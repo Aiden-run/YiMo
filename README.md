@@ -18,7 +18,7 @@ cd YiMo
 mvn spring-boot:run
 ```
 3. **访问管理界面**：
-   - http://localhost:8080/index.html
+   - http://localhost:9091/index.html
 
 ## 使用说明
 - 通过 Web 管理界面创建分组、添加 API 配置、编辑/删除/启用/禁用接口
