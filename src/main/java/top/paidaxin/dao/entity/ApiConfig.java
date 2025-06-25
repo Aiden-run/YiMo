@@ -1,6 +1,7 @@
 package top.paidaxin.dao.entity;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -48,17 +49,17 @@ public class ApiConfig extends ApiGroup implements Serializable {
     /**
      * HTTP状态码
      */
-    private Integer statusCode;
+    private Integer statusCode = HttpServletResponse.SC_OK;
     
     /**
      * 响应延迟(毫秒)
      */
-    private Integer delay;
+    private Integer delay = 0;
     
     /**
      * 是否启用
      */
-    private Boolean enabled;
+    private Boolean enabled = true;
     
     /**
      * 请求参数匹配条件(JSON格式)
@@ -78,10 +79,10 @@ public class ApiConfig extends ApiGroup implements Serializable {
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date createTime = new Date();
     
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private Date updateTime = new Date();
 }

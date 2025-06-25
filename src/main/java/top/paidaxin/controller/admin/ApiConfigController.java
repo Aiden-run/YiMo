@@ -18,54 +18,43 @@ import java.util.UUID;
  */
 @Tag(name = "YiMo管理")
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admin/config")
 public class ApiConfigController {
 
     @Resource
     private ApiConfigService apiConfigService;
-    
+
     @Operation(summary = "查询API配置列表")
-    @GetMapping("/config/list")
+    @GetMapping("/list")
     public HttpResult<PageSerializable<ApiConfig>> queryConfigList(@RequestParam(defaultValue = "1") int pageNum,
                                                                    @RequestParam(defaultValue = "10") int pageSize,
                                                                    @RequestParam(required = false) String groupId) {
         return HttpResult.success(apiConfigService.queryConfigList(pageNum, pageSize, groupId));
     }
-    
+
     @Operation(summary = "创建API配置")
-    @PostMapping("/config")
+    @PostMapping
     public HttpResult<ApiConfig> createConfig(@RequestBody ApiConfig apiConfig) {
         apiConfig.setApiConfigId(UUID.randomUUID().toString().replace("-", ""));
-        apiConfig.setCreateTime(new Date());
-        apiConfig.setUpdateTime(new Date());
-        if (apiConfig.getEnabled() == null) {
-            apiConfig.setEnabled(true);
-        }
-        if (apiConfig.getStatusCode() == null) {
-            apiConfig.setStatusCode(200);
-        }
-        if (apiConfig.getDelay() == null) {
-            apiConfig.setDelay(0);
-        }
         return HttpResult.success(apiConfigService.createConfig(apiConfig));
     }
-    
+
     @Operation(summary = "更新API配置")
-    @PutMapping("/config")
+    @PutMapping
     public HttpResult<ApiConfig> updateConfig(@RequestBody ApiConfig apiConfig) {
         apiConfig.setUpdateTime(new Date());
         return HttpResult.success(apiConfigService.updateConfig(apiConfig));
     }
-    
+
     @Operation(summary = "删除API配置")
-    @DeleteMapping("/config/{configId}")
+    @DeleteMapping("/{configId}")
     public HttpResult<Void> deleteConfig(@PathVariable String configId) {
         apiConfigService.deleteConfig(configId);
         return HttpResult.success();
     }
-    
+
     @Operation(summary = "启用/禁用API配置")
-    @PutMapping("/config/{configId}/toggle")
+    @PutMapping("/{configId}/toggle")
     public HttpResult<Void> toggleConfig(@PathVariable String configId) {
         apiConfigService.toggleConfig(configId);
         return HttpResult.success();

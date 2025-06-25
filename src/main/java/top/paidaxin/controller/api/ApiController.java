@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import top.paidaxin.dao.entity.ApiConfig;
 import top.paidaxin.service.client.IYiMoApiService;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @Tag(name = "YiMo接口")
 @RequestMapping("/api")
@@ -35,7 +37,10 @@ public class ApiController {
             return null;
         }
 
-        //3.设置响应头
+        //3.设置响应时间
+        TimeUnit.MILLISECONDS.sleep(apiConfig.getDelay());
+
+        //4.设置响应头
         response.setHeader("content-type", apiConfig.getContentType());
         response.setStatus(apiConfig.getStatusCode());
         return apiConfig.getResponse();

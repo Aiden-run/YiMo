@@ -343,7 +343,7 @@
                             <div class="group-header">
                                 <div>
                                     <span class="group-name">{{ group.apiGroupName || '' }}</span>
-                                    <span class="group-url">{{ group.apiBaseUrl || '' }}</span>
+                                    <span class="group-url">{{ "/api" + group.apiBaseUrl || '' }}</span>
                                 </div>
                                 <div class="group-actions">
                                     <el-button size="mini" @click="editGroup(group)">编辑</el-button>
@@ -421,7 +421,7 @@
                                     <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">
                                         {{ api.apiMethod || 'GET' }}
                                     </span>
-                                    <span class="api-url">{{ (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
+                                    <span class="api-url">{{"/api" + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
                                     <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
                                 </div>
                                 <div class="api-status">

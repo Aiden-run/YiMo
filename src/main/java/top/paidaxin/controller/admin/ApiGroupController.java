@@ -28,13 +28,13 @@ public class ApiGroupController {
     }
 
     @Operation(summary = "创建API分组")
-    @PostMapping("/")
+    @PostMapping
     public HttpResult<ApiGroup> createGroup(@RequestBody ApiGroup apiGroup) {
         return HttpResult.success(apiGroupService.createGroup(apiGroup));
     }
 
     @Operation(summary = "更新API分组")
-    @PutMapping("/")
+    @PutMapping
     public HttpResult<ApiGroup> updateGroup(@RequestBody ApiGroup apiGroup) {
         return HttpResult.success(apiGroupService.updateGroup(apiGroup));
     }
