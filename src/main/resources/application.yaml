@@ -16,8 +16,7 @@ spring:
 
 # 服务器配置
 server:
-  port: 8081
-  # servlet:
+  port: 9091
 
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
