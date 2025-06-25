@@ -37,6 +37,7 @@ public class ApiController {
 
         //3.设置响应头
         response.setHeader("content-type", apiConfig.getContentType());
+        response.setStatus(apiConfig.getStatusCode());
         return apiConfig.getResponse();
     }
 }

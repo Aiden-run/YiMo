@@ -23,37 +23,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin")
 public class ApiConfigController {
-    @Resource
-    private ApiGroupService apiGroupService;
-    
+
     @Resource
     private ApiConfigService apiConfigService;
-
-    @Operation(summary = "查询API分组列表")
-    @GetMapping("/group/list")
-    public HttpResult<PageSerializable<ApiGroup>> queryGroupList(@RequestParam(defaultValue = "1") int pageNum,
-                                                      @RequestParam(defaultValue = "10") int pageSize) {
-        return HttpResult.success(apiGroupService.queryGroupList(pageNum, pageSize));
-    }
-    
-    @Operation(summary = "创建API分组")
-    @PostMapping("/group")
-    public HttpResult<ApiGroup> createGroup(@RequestBody ApiGroup apiGroup) {
-        return HttpResult.success(apiGroupService.createGroup(apiGroup));
-    }
-    
-    @Operation(summary = "更新API分组")
-    @PutMapping("/group")
-    public HttpResult<ApiGroup> updateGroup(@RequestBody ApiGroup apiGroup) {
-        return HttpResult.success(apiGroupService.updateGroup(apiGroup));
-    }
-    
-    @Operation(summary = "删除API分组")
-    @DeleteMapping("/group/{groupId}")
-    public HttpResult<Void> deleteGroup(@PathVariable String groupId) {
-        apiGroupService.deleteGroup(groupId);
-        return HttpResult.success();
-    }
     
     @Operation(summary = "查询API配置列表")
     @GetMapping("/config/list")
