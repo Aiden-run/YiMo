@@ -1,6 +1,5 @@
 package top.paidaxin.service.admin;
 
-import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.PageSerializable;
 import top.paidaxin.dao.entity.ApiGroup;
 
