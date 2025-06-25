@@ -48,7 +48,7 @@
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS
         FROM API_GROUP AG
-                 LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
+                 RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         <where>
             <if test="groupId != null and groupId != ''">
                 AND AC.API_GROUP_ID = #{groupId}
@@ -115,5 +115,9 @@
     
     <delete id="deleteConfig" parameterType="string">
         DELETE FROM API_CONFIG WHERE API_CONFIG_ID = #{configId}
+    </delete>
+
+    <delete id="deleteConfigByGoupId" parameterType="string">
+        DELETE FROM API_CONFIG WHERE API_GROUP_ID = #{configId}
     </delete>
 </mapper>

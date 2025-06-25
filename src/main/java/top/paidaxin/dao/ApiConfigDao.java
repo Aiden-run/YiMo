@@ -15,6 +15,7 @@ public interface ApiConfigDao {
     void updateConfig(ApiConfig apiConfig);
     
     void deleteConfig(@Param("configId") String configId);
-    
+    void deleteConfigByGoupId(@Param("configId") String configId);
+
     ApiConfig queryConfigById(@Param("configId") String configId);
 }

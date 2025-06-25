@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.PageSerializable;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.paidaxin.controller.vo.Pages;
 import top.paidaxin.dao.ApiConfigDao;
 import top.paidaxin.dao.ApiGroupDao;
@@ -40,7 +41,9 @@ public class ApiGroupService implements IApiGroupService {
     }
     
     @Override
+    @Transactional
     public void deleteGroup(String groupId) {
         apiGroupDao.deleteGroup(groupId);
+        apiConfigDao.deleteConfigByGoupId(groupId);
     }
 }

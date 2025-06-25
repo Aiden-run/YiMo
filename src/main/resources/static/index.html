@@ -13,42 +13,42 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
             background-color: #f5f7fa;
         }
-        
+
         .app-container {
             min-height: 100vh;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
         }
-        
+
         .header h1 {
             margin: 0;
             font-size: 24px;
             font-weight: 300;
         }
-        
+
         .main-content {
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .card {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
             margin-bottom: 20px;
         }
-        
+
         .card-header {
             padding: 20px;
             border-bottom: 1px solid #ebeef5;
@@ -56,18 +56,18 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .card-body {
             padding: 20px;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
+
         .stat-card {
             background: white;
             padding: 20px;
@@ -75,30 +75,30 @@
             box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
             text-align: center;
         }
-        
+
         .stat-number {
             font-size: 32px;
             font-weight: bold;
             color: #409eff;
             margin-bottom: 8px;
         }
-        
+
         .stat-label {
             color: #606266;
             font-size: 14px;
         }
-        
+
         .api-item {
             border: 1px solid #ebeef5;
             border-radius: 4px;
             margin-bottom: 10px;
             transition: all 0.3s;
         }
-        
+
         .api-item:hover {
             box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
         }
-        
+
         .api-header {
             padding: 15px;
             background: #fafafa;
@@ -106,7 +106,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .api-method {
             padding: 4px 8px;
             border-radius: 4px;
@@ -114,44 +114,44 @@
             font-weight: bold;
             color: white;
         }
-        
+
         .method-get { background-color: #67c23a; }
         .method-post { background-color: #409eff; }
         .method-put { background-color: #e6a23c; }
         .method-delete { background-color: #f56c6c; }
-        
+
         .api-url {
             font-family: 'Courier New', monospace;
             color: #606266;
         }
-        
+
         .api-status {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .status-badge {
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 12px;
             color: white;
         }
-        
+
         .status-active { background-color: #67c23a; }
         .status-inactive { background-color: #909399; }
-        
+
         .group-item {
             border: 1px solid #ebeef5;
             border-radius: 4px;
             margin-bottom: 10px;
             transition: all 0.3s;
         }
-        
+
         .group-item:hover {
             box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
         }
-        
+
         .group-header {
             padding: 15px;
             background: #fafafa;
@@ -159,64 +159,64 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .group-name {
             font-weight: bold;
             color: #303133;
             margin-right: 10px;
         }
-        
+
         .group-url {
             font-family: 'Courier New', monospace;
             color: #606266;
         }
-        
+
         .group-actions {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .loading {
             text-align: center;
             padding: 40px;
             color: #909399;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: #909399;
         }
-        
+
         .empty-state i {
             font-size: 48px;
             margin-bottom: 20px;
             opacity: 0.5;
         }
-        
+
         .toolbar {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
-        
+
         .search-box {
             flex: 1;
             max-width: 300px;
         }
-        
+
         .filter-group {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .pagination-container {
             text-align: center;
             margin-top: 20px;
         }
-        
+
         .template-example {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -227,7 +227,7 @@
             font-size: 12px;
             color: #495057;
         }
-        
+
         .response-preview {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -240,13 +240,13 @@
             max-height: 200px;
             overflow-y: auto;
         }
-        
+
         /* 响应对话框样式 */
         .response-dialog .el-dialog__body {
             max-height: 70vh;
             overflow-y: auto;
         }
-        
+
         .response-dialog pre {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -254,22 +254,22 @@
             font-size: 12px;
             line-height: 1.4;
         }
-        
+
         .response-dialog h4 {
             margin: 15px 0 10px 0;
             color: #303133;
             font-size: 14px;
         }
-        
+
         .response-dialog p {
             margin: 5px 0;
             color: #606266;
         }
-        
+
         .response-dialog strong {
             color: #303133;
         }
-        
+
         .response-info {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -277,31 +277,31 @@
             padding: 15px;
             margin-bottom: 15px;
         }
-        
+
         .response-info h4 {
             margin: 0 0 10px 0;
             color: #303133;
             font-size: 14px;
         }
-        
+
         .response-info p {
             margin: 5px 0;
             color: #606266;
             font-size: 12px;
         }
-        
+
         .response-content {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 4px;
             padding: 15px;
         }
-        
+
         .response-content pre {
             margin: 0;
             background: transparent;
         }
-        
+
         .hljs {
             background: transparent !important;
             padding: 0 !important;
@@ -313,7 +313,7 @@
         <div class="header">
             <h1>YiMo Mock服务管理平台</h1>
         </div>
-        
+
         <div class="main-content">
             <!-- 分组管理 -->
             <div class="card">
@@ -325,17 +325,19 @@
                         </el-button>
                     </div>
                 </div>
-                
+
                 <div class="card-body">
                     <div v-if="loading" class="loading">
                         加载中...
                     </div>
-                    
+
                     <div v-else-if="groups.length === 0" class="empty-state">
-                        <p>暂无分组</p>
+                        <h4>暂无分组</h4>
+                        <p>为什么不去创一个分组呢?</p>
+                        <br>
                         <el-button type="primary" @click="showGroupDialog = true">创建第一个分组</el-button>
                     </div>
-                    
+
                     <div v-else>
                         <div v-for="group in groups" :key="group.apiGroupId || Math.random()" class="group-item">
                             <div class="group-header">
@@ -352,7 +354,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- API管理 -->
             <div class="card">
                 <div class="card-header">
@@ -366,7 +368,7 @@
                         </el-button>
                     </div>
                 </div>
-                
+
                 <div class="card-body">
                     <!-- 工具栏 -->
                     <div class="toolbar">
@@ -398,19 +400,20 @@
                             </el-select>
                         </div>
                     </div>
-                    
+
                     <!-- API列表 -->
                     <div v-if="loading" class="loading">
                         加载中...
                     </div>
-                    
+
                     <div v-else-if="filteredApis.length === 0" class="empty-state">
-                        <p>暂无API配置</p>
+                        <h4>暂无API配置</h4>
+                        <p>为什么不去创一个API呢?</p>
                         <br>
                         <br>
                         <el-button type="primary" @click="showCreateDialog = true">创建第一个API</el-button>
                     </div>
-                    
+
                     <div v-else>
                         <div v-for="api in filteredApis" :key="api.apiConfigId || Math.random()" class="api-item">
                             <div class="api-header">
@@ -438,7 +441,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- 分页 -->
                     <div class="pagination-container">
                         <el-pagination
@@ -452,7 +455,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 创建/编辑API对话框 -->
         <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="60%">
             <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="100px">
@@ -475,7 +478,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                
+
                 <el-row :gutter="20">
                     <el-col :span="12">
                         <el-form-item label="请求方法" prop="apiMethod">
@@ -493,7 +496,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                
+
                 <el-row :gutter="20">
                     <el-col :span="12">
                         <el-form-item label="状态码" prop="statusCode">
@@ -506,7 +509,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                
+
                 <el-form-item label="响应内容" prop="response">
                     <el-input
                         type="textarea"
@@ -515,25 +518,31 @@
                         placeholder="请输入响应内容，支持模板语法">
                     </el-input>
                     <div class="template-example" v-pre>
-                        模板示例：{"id": "{{uuid}}", "name": "{{random.string(8)}}", "age": {{random.int(18,65)}}}
+                        模板示例：
+                         <code>
+                             {
+                                 "name":"YiMo",
+                                 "desc":"开箱即用的mock平台"
+                             }
+                         </code>
                     </div>
                 </el-form-item>
-                
+
                 <el-form-item label="描述">
                     <el-input v-model="apiForm.comment" placeholder="API描述"></el-input>
                 </el-form-item>
-                
+
                 <el-form-item label="启用状态">
                     <el-switch v-model="apiForm.enabled"></el-switch>
                 </el-form-item>
             </el-form>
-            
+
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showCreateDialog = false">取消</el-button>
                 <el-button type="primary" @click="saveApi">确定</el-button>
             </div>
         </el-dialog>
-        
+
         <!-- 创建分组对话框 -->
         <el-dialog :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="40%">
             <el-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
@@ -544,13 +553,13 @@
                     <el-input v-model="groupForm.apiBaseUrl" placeholder="/api"></el-input>
                 </el-form-item>
             </el-form>
-            
+
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showGroupDialog = false">取消</el-button>
                 <el-button type="primary" @click="saveGroup">确定</el-button>
             </div>
         </el-dialog>
-        
+
         <!-- 响应弹框 -->
         <el-dialog title="API响应结果" :visible.sync="showResponseDialog" width="70%" class="response-dialog">
             <div v-if="currentResponse">
@@ -561,13 +570,13 @@
                     <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
                     <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
                 </div>
-                
+
                 <div class="response-content">
                     <h4>响应内容</h4>
                     <pre><code class="language-json" v-html="formattedResponse"></code></pre>
                 </div>
             </div>
-            
+
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showResponseDialog = false">关闭</el-button>
                 <el-button type="primary" @click="copyResponse">复制响应</el-button>
