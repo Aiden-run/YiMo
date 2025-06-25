@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.paidaxin.dao.ApiGroupDao">
+    <select id="queryGroupConfigByPage" resultType="top.paidaxin.dao.entity.ApiGroupConfig">
+        SELECT API_GROUP_ID,
+               API_GROUP_NAME,
+               API_BASE_URL
+        FROM API_GROUP
+    </select>
+    
+    <insert id="insertGroup" parameterType="top.paidaxin.dao.entity.ApiGroup">
+        INSERT INTO API_GROUP (API_GROUP_NAME, API_BASE_URL)
+        VALUES (#{apiGroupName}, #{apiBaseUrl})
+    </insert>
+    
+    <update id="updateGroup" parameterType="top.paidaxin.dao.entity.ApiGroup">
+        UPDATE API_GROUP 
+        SET API_GROUP_NAME = #{apiGroupName},
+            API_BASE_URL = #{apiBaseUrl}
+        WHERE API_GROUP_ID = #{apiGroupId}
+    </update>
+    
+    <delete id="deleteGroup" parameterType="string">
+        DELETE FROM API_GROUP WHERE API_GROUP_ID = #{groupId}
+    </delete>
+
+</mapper>

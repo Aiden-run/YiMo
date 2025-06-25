@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.paidaxin.dao.ApiConfigDao">
+
+    <select id="queryApiConfig" resultType="top.paidaxin.dao.entity.ApiConfig">
+        SELECT AC.API_CONFIG_ID,
+               AC.API_GROUP_ID,
+               AC.API_CONFIG_NAME,
+               AG.API_BASE_URL,
+               AC.API_URL,
+               AC.COMMENT,
+               AC.RESPONSE,
+               AC.REQUEST,
+               AC.CREATE_TIME,
+               AC.UPDATE_TIME,
+               AC.API_METHOD,
+               AC.CONTENT_TYPE,
+               AC.STATUS_CODE,
+               AC.DELAY,
+               AC.ENABLED,
+               AC.REQUEST_MATCH,
+               AC.HEADER_MATCH,
+               AC.RESPONSE_HEADERS
+        FROM API_GROUP AG
+                 LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
+        WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
+          AND AC.API_METHOD = #{method}
+          AND AC.ENABLED = true
+    </select>
+    
+    <select id="queryConfigList" resultType="top.paidaxin.dao.entity.ApiConfig">
+        SELECT AC.API_CONFIG_ID,
+               AC.API_GROUP_ID,
+               AC.API_CONFIG_NAME,
+               AG.API_BASE_URL,
+               AC.API_URL,
+               AC.COMMENT,
+               AC.RESPONSE,
+               AC.REQUEST,
+               AC.CREATE_TIME,
+               AC.UPDATE_TIME,
+               AC.API_METHOD,
+               AC.CONTENT_TYPE,
+               AC.STATUS_CODE,
+               AC.DELAY,
+               AC.ENABLED,
+               AC.REQUEST_MATCH,
+               AC.HEADER_MATCH,
+               AC.RESPONSE_HEADERS
+        FROM API_GROUP AG
+                 LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
+        <where>
+            <if test="groupId != null and groupId != ''">
+                AND AC.API_GROUP_ID = #{groupId}
+            </if>
+        </where>
+        ORDER BY AC.CREATE_TIME DESC
+    </select>
+    
+    <select id="queryConfigById" resultType="top.paidaxin.dao.entity.ApiConfig">
+        SELECT AC.API_CONFIG_ID,
+               AC.API_GROUP_ID,
+               AC.API_CONFIG_NAME,
+               AG.API_BASE_URL,
+               AC.API_URL,
+               AC.COMMENT,
+               AC.RESPONSE,
+               AC.REQUEST,
+               AC.CREATE_TIME,
+               AC.UPDATE_TIME,
+               AC.API_METHOD,
+               AC.CONTENT_TYPE,
+               AC.STATUS_CODE,
+               AC.DELAY,
+               AC.ENABLED,
+               AC.REQUEST_MATCH,
+               AC.HEADER_MATCH,
+               AC.RESPONSE_HEADERS
+        FROM API_GROUP AG
+                 LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
+        WHERE AC.API_CONFIG_ID = #{configId}
+    </select>
+    
+    <insert id="insertConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
+        INSERT INTO API_CONFIG (
+            API_CONFIG_ID, API_GROUP_ID, API_CONFIG_NAME, API_URL, COMMENT,
+            RESPONSE, REQUEST, CREATE_TIME, UPDATE_TIME, API_METHOD, CONTENT_TYPE,
+            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS
+        ) VALUES (
+            #{apiConfigId}, #{apiGroupId}, #{apiConfigName}, #{apiUrl}, #{comment},
+            #{response}, #{request}, #{createTime}, #{updateTime}, #{apiMethod}, #{contentType},
+            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders}
+        )
+    </insert>
+    
+    <update id="updateConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
+        UPDATE API_CONFIG SET
+            API_GROUP_ID = #{apiGroupId},
+            API_CONFIG_NAME = #{apiConfigName},
+            API_URL = #{apiUrl},
+            COMMENT = #{comment},
+            RESPONSE = #{response},
+            REQUEST = #{request},
+            UPDATE_TIME = #{updateTime},
+            API_METHOD = #{apiMethod},
+            CONTENT_TYPE = #{contentType},
+            STATUS_CODE = #{statusCode},
+            DELAY = #{delay},
+            ENABLED = #{enabled},
+            REQUEST_MATCH = #{requestMatch},
+            HEADER_MATCH = #{headerMatch},
+            RESPONSE_HEADERS = #{responseHeaders}
+        WHERE API_CONFIG_ID = #{apiConfigId}
+    </update>
+    
+    <delete id="deleteConfig" parameterType="string">
+        DELETE FROM API_CONFIG WHERE API_CONFIG_ID = #{configId}
+    </delete>
+</mapper>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YiMo - Mock服务管理平台</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="lib/element-ui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #ebeef5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #409eff;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #606266;
+            font-size: 14px;
+        }
+        
+        .api-item {
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .api-item:hover {
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        }
+        
+        .api-header {
+            padding: 15px;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .api-method {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .method-get { background-color: #67c23a; }
+        .method-post { background-color: #409eff; }
+        .method-put { background-color: #e6a23c; }
+        .method-delete { background-color: #f56c6c; }
+        
+        .api-url {
+            font-family: 'Courier New', monospace;
+            color: #606266;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .status-active { background-color: #67c23a; }
+        .status-inactive { background-color: #909399; }
+        
+        .group-item {
+            border: 1px solid #ebeef5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .group-item:hover {
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        }
+        
+        .group-header {
+            padding: 15px;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .group-name {
+            font-weight: bold;
+            color: #303133;
+            margin-right: 10px;
+        }
+        
+        .group-url {
+            font-family: 'Courier New', monospace;
+            color: #606266;
+        }
+        
+        .group-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #909399;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #909399;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .pagination-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .template-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #495057;
+        }
+        
+        .response-preview {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #495057;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* 响应对话框样式 */
+        .response-dialog .el-dialog__body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .response-dialog pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .response-dialog h4 {
+            margin: 15px 0 10px 0;
+            color: #303133;
+            font-size: 14px;
+        }
+        
+        .response-dialog p {
+            margin: 5px 0;
+            color: #606266;
+        }
+        
+        .response-dialog strong {
+            color: #303133;
+        }
+        
+        .response-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .response-info h4 {
+            margin: 0 0 10px 0;
+            color: #303133;
+            font-size: 14px;
+        }
+        
+        .response-info p {
+            margin: 5px 0;
+            color: #606266;
+            font-size: 12px;
+        }
+        
+        .response-content {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        
+        .response-content pre {
+            margin: 0;
+            background: transparent;
+        }
+        
+        .hljs {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="app-container">
+        <div class="header">
+            <h1>YiMo Mock服务管理平台</h1>
+        </div>
+        
+        <div class="main-content">
+            <!-- 分组管理 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>分组管理</h2>
+                    <div>
+                        <el-button type="primary" @click="showGroupDialog = true">
+                            新建分组
+                        </el-button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div v-if="loading" class="loading">
+                        加载中...
+                    </div>
+                    
+                    <div v-else-if="groups.length === 0" class="empty-state">
+                        <p>暂无分组</p>
+                        <el-button type="primary" @click="showGroupDialog = true">创建第一个分组</el-button>
+                    </div>
+                    
+                    <div v-else>
+                        <div v-for="group in groups" :key="group.apiGroupId || Math.random()" class="group-item">
+                            <div class="group-header">
+                                <div>
+                                    <span class="group-name">{{ group.apiGroupName || '' }}</span>
+                                    <span class="group-url">{{ group.apiBaseUrl || '' }}</span>
+                                </div>
+                                <div class="group-actions">
+                                    <el-button size="mini" @click="editGroup(group)">编辑</el-button>
+                                    <el-button size="mini" type="danger" @click="deleteGroup(group.apiGroupId)">删除</el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API管理 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>API管理</h2>
+                    <div>
+                        <el-button type="primary" @click="showCreateDialog = true">
+                            新建API
+                        </el-button>
+                        <el-button @click="showGroupDialog = true">
+                            新建分组
+                        </el-button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- 工具栏 -->
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <el-input
+                                v-model="searchKeyword"
+                                placeholder="搜索API名称或URL"
+                                clearable>
+                            </el-input>
+                        </div>
+                        <div class="filter-group">
+                            <el-select v-model="selectedGroup" placeholder="选择分组" clearable>
+                                <el-option
+                                    v-for="group in groups"
+                                    :key="group.apiGroupId || Math.random()"
+                                    :label="group.apiGroupName || ''"
+                                    :value="group.apiGroupId">
+                                </el-option>
+                            </el-select>
+                            <el-select v-model="selectedMethod" placeholder="请求方法" clearable>
+                                <el-option label="GET" value="GET"></el-option>
+                                <el-option label="POST" value="POST"></el-option>
+                                <el-option label="PUT" value="PUT"></el-option>
+                                <el-option label="DELETE" value="DELETE"></el-option>
+                            </el-select>
+                            <el-select v-model="selectedStatus" placeholder="状态" clearable>
+                                <el-option label="启用" :value="true"></el-option>
+                                <el-option label="禁用" :value="false"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    
+                    <!-- API列表 -->
+                    <div v-if="loading" class="loading">
+                        加载中...
+                    </div>
+                    
+                    <div v-else-if="filteredApis.length === 0" class="empty-state">
+                        <p>暂无API配置</p>
+                        <br>
+                        <br>
+                        <el-button type="primary" @click="showCreateDialog = true">创建第一个API</el-button>
+                    </div>
+                    
+                    <div v-else>
+                        <div v-for="api in filteredApis" :key="api.apiConfigId || Math.random()" class="api-item">
+                            <div class="api-header">
+                                <div>
+                                    <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">
+                                        {{ api.apiMethod || 'GET' }}
+                                    </span>
+                                    <span class="api-url">{{ (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
+                                    <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
+                                </div>
+                                <div class="api-status">
+                                    <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">
+                                        {{ api.enabled ? '启用' : '禁用' }}
+                                    </span>
+                                    <el-button size="mini" type="info" @click="requestApi(api)" style="margin-left: 10px; vertical-align: middle;">
+                                        请求
+                                    </el-button>
+                                    <el-button size="mini" @click="editApi(api)">
+                                        编辑
+                                    </el-button>
+                                    <el-button size="mini" type="danger" @click="deleteApi(api.apiConfigId || 0)">
+                                        删除
+                                    </el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="pagination-container">
+                        <el-pagination
+                            @current-change="handleCurrentChange"
+                            :current-page="currentPage"
+                            :page-size="pageSize"
+                            layout="total, prev, pager, next"
+                            :total="total">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 创建/编辑API对话框 -->
+        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="60%">
+            <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="100px">
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-form-item label="API名称" prop="apiConfigName">
+                            <el-input v-model="apiForm.apiConfigName" placeholder="请输入API名称"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="所属分组" prop="apiGroupId">
+                            <el-select v-model="apiForm.apiGroupId" placeholder="选择分组">
+                                <el-option
+                                    v-for="group in groups"
+                                    :key="group.apiGroupId || Math.random()"
+                                    :label="group.apiGroupName || ''"
+                                    :value="group.apiGroupId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-form-item label="请求方法" prop="apiMethod">
+                            <el-select v-model="apiForm.apiMethod">
+                                <el-option label="GET" value="GET"></el-option>
+                                <el-option label="POST" value="POST"></el-option>
+                                <el-option label="PUT" value="PUT"></el-option>
+                                <el-option label="DELETE" value="DELETE"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="API路径" prop="apiUrl">
+                            <el-input v-model="apiForm.apiUrl" placeholder="/api/path"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-form-item label="状态码" prop="statusCode">
+                            <el-input-number v-model="apiForm.statusCode" :min="100" :max="599"></el-input-number>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="延迟(ms)" prop="delay">
+                            <el-input-number v-model="apiForm.delay" :min="0" :max="10000"></el-input-number>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                
+                <el-form-item label="响应内容" prop="response">
+                    <el-input
+                        type="textarea"
+                        v-model="apiForm.response"
+                        :rows="8"
+                        placeholder="请输入响应内容，支持模板语法">
+                    </el-input>
+                    <div class="template-example" v-pre>
+                        模板示例：{"id": "{{uuid}}", "name": "{{random.string(8)}}", "age": {{random.int(18,65)}}}
+                    </div>
+                </el-form-item>
+                
+                <el-form-item label="描述">
+                    <el-input v-model="apiForm.comment" placeholder="API描述"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="启用状态">
+                    <el-switch v-model="apiForm.enabled"></el-switch>
+                </el-form-item>
+            </el-form>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showCreateDialog = false">取消</el-button>
+                <el-button type="primary" @click="saveApi">确定</el-button>
+            </div>
+        </el-dialog>
+        
+        <!-- 创建分组对话框 -->
+        <el-dialog :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="40%">
+            <el-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
+                <el-form-item label="分组名称" prop="apiGroupName">
+                    <el-input v-model="groupForm.apiGroupName" placeholder="请输入分组名称"></el-input>
+                </el-form-item>
+                <el-form-item label="基础URL" prop="apiBaseUrl">
+                    <el-input v-model="groupForm.apiBaseUrl" placeholder="/api"></el-input>
+                </el-form-item>
+            </el-form>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showGroupDialog = false">取消</el-button>
+                <el-button type="primary" @click="saveGroup">确定</el-button>
+            </div>
+        </el-dialog>
+        
+        <!-- 响应弹框 -->
+        <el-dialog title="API响应结果" :visible.sync="showResponseDialog" width="70%" class="response-dialog">
+            <div v-if="currentResponse">
+                <div class="response-info">
+                    <h4>请求信息</h4>
+                    <p><strong>请求方法：</strong>{{ currentResponse.method }}</p>
+                    <p><strong>请求URL：</strong>{{ currentResponse.url }}</p>
+                    <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
+                    <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
+                </div>
+                
+                <div class="response-content">
+                    <h4>响应内容</h4>
+                    <pre><code class="language-json" v-html="formattedResponse"></code></pre>
+                </div>
+            </div>
+            
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showResponseDialog = false">关闭</el-button>
+                <el-button type="primary" @click="copyResponse">复制响应</el-button>
+            </div>
+        </el-dialog>
+    </div>
+
+    <script src="lib/vue.js"></script>
+    <script src="lib/element-ui.js"></script>
+    <script src="lib/axios.min.js"></script>
+    <script src="lib/highlight.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
