@@ -6,7 +6,7 @@ spring:
   application:
     name: YiMo
   datasource:
-    url: jdbc:h2:tcp://localhost:9092/./data/YiMo
+    url: jdbc:h2:file:~/.YiMo/data/YiMo
     driver-class-name: org.h2.Driver
     username: sa
     password: YiMo

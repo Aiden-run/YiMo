@@ -1,3 +1,9 @@
 logging:
   level:
     top.paidaxin.dao.*: debug
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost:9092/./data/YiMo
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: YiMo

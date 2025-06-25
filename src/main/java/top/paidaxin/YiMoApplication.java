@@ -11,15 +11,6 @@ import java.sql.SQLException;
 @MapperScan("top.paidaxin.dao")
 public class YiMoApplication {
     public static void main(String[] args) throws SQLException {
-        /*
-            启动H2数据库服务
-         */
-        Server server = Server.createTcpServer(
-                "-tcp",
-                "-tcpAllowOthers",
-                "-tcpPort", "9092"
-        ).start();
-
         SpringApplication.run(YiMoApplication.class, args);
     }
 }
