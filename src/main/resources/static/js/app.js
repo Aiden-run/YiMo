@@ -498,6 +498,24 @@ new Vue({
         handleCurrentChange(page) {
             this.currentPage = page;
             this.loadApis();
+        },
+        
+        copyFullUrl() {
+            const fullUrl = window.location.origin + (this.currentResponse?.url || '');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    this.$message.success('已复制完整URL');
+                });
+            } else {
+                // 兼容旧浏览器
+                const input = document.createElement('input');
+                input.value = fullUrl;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                this.$message.success('已复制完整URL');
+            }
         }
     },
     

@@ -428,7 +428,7 @@
                                     <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">
                                         {{ api.enabled ? '启用' : '禁用' }}
                                     </span>
-                                    <el-button size="mini" type="info" @click="requestApi(api)" style="margin-left: 10px; vertical-align: middle;">
+                                    <el-button size="mini" type="text" @click="requestApi(api)" style="margin-left: 10px; vertical-align: middle;">
                                         请求
                                     </el-button>
                                     <el-button size="mini" @click="editApi(api)">
@@ -566,7 +566,14 @@
                 <div class="response-info">
                     <h4>请求信息</h4>
                     <p><strong>请求方法：</strong>{{ currentResponse.method }}</p>
-                    <p><strong>请求URL：</strong>{{ currentResponse.url }}</p>
+                    <p><strong>请求URL：</strong>{{ currentResponse.url }}
+                      <el-button
+                        size="mini"
+                        type="text"
+                        style="margin-left: 8px;"
+                        @click="copyFullUrl"
+                      >复制路径</el-button>
+                    </p>
                     <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
                     <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
                 </div>
