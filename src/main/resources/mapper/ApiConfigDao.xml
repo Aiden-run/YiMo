@@ -49,11 +49,19 @@
                AC.RESPONSE_HEADERS
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        <where>
-            <if test="groupId != null and groupId != ''">
-                AND AC.API_GROUP_ID = #{groupId}
+        WHERE 1 = 1
+            <if test="groupName != null and groupName != ''">
+                AND AG.API_GROUP_NAME like '%' || #{groupName} || '%'
             </if>
-        </where>
+            <if test="apiName != null and apiName != ''">
+                AND AC.API_CONFIG_NAME like '%' || #{apiName} || '%'
+            </if>
+            <if test="method != null and method != ''">
+                AND AC.API_METHOD = #{method}
+            </if>
+            <if test="status != null and status != ''">
+                AND AC.ENABLED = #{status}
+            </if>
         ORDER BY AC.CREATE_TIME DESC
     </select>
     

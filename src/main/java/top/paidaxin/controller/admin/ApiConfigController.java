@@ -28,8 +28,11 @@ public class ApiConfigController {
     @GetMapping("/list")
     public HttpResult<PageSerializable<ApiConfig>> queryConfigList(@RequestParam(defaultValue = "1") int pageNum,
                                                                    @RequestParam(defaultValue = "10") int pageSize,
-                                                                   @RequestParam(required = false) String groupId) {
-        return HttpResult.success(apiConfigService.queryConfigList(pageNum, pageSize, groupId));
+                                                                   @RequestParam(required = false) String groupName,
+                                                                   @RequestParam(required = false) String apiName,
+                                                                   @RequestParam(required = false) String method,
+                                                                   @RequestParam(required = false) boolean status) {
+        return HttpResult.success(apiConfigService.queryConfigList(pageNum, pageSize, groupName, apiName, method, status));
     }
 
     @Operation(summary = "创建API配置")
