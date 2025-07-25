@@ -50,8 +50,8 @@
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE 1 = 1
-            <if test="groupName != null and groupName != ''">
-                AND AG.API_GROUP_NAME like '%' || #{groupName} || '%'
+            <if test="groupId != null and groupId != ''">
+                AND AG.API_GROUP_ID like '%' || #{groupId} || '%'
             </if>
             <if test="apiName != null and apiName != ''">
                 AND AC.API_CONFIG_NAME like '%' || #{apiName} || '%'

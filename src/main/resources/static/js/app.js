@@ -5,7 +5,13 @@ new Vue({
         return {
             // API列表数据
             apis: [],
-            groups: [],
+            groups: [], // For dropdowns
+            groupList: [], // For paginated list
+            groupListCurrentPage: 1,
+            groupListPageSize: 5,
+            groupListTotal: 0,
+            groupListLoading: false,
+            groupListListenerAttached: false,
             loading: false,
             
             // 分页
@@ -25,6 +31,7 @@ new Vue({
             showResponseDialog: false,
             editingApi: null,
             editingGroup: null,
+            deletePopoverVisible: false,
             
             // 响应弹框数据
             currentResponse: null,
@@ -79,41 +86,6 @@ new Vue({
     },
     
     computed: {
-        // 过滤后的API列表
-        filteredApis() {
-            let result = this.apis || [];
-            
-            // 关键词搜索
-            if (this.searchKeyword) {
-                const keyword = this.searchKeyword.toLowerCase();
-                result = result.filter(api => {
-                    if (!api) return false;
-                    const apiConfigName = api.apiConfigName || '';
-                    const apiBaseUrl = api.apiBaseUrl || '';
-                    const apiUrl = api.apiUrl || '';
-                    return apiConfigName.toLowerCase().includes(keyword) ||
-                           (apiBaseUrl + apiUrl).toLowerCase().includes(keyword);
-                });
-            }
-            
-            // 分组筛选
-            if (this.selectedGroup) {
-                result = result.filter(api => api && api.apiGroupId === this.selectedGroup);
-            }
-            
-            // 方法筛选
-            if (this.selectedMethod) {
-                result = result.filter(api => api && api.apiMethod === this.selectedMethod);
-            }
-            
-            // 状态筛选
-            if (this.selectedStatus !== '') {
-                result = result.filter(api => api && api.enabled === this.selectedStatus);
-            }
-            
-            return result;
-        },
-        
         // 格式化的响应内容
         formattedResponse() {
             if (!this.currentResponse || !this.currentResponse.data) {
@@ -135,15 +107,46 @@ new Vue({
     mounted() {
         this.loadData();
     },
+
+    updated() {
+        if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
+            this.$refs.groupListContainer.addEventListener('scroll', this.handleGroupListScroll);
+            this.groupListListenerAttached = true;
+        }
+    },
+
+    beforeDestroy() {
+        if (this.$refs.groupListContainer) {
+            this.$refs.groupListContainer.removeEventListener('scroll', this.handleGroupListScroll);
+        }
+    },
     
     methods: {
+        async fetchGitHubStars() {
+            try {
+                const response = await axios.get('https://api.github.com/repos/Aiden-run/YiMo');
+                if (response.data && response.data.stargazers_count !== undefined) {
+                    document.getElementById('github-stars').textContent = `Star ${response.data.stargazers_count}`;
+                }
+            } catch (error) {
+                console.error('Failed to fetch GitHub stars:', error);
+                // Keep default text if API fails
+            }
+        },
+
         // 加载数据
         async loadData() {
             this.loading = true;
+            // Reset group list state before loading
+            this.groupList = [];
+            this.groupListCurrentPage = 1;
+            this.groupListTotal = 0;
             try {
                 await Promise.all([
-                    this.loadGroups(),
-                    this.loadApis()
+                    this.loadGroupList(), // Load paginated list for management view
+                    this.loadAllGroupsForDropdown(), // Load all groups for select dropdowns
+                    this.loadApis(),
+                    this.fetchGitHubStars() // Fetch stars on load
                 ]);
             } catch (error) {
                 this.$message.error('加载数据失败: ' + error.message);
@@ -152,29 +155,57 @@ new Vue({
             }
         },
         
-        // 加载分组列表
-        async loadGroups() {
+        // Load paginated list of groups for the management card
+        async loadGroupList() {
+            if (this.groupListLoading || (this.groupList.length > 0 && this.groupList.length >= this.groupListTotal)) {
+                return;
+            }
+            
+            this.groupListLoading = true;
             try {
                 const response = await axios.get('/admin/group/list', {
-                    params: { pageNum: 1, pageSize: 1000 }
+                    params: { pageNum: this.groupListCurrentPage, pageSize: this.groupListPageSize }
+                });
+                if (response.data.code === 200 && response.data.data) {
+                    this.groupList = this.groupList.concat(response.data.data.list || []);
+                    this.groupListTotal = response.data.data.total || 0;
+                    this.groupListCurrentPage++;
+                }
+            } catch (error) {
+                this.$message.error('加载分组列表失败');
+                console.error('加载分组列表失败:', error);
+            } finally {
+                this.groupListLoading = false;
+            }
+        },
+
+        // Load all groups (up to a limit) for dropdowns
+        async loadAllGroupsForDropdown() {
+            try {
+                const response = await axios.get('/admin/group/list', {
+                    params: { pageNum: 1, pageSize: 100 } // Load up to 100 groups for dropdowns
                 });
                 if (response.data.code === 200) {
                     this.groups = response.data.data.list || [];
                 }
             } catch (error) {
-                console.error('加载分组失败:', error);
+                console.error('加载全量分组失败:', error);
                 this.groups = [];
             }
         },
         
         // 加载API列表
         async loadApis() {
+            this.loading = true;
             try {
                 const response = await axios.get('/admin/config/list', {
                     params: {
                         pageNum: this.currentPage,
                         pageSize: this.pageSize,
-                        groupId: this.selectedGroup || undefined
+                        groupName: this.selectedGroup || undefined,
+                        apiName: this.searchKeyword || undefined,
+                        method: this.selectedMethod || undefined,
+                        status: this.selectedStatus === '' ? undefined : this.selectedStatus
                     }
                 });
                 if (response.data.code === 200) {
@@ -185,6 +216,8 @@ new Vue({
                 console.error('加载API列表失败:', error);
                 this.apis = [];
                 this.total = 0;
+            } finally {
+                this.loading = false;
             }
         },
         
@@ -209,16 +242,26 @@ new Vue({
                     this.$message.success(this.editingApi ? '更新成功' : '创建成功');
                     this.showCreateDialog = false;
                     this.resetApiForm();
-                    this.loadData();
+                    this.loadApis(); // Only reload the API list
                 } else {
                     this.$message.error(response.data.message || '操作失败');
                 }
             } catch (error) {
-                if (error.response) {
-                    this.$message.error('操作失败: ' + error.response.data.message);
-                } else {
-                    this.$message.error('操作失败: ' + error.message);
+                // We only want to show a message for actual errors, not for validation failures.
+                // Element UI's validation rejects with an object of validation errors, which isn't an `Error` instance.
+                if (error instanceof Error) {
+                    if (error.response) {
+                        // Server responded with a status code that falls out of the range of 2xx
+                        const errorMessage = error.response.data && error.response.data.message
+                            ? error.response.data.message
+                            : '服务器错误';
+                        this.$message.error('操作失败: ' + errorMessage);
+                    } else {
+                        // For other errors (network, etc.), show the error message.
+                        this.$message.error('操作失败: ' + error.message);
+                    }
                 }
+                // If it's not an `Error` instance, it's a validation failure, and we do nothing.
             }
         },
         
@@ -264,7 +307,7 @@ new Vue({
                     this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
                     this.showGroupDialog = false;
                     this.resetGroupForm();
-                    this.loadGroups();
+                    this.loadData();
                 } else {
                     this.$message.error(response.data.message || '操作失败');
                 }
@@ -277,6 +320,7 @@ new Vue({
         editGroup(group) {
             this.editingGroup = group;
             this.groupForm = { ...group };
+            this.deletePopoverVisible = false; // Reset on edit
             this.showGroupDialog = true;
         },
         
@@ -287,25 +331,21 @@ new Vue({
                     this.$message.error('分组ID为空');
                     return;
                 }
-                await this.$confirm('确定要删除这个分组吗？删除分组会同时删除该分组下的所有API配置。', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                });
                 
                 const response = await axios.delete(`/admin/group/${groupId}`);
                 
+                this.deletePopoverVisible = false; // Hide popover
+
                 if (response.data.code === 200) {
                     this.$message.success('删除分组成功');
-                    this.loadGroups();
-                    this.loadApis(); // 重新加载API列表
+                    this.showGroupDialog = false; // Close dialog
+                    this.loadData(); // Reload all data
                 } else {
                     this.$message.error(response.data.message || '删除失败');
                 }
             } catch (error) {
-                if (error !== 'cancel') {
-                    this.$message.error('删除失败: ' + error.message);
-                }
+                this.deletePopoverVisible = false; // Hide popover on error
+                this.$message.error('删除失败: ' + error.message);
             }
         },
         
@@ -325,10 +365,6 @@ new Vue({
             };
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
-            this.selectedGroup = '';
-            this.selectedMethod = '';
-            this.selectedStatus = '';
-            this.searchKeyword = '';
         },
         
         // 重置分组表单
@@ -338,37 +374,8 @@ new Vue({
                 apiBaseUrl: ''
             };
             this.editingGroup = null;
+            this.deletePopoverVisible = false;
             this.$refs.groupForm && this.$refs.groupForm.resetFields();
-            this.selectedGroup = '';
-            this.selectedMethod = '';
-            this.selectedStatus = '';
-            this.searchKeyword = '';
-        },
-        
-        // 测试API
-        async testApi(api) {
-            try {
-                if (!api) {
-                    this.$message.error('API对象为空');
-                    return;
-                }
-                const apiBaseUrl = api.apiBaseUrl || '';
-                const apiUrl = api.apiUrl || '';
-                const apiMethod = api.apiMethod || 'GET';
-                const url = `${apiBaseUrl}${apiUrl}`;
-                const response = await axios({
-                    method: apiMethod.toLowerCase(),
-                    url: url,
-                    timeout: 10000
-                });
-                
-                this.$alert(JSON.stringify(response.data, null, 2), 'API响应', {
-                    confirmButtonText: '确定',
-                    customClass: 'response-dialog'
-                });
-            } catch (error) {
-                this.$message.error('测试失败: ' + error.message);
-            }
         },
         
         // 请求API
@@ -458,46 +465,19 @@ new Vue({
             }
         },
         
-        // 复制API URL
-        copyApiUrl(api) {
-            if (!api) {
-                this.$message.error('API对象为空');
-                return;
-            }
-            const apiBaseUrl = api.apiBaseUrl || '';
-            const apiUrl = api.apiUrl || '';
-            const url = `${window.location.origin}${apiBaseUrl}${apiUrl}`;
-            navigator.clipboard.writeText(url).then(() => {
-                this.$message.success('URL已复制到剪贴板');
-            }).catch(() => {
-                this.$message.error('复制失败');
-            });
-        },
-        
-        // 切换API状态
-        async toggleApiStatus(api) {
-            try {
-                if (!api || !api.apiConfigId) {
-                    this.$message.error('API配置ID为空');
-                    return;
-                }
-                const response = await axios.put(`/admin/config/${api.apiConfigId}/toggle`);
-                
-                if (response.data.code === 200) {
-                    this.$message.success(api.enabled ? '已禁用' : '已启用');
-                    this.loadData();
-                } else {
-                    this.$message.error(response.data.message || '操作失败');
-                }
-            } catch (error) {
-                this.$message.error('操作失败: ' + error.message);
-            }
-        },
-        
         // 分页处理
         handleCurrentChange(page) {
             this.currentPage = page;
             this.loadApis();
+        },
+        
+        handleGroupListScroll() {
+            const el = this.$refs.groupListContainer;
+            if (!el) return;
+            // Check if scrolled to the bottom (with a buffer)
+            if (el.scrollHeight - el.scrollTop - el.clientHeight < 10) {
+                this.loadGroupList();
+            }
         },
         
         copyFullUrl() {
@@ -522,6 +502,18 @@ new Vue({
     watch: {
         // 监听筛选条件变化
         selectedGroup() {
+            this.currentPage = 1;
+            this.loadApis();
+        },
+        selectedMethod() {
+            this.currentPage = 1;
+            this.loadApis();
+        },
+        selectedStatus() {
+            this.currentPage = 1;
+            this.loadApis();
+        },
+        searchKeyword() {
             this.currentPage = 1;
             this.loadApis();
         },
