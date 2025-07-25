@@ -415,7 +415,7 @@
                             </div>
                         </div>
                         <p v-if="groupListLoading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
-                        <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
+<!--                        <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>-->
                     </div>
                 </div>
             </div>
@@ -467,7 +467,7 @@
                     </div>
 
                     <!-- API列表 -->
-                    <div v-if="!loading && filteredApis.length === 0" class="empty-state">
+                    <div v-if="!loading && apis.length === 0" class="empty-state">
                         <h4>暂无API配置</h4>
                         <p>为什么不去创一个API呢?</p>
                         <br>
@@ -476,7 +476,7 @@
                     </div>
 
                     <div v-else>
-                        <div v-for="api in filteredApis" :key="api.apiConfigId || Math.random()" class="api-item">
+                        <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="api-item">
                             <div class="api-header">
                                 <div>
                                     <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">

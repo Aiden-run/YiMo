@@ -86,11 +86,6 @@ new Vue({
     },
     
     computed: {
-        // 过滤后的API列表
-        filteredApis() {
-            return this.apis || [];
-        },
-        
         // 格式化的响应内容
         formattedResponse() {
             if (!this.currentResponse || !this.currentResponse.data) {
@@ -252,11 +247,21 @@ new Vue({
                     this.$message.error(response.data.message || '操作失败');
                 }
             } catch (error) {
-                if (error.response) {
-                    this.$message.error('操作失败: ' + error.response.data.message);
-                } else {
-                    this.$message.error('操作失败: ' + error.message);
+                // We only want to show a message for actual errors, not for validation failures.
+                // Element UI's validation rejects with an object of validation errors, which isn't an `Error` instance.
+                if (error instanceof Error) {
+                    if (error.response) {
+                        // Server responded with a status code that falls out of the range of 2xx
+                        const errorMessage = error.response.data && error.response.data.message
+                            ? error.response.data.message
+                            : '服务器错误';
+                        this.$message.error('操作失败: ' + errorMessage);
+                    } else {
+                        // For other errors (network, etc.), show the error message.
+                        this.$message.error('操作失败: ' + error.message);
+                    }
                 }
+                // If it's not an `Error` instance, it's a validation failure, and we do nothing.
             }
         },
         
@@ -302,7 +307,7 @@ new Vue({
                     this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
                     this.showGroupDialog = false;
                     this.resetGroupForm();
-                    this.loadGroups();
+                    this.loadData();
                 } else {
                     this.$message.error(response.data.message || '操作失败');
                 }
@@ -371,32 +376,6 @@ new Vue({
             this.editingGroup = null;
             this.deletePopoverVisible = false;
             this.$refs.groupForm && this.$refs.groupForm.resetFields();
-        },
-        
-        // 测试API
-        async testApi(api) {
-            try {
-                if (!api) {
-                    this.$message.error('API对象为空');
-                    return;
-                }
-                const apiBaseUrl = api.apiBaseUrl || '';
-                const apiUrl = api.apiUrl || '';
-                const apiMethod = api.apiMethod || 'GET';
-                const url = `${apiBaseUrl}${apiUrl}`;
-                const response = await axios({
-                    method: apiMethod.toLowerCase(),
-                    url: url,
-                    timeout: 10000
-                });
-                
-                this.$alert(JSON.stringify(response.data, null, 2), 'API响应', {
-                    confirmButtonText: '确定',
-                    customClass: 'response-dialog'
-                });
-            } catch (error) {
-                this.$message.error('测试失败: ' + error.message);
-            }
         },
         
         // 请求API
@@ -483,42 +462,6 @@ new Vue({
                 });
             } catch (error) {
                 this.$message.error('复制失败: ' + error.message);
-            }
-        },
-        
-        // 复制API URL
-        copyApiUrl(api) {
-            if (!api) {
-                this.$message.error('API对象为空');
-                return;
-            }
-            const apiBaseUrl = api.apiBaseUrl || '';
-            const apiUrl = api.apiUrl || '';
-            const url = `${window.location.origin}${apiBaseUrl}${apiUrl}`;
-            navigator.clipboard.writeText(url).then(() => {
-                this.$message.success('URL已复制到剪贴板');
-            }).catch(() => {
-                this.$message.error('复制失败');
-            });
-        },
-        
-        // 切换API状态
-        async toggleApiStatus(api) {
-            try {
-                if (!api || !api.apiConfigId) {
-                    this.$message.error('API配置ID为空');
-                    return;
-                }
-                const response = await axios.put(`/admin/config/${api.apiConfigId}/toggle`);
-                
-                if (response.data.code === 200) {
-                    this.$message.success(api.enabled ? '已禁用' : '已启用');
-                    this.loadData();
-                } else {
-                    this.$message.error(response.data.message || '操作失败');
-                }
-            } catch (error) {
-                this.$message.error('操作失败: ' + error.message);
             }
         },
         
