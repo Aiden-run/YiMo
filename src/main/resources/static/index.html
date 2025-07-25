@@ -359,10 +359,13 @@
         .group-select-popper .el-scrollbar__view {
             /* Add any specific styles for the view if needed */
         }
+        [v-cloak] {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div id="app" class="app-container">
+    <div id="app" class="app-container" v-cloak>
         <div class="header">
             <h1>YiMo Mock服务管理平台</h1>
             <div class="header-actions">
@@ -375,7 +378,7 @@
 
         <div class="main-content">
             <!-- 分组管理 -->
-            <div class="card">
+            <div class="card" v-loading="groupListLoading && !groupList.length">
                 <div class="card-header">
                     <h2>分组管理</h2>
                     <div>
@@ -418,7 +421,7 @@
             </div>
 
             <!-- API管理 -->
-            <div class="card">
+            <div class="card" v-loading="loading">
                 <div class="card-header">
                     <h2>API管理</h2>
                     <div>
@@ -464,11 +467,7 @@
                     </div>
 
                     <!-- API列表 -->
-                    <div v-if="loading" class="loading">
-                        加载中...
-                    </div>
-
-                    <div v-else-if="filteredApis.length === 0" class="empty-state">
+                    <div v-if="!loading && filteredApis.length === 0" class="empty-state">
                         <h4>暂无API配置</h4>
                         <p>为什么不去创一个API呢?</p>
                         <br>

@@ -201,12 +201,13 @@ new Vue({
         
         // 加载API列表
         async loadApis() {
+            this.loading = true;
             try {
                 const response = await axios.get('/admin/config/list', {
                     params: {
                         pageNum: this.currentPage,
                         pageSize: this.pageSize,
-                        groupId: this.selectedGroup || undefined,
+                        groupName: this.selectedGroup || undefined,
                         apiName: this.searchKeyword || undefined,
                         method: this.selectedMethod || undefined,
                         status: this.selectedStatus === '' ? undefined : this.selectedStatus
@@ -220,6 +221,8 @@ new Vue({
                 console.error('加载API列表失败:', error);
                 this.apis = [];
                 this.total = 0;
+            } finally {
+                this.loading = false;
             }
         },
         
@@ -244,7 +247,7 @@ new Vue({
                     this.$message.success(this.editingApi ? '更新成功' : '创建成功');
                     this.showCreateDialog = false;
                     this.resetApiForm();
-                    this.loadData();
+                    this.loadApis(); // Only reload the API list
                 } else {
                     this.$message.error(response.data.message || '操作失败');
                 }
@@ -357,10 +360,6 @@ new Vue({
             };
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
-            this.selectedGroup = '';
-            this.selectedMethod = '';
-            this.selectedStatus = '';
-            this.searchKeyword = '';
         },
         
         // 重置分组表单
@@ -370,11 +369,8 @@ new Vue({
                 apiBaseUrl: ''
             };
             this.editingGroup = null;
+            this.deletePopoverVisible = false;
             this.$refs.groupForm && this.$refs.groupForm.resetFields();
-            this.selectedGroup = '';
-            this.selectedMethod = '';
-            this.selectedStatus = '';
-            this.searchKeyword = '';
         },
         
         // 测试API
@@ -589,7 +585,6 @@ new Vue({
         showGroupDialog(val) {
             if (!val) {
                 this.resetGroupForm();
-                this.deletePopoverVisible = false; // Also reset when dialog is closed
             }
         }
     }
