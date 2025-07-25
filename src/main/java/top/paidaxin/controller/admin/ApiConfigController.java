@@ -31,7 +31,7 @@ public class ApiConfigController {
                                                                    @RequestParam(required = false) String groupId,
                                                                    @RequestParam(required = false) String apiName,
                                                                    @RequestParam(required = false) String method,
-                                                                   @RequestParam(required = false) boolean status) {
+                                                                   @RequestParam(required = false,defaultValue = "true") boolean status) {
         return HttpResult.success(apiConfigService.queryConfigList(pageNum, pageSize, groupId, apiName, method, status));
     }
 

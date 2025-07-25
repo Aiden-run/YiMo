@@ -362,6 +362,11 @@
         [v-cloak] {
             display: none;
         }
+
+        .content-area {
+            min-height: 300px;
+            transition: background-color 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -388,8 +393,8 @@
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <div v-if="loading" class="loading">
+                <div class="card-body content-area">
+                    <div v-if="groupListLoading && !groupList.length" class="loading">
                         加载中...
                     </div>
 
@@ -434,7 +439,7 @@
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body content-area">
                     <!-- 工具栏 -->
                     <div class="toolbar">
                         <div class="search-box">
@@ -467,7 +472,10 @@
                     </div>
 
                     <!-- API列表 -->
-                    <div v-if="!loading && apis.length === 0" class="empty-state">
+                    <div v-if="loading" class="loading">
+                        <p>正在加载...</p>
+                    </div>
+                    <div v-else-if="apis.length === 0" class="empty-state">
                         <h4>暂无API配置</h4>
                         <p>为什么不去创一个API呢?</p>
                         <br>
