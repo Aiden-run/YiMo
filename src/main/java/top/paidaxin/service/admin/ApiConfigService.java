@@ -20,9 +20,9 @@ public class ApiConfigService implements IApiConfigService {
     private ApiConfigDao apiConfigDao;
     
     @Override
-    public PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupName, String apiName, String method, boolean status) {
+    public PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupId, String apiName, String method, boolean status) {
         PageHelper.startPage(pageNum, pageSize);
-        List<ApiConfig> list = apiConfigDao.queryConfigList(groupName,apiName,method,status);
+        List<ApiConfig> list = apiConfigDao.queryConfigList(groupId,apiName,method,status);
         return new PageSerializable<>(list);
     }
     

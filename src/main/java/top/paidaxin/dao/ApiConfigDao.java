@@ -8,7 +8,7 @@ import java.util.List;
 public interface ApiConfigDao {
     ApiConfig queryApiConfig(@Param("apiUrl") String apiUrl, @Param("method") String method);
 
-    List<ApiConfig> queryConfigList(@Param("groupName") String groupName,
+    List<ApiConfig> queryConfigList(@Param("groupId") String groupId,
                                     @Param("apiName") String apiName,
                                     @Param("method") String method,
                                     @Param("status") boolean status);
