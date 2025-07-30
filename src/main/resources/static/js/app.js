@@ -208,7 +208,7 @@ new Vue({
                     params: {
                         pageNum: this.currentPage,
                         pageSize: this.pageSize,
-                        groupName: this.selectedGroup || undefined,
+                        groupId: this.selectedGroup || undefined,
                         apiName: this.searchKeyword || undefined,
                         method: this.selectedMethod || undefined,
                         status: this.selectedStatus === '' ? undefined : this.selectedStatus

@@ -40,3 +40,4 @@ build/
 ### Mac OS ###
 .DS_Store
 /data/
+!/data/YiMo.mv.db
