@@ -1,4 +1,4 @@
-package top.paidaxin.config;
+package top.paidaxin.config.H2Config;
 
 import lombok.SneakyThrows;
 import org.h2.tools.Server;

@@ -85,7 +85,30 @@
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.API_CONFIG_ID = #{configId}
     </select>
-    
+    <select id="queryConfigByApiUrl" resultType="top.paidaxin.dao.entity.ApiConfig">
+        SELECT AC.API_CONFIG_ID,
+               AC.API_GROUP_ID,
+               AC.API_CONFIG_NAME ,
+               AG.API_BASE_URL,
+               AC.API_URL,
+               AC.COMMENT,
+               AC.RESPONSE,
+               AC.REQUEST,
+               AC.CREATE_TIME,
+               AC.UPDATE_TIME,
+               AC.API_METHOD,
+               AC.CONTENT_TYPE,
+               AC.STATUS_CODE,
+               AC.DELAY,
+               AC.ENABLED,
+               AC.REQUEST_MATCH,
+               AC.HEADER_MATCH,
+               AC.RESPONSE_HEADERS
+        FROM API_GROUP AG
+                 LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
+        WHERE AC.API_URL = #{apiUrl} AND AG.API_GROUP_ID = #{groupId}
+    </select>
+
     <insert id="insertConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
         INSERT INTO API_CONFIG (
             API_CONFIG_ID, API_GROUP_ID, API_CONFIG_NAME, API_URL, COMMENT,
