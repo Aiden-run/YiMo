@@ -24,6 +24,8 @@ new Vue({
             selectedGroup: '',
             selectedMethod: '',
             selectedStatus: '',
+            searchTimeout: null,
+            loadingTimer: null,
             
             // 对话框控制
             showCreateDialog: false,
@@ -196,13 +198,17 @@ new Vue({
         
         // 加载API列表
         async loadApis() {
-            this.loading = true;
+            clearTimeout(this.loadingTimer);
+            this.loadingTimer = setTimeout(() => {
+                this.loading = true;
+            }, 300); // Only show loading indicator if request takes > 300ms
+
             try {
                 const response = await axios.get('/admin/config/list', {
                     params: {
                         pageNum: this.currentPage,
                         pageSize: this.pageSize,
-                        groupName: this.selectedGroup || undefined,
+                        groupId: this.selectedGroup || undefined,
                         apiName: this.searchKeyword || undefined,
                         method: this.selectedMethod || undefined,
                         status: this.selectedStatus === '' ? undefined : this.selectedStatus
@@ -217,6 +223,7 @@ new Vue({
                 this.apis = [];
                 this.total = 0;
             } finally {
+                clearTimeout(this.loadingTimer);
                 this.loading = false;
             }
         },
@@ -515,7 +522,10 @@ new Vue({
         },
         searchKeyword() {
             this.currentPage = 1;
-            this.loadApis();
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.loadApis();
+            }, 300);
         },
         
         // 监听对话框关闭
