@@ -12,4 +12,6 @@ public interface ApiGroupDao {
     void updateGroup(ApiGroup apiGroup);
     
     void deleteGroup(String groupId);
+
+    ApiGroup queryGroupByBaseUrl(String apiBaseUrl);
 }

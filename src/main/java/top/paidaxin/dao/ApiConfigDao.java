@@ -12,13 +12,16 @@ public interface ApiConfigDao {
                                     @Param("apiName") String apiName,
                                     @Param("method") String method,
                                     @Param("status") boolean status);
-    
+
     void insertConfig(ApiConfig apiConfig);
-    
+
     void updateConfig(ApiConfig apiConfig);
-    
+
     void deleteConfig(@Param("configId") String configId);
+
     void deleteConfigByGoupId(@Param("configId") String configId);
 
     ApiConfig queryConfigById(@Param("configId") String configId);
+
+    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,@Param("apiUrl") String apiUrl);
 }

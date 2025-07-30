@@ -274,30 +274,34 @@ new Vue({
         
         // 删除API
         async deleteApi(apiId) {
-            try {
-                if (!apiId) {
-                    this.$message.error('API配置ID为空');
-                    return;
-                }
-                await this.$confirm('确定要删除这个API配置吗？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                });
-                
-                const response = await axios.delete(`/admin/config/${apiId}`);
-                
-                if (response.data.code === 200) {
-                    this.$message.success('删除成功');
-                    this.loadApis();
-                } else {
-                    this.$message.error(response.data.message || '删除失败');
-                }
-            } catch (error) {
-                if (error !== 'cancel') {
-                    this.$message.error('删除失败: ' + error.message);
-                }
+            if (!apiId) {
+                this.$message.error('API配置ID为空');
+                return;
             }
+
+            this.$confirm('确定要删除这个API配置吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                try {
+                    const response = await axios.delete(`/admin/config/${apiId}`);
+                    if (response.data.code === 200) {
+                        this.$message.success('删除成功');
+                        this.loadApis();
+                    } else {
+                        this.$message.error(response.data.message || '删除失败');
+                    }
+                } catch (apiError) {
+                    this.$message.error('删除失败: ' + (apiError.message || '网络错误'));
+                }
+            }).catch(() => {
+                // 用户取消操作（点击取消、ESC或关闭按钮）
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
         
         // 保存分组

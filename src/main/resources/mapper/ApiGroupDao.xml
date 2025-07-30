@@ -7,7 +7,14 @@
                API_BASE_URL
         FROM API_GROUP
     </select>
-    
+    <select id="queryGroupByBaseUrl" resultType="top.paidaxin.dao.entity.ApiGroup">
+        SELECT API_GROUP_ID,
+               API_GROUP_NAME,
+               API_BASE_URL
+        FROM API_GROUP
+        WHERE API_BASE_URL = #{apiBaseUrl}
+    </select>
+
     <insert id="insertGroup" parameterType="top.paidaxin.dao.entity.ApiGroup">
         INSERT INTO API_GROUP (API_GROUP_NAME, API_BASE_URL)
         VALUES (#{apiGroupName}, #{apiBaseUrl})
