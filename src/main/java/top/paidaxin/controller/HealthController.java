@@ -2,7 +2,7 @@ package top.paidaxin.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.paidaxin.controller.vo.HttpResult;
+import top.paidaxin.common.vo.HttpResult;
 
 import java.util.HashMap;
 import java.util.Map;

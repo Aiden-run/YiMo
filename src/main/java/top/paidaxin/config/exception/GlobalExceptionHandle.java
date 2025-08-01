@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import top.paidaxin.controller.vo.HttpResult;
+import top.paidaxin.common.vo.HttpResult;
 
 /**
  * @author paidaxin
