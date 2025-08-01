@@ -1,4 +1,4 @@
-package top.paidaxin.controller.vo;
+package top.paidaxin.common.vo;
 
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.PageSerializable;

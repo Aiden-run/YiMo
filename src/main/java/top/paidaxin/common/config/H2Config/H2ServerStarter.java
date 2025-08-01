@@ -1,6 +1,5 @@
-package top.paidaxin.config.H2Config;
+package top.paidaxin.common.config.H2Config;
 
-import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.h2.tools.Server;
 import org.slf4j.Logger;
