@@ -31,10 +31,17 @@ new Vue({
             showCreateDialog: false,
             showGroupDialog: false,
             showResponseDialog: false,
+            showTemplateHelpDialog: false, // 控制模板说明对话框
             editingApi: null,
             editingGroup: null,
             deletePopoverVisible: false,
             
+            // 模板变量
+            templateConstants: [],
+            templateList: [],
+            templateSearchKeyword: '',
+            templateLoading: false,
+
             // 响应弹框数据
             currentResponse: null,
             
@@ -49,7 +56,7 @@ new Vue({
                 response: '',
                 comment: '',
                 enabled: true,
-                isTemplate: false,
+                template: false, // 控制模板变量替换
                 contentType: 'application/json'
             },
             
@@ -104,6 +111,18 @@ new Vue({
                 // 如果不是JSON，直接返回原始内容
                 return this.currentResponse.data;
             }
+        },
+        // 过滤后的模板列表
+        filteredTemplateList() {
+            if (!this.templateSearchKeyword) {
+                return this.templateList;
+            }
+            const keyword = this.templateSearchKeyword.toLowerCase();
+            return this.templateList.filter(template => 
+                template.templateName.toLowerCase().includes(keyword) ||
+                template.templateDescription.toLowerCase().includes(keyword) ||
+                template.apiUrl.toLowerCase().includes(keyword)
+            );
         }
     },
     
@@ -304,7 +323,27 @@ new Vue({
                 });
             });
         },
-        
+
+        // 显示模板变量说明
+        async showTemplateHelp() {
+            this.templateLoading = true;
+            this.showTemplateHelpDialog = true;
+            try {
+                const response = await axios.get('/admin/config/template/list');
+                if (response.data.code === 200) {
+                    this.templateConstants = response.data.data || [];
+                } else {
+                    this.$message.error('加载模板变量失败: ' + response.data.message);
+                    this.showTemplateHelpDialog = false; // 加载失败时关闭弹窗
+                }
+            } catch (error) {
+                this.$message.error('加载模板变量失败: ' + (error.message || '网络错误'));
+                this.showTemplateHelpDialog = false; // 加载失败时关闭弹窗
+            } finally {
+                this.templateLoading = false;
+            }
+        },
+
         // 保存分组
         async saveGroup() {
             try {
@@ -373,6 +412,7 @@ new Vue({
                 response: '',
                 comment: '',
                 enabled: true,
+                template: false, // 控制模板变量替换
                 contentType: 'application/json'
             };
             this.editingApi = null;
@@ -508,6 +548,113 @@ new Vue({
                 document.body.removeChild(input);
                 this.$message.success('已复制完整URL');
             }
+        },
+        
+        // 保存为模板
+        saveAsTemplate() {
+            if (!this.apiForm.templateName.trim()) {
+                this.$message.error('请填写模板名称');
+                return;
+            }
+                
+            // 模拟保存模板的API调用
+            setTimeout(() => {
+                this.$message.success('模板保存成功');
+                // 这里可以添加实际的API调用
+                // 例如：axios.post('/api/template/save', this.apiForm)
+            }, 500);
+        },
+        
+        // 打开模板选择对话框
+        openTemplateDialog() {
+            this.templateDialogVisible = true;
+            this.loadTemplates();
+        },
+        
+        // 加载模板列表
+        loadTemplates() {
+            this.templateLoading = true;
+            // 模拟从服务器加载模板列表
+            setTimeout(() => {
+                // 实际应从服务器获取数据
+                this.templateList = [
+                    {
+                        templateId: 1,
+                        templateName: '用户管理模板',
+                        templateDescription: '包含用户增删改查的标准接口',
+                        apiUrl: '/api/user',
+                        apiMethod: 'GET',
+                        response: '{"code":200,"message":"success"}',
+                        contentType: 'application/json'
+                    },
+                    {
+                        templateId: 2,
+                        templateName: '产品详情模板',
+                        templateDescription: '产品信息展示接口',
+                        apiUrl: '/api/product/detail',
+                        apiMethod: 'GET',
+                        response: '{"product":{"id":1,"name":"示例产品"}}',
+                        contentType: 'application/json'
+                    }
+                ];
+                this.templateLoading = false;
+                this.$message.success(`成功加载 ${this.templateList.length} 个模板`);
+            }, 800);
+        },
+        
+        // 应用模板
+        applyTemplate(template) {
+            // 模拟应用模板的API调用
+            setTimeout(() => {
+                // 将模板数据应用到当前API表单
+                this.apiForm.apiUrl = template.apiUrl;
+                this.apiForm.apiMethod = template.apiMethod;
+                this.apiForm.response = template.response;
+                this.apiForm.comment = template.comment || template.templateDescription;
+                this.apiForm.contentType = template.contentType;
+                this.apiForm.isTemplate = true;
+                this.apiForm.templateName = template.templateName;
+                this.apiForm.templateDescription = template.templateDescription;
+                    
+                this.$message.success('模板应用成功');
+                this.templateDialogVisible = false;
+                // 这里可以添加实际的API调用
+            }, 500);
+        },
+        
+        // 删除模板
+        deleteTemplate() {
+            this.$confirm('确定要删除该模板吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                // 模拟删除模板的API调用
+                setTimeout(() => {
+                    this.$message.success('模板删除成功');
+                    this.apiForm.templateName = '';
+                    this.apiForm.templateDescription = '';
+                    this.apiForm.isTemplate = false;
+                    // 这里可以添加实际的API调用
+                }, 500);
+            }).catch(() => {
+                // 取消删除
+            });
+        },
+        
+        // 删除指定模板
+        deleteTemplateById(templateId) {
+            this.$confirm('确定要删除该模板吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                // 模拟删除指定模板
+                this.templateList = this.templateList.filter(t => t.templateId !== templateId);
+                this.$message.success('模板删除成功');
+            }).catch(() => {
+                // 取消删除
+            });
         }
     },
     

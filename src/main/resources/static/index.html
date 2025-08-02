@@ -367,6 +367,16 @@
             min-height: 300px;
             transition: background-color 0.3s ease;
         }
+        
+        /* 强制对话框垂直居中 */
+        .el-dialog__wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .el-dialog {
+            margin: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -420,7 +430,7 @@
                             </div>
                         </div>
                         <p v-if="groupListLoading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
-<!--                        <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>-->
+                        <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
                     </div>
                 </div>
             </div>
@@ -548,35 +558,6 @@
                     </el-col>
                 </el-row>
 
-                <!-- 模板管理部分 -->
-                <el-form-item label="模板设置">
-                    <el-switch
-                        v-model="apiForm.isTemplate"
-                        active-text="启用模板"
-                        inactive-text="普通API">
-                    </el-switch>
-                </el-form-item>
-
-                <el-row v-if="apiForm.isTemplate" :gutter="20">
-                    <el-col :span="12">
-                        <el-form-item label="模板名称">
-                            <el-input v-model="apiForm.templateName" placeholder="请输入模板名称"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="模板描述">
-                            <el-input v-model="apiForm.templateDescription" type="textarea" :rows="3" placeholder="请输入模板描述"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <div v-if="apiForm.isTemplate" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
-                    <h4>模板管理</h4>
-                    <el-button type="primary" @click="saveAsTemplate">保存为模板</el-button>
-                    <el-button @click="openTemplateDialog">应用模板</el-button>
-                    <el-button @click="deleteTemplate">删除模板</el-button>
-                </div>
-
                 <el-row :gutter="20">
                     <el-col :span="12">
                         <el-form-item label="请求方法" prop="apiMethod">
@@ -615,14 +596,11 @@
                         :rows="8"
                         placeholder="请输入响应内容，支持模板语法">
                     </el-input>
-                    <div class="template-example" v-pre>
-                        模板示例：
-                         <code>
-                             {
-                                 "name":"YiMo",
-                                 "desc":"开箱即用的mock平台"
-                             }
-                         </code>
+                    <div class="template-example">
+                        <el-button type="text" @click="showTemplateHelp">查看可用变量</el-button>
+                        <div v-pre>
+                             模板示例：<code>{"name": "${name}"}</code>
+                        </div>
                     </div>
                 </el-form-item>
 
@@ -633,8 +611,8 @@
                 <el-form-item label="启用状态">
                     <el-switch v-model="apiForm.enabled"></el-switch>
                 </el-form-item>
-
-                <el-form-item label="启动模版功能">
+                
+                <el-form-item label="启用模板变量">
                     <el-switch v-model="apiForm.template"></el-switch>
                 </el-form-item>
             </el-form>
@@ -642,6 +620,17 @@
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showCreateDialog = false">取消</el-button>
                 <el-button type="primary" @click="saveApi">确定</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 模板变量说明对话框 -->
+        <el-dialog title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="60%">
+            <el-table :data="templateConstants" style="width: 100%" v-loading="templateLoading">
+                <el-table-column prop="code" label="变量名"></el-table-column>
+                <el-table-column prop="desc" label="说明"></el-table-column>
+            </el-table>
+            <div slot="footer">
+                <el-button @click="showTemplateHelpDialog = false">关闭</el-button>
             </div>
         </el-dialog>
 
