@@ -89,5 +89,5 @@ public class ApiConfig extends ApiGroup implements Serializable {
     /**
      * 是否启用模版
      */
-    private boolean isTemplate;
+    private boolean template;
 }

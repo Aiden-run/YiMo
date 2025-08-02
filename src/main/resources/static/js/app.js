@@ -49,6 +49,7 @@ new Vue({
                 response: '',
                 comment: '',
                 enabled: true,
+                isTemplate: false,
                 contentType: 'application/json'
             },
             

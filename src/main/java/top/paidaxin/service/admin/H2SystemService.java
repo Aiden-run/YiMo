@@ -25,7 +25,7 @@ public class H2SystemService implements IH2SystemService {
         boolean exists = h2SystemDao.queryTableHasColumn(API_CONFIG.name(), "IS_TEMPLATE");
         //2.不存在则创建
         if (!exists) {
-            h2SystemDao.addColumn(API_CONFIG.name(), "IS_TEMPLATE", "tinyint",0);
+            h2SystemDao.addColumn(API_CONFIG.name(), "IS_TEMPLATE", "tinyint", 0);
             logger.info("✅ 1.2版本更新 兼容完成 ~ ");
         }
     }
