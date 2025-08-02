@@ -6,7 +6,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import top.paidaxin.config.exception.ParamException;
+import top.paidaxin.common.config.exception.ParamException;
 import top.paidaxin.dao.ApiConfigDao;
 import top.paidaxin.dao.ApiGroupDao;
 import top.paidaxin.dao.entity.ApiGroup;

@@ -1,4 +1,4 @@
-package top.paidaxin.config.exception;
+package top.paidaxin.common.config.exception;
 
 /**
  * @author paidaxin

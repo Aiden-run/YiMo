@@ -1,4 +1,4 @@
-package top.paidaxin.controller.vo;
+package top.paidaxin.common.vo;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
