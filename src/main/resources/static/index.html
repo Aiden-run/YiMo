@@ -509,7 +509,7 @@
             <div class="header-actions">
                 <a href="https://github.com/Aiden-run/YiMo" target="_blank" class="github-link">
                     <span class="github-icon"></span>
-                    <span id="github-stars">Star</span>
+                    <span id="github-stars">YiMo</span>
                 </a>
             </div>
         </div>
@@ -529,7 +529,7 @@
                         <div v-if="groupListLoading && !groupList.length" class="loading">
                            加载中...
                        </div>
-                       <div v-else-if="groups.length === 0" class="empty-state">
+                       <div v-else-if="groupList.length === 0 && !groupListLoading" class="empty-state">
                            <h4>暂无分组</h4>
                            <p>可以点击右上角按钮，立即创建一个！</p>
                        </div>
@@ -546,8 +546,8 @@
                                        </div>
                                    </div>
                                </div>
-                               <p v-if="groupListLoading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
-                               <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
+                               <p v-if="groupListLoading" key="loading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
+                               <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" key="no-more" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
                            </transition-group>
                        </div>
                    </div>
