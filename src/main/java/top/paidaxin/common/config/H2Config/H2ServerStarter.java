@@ -23,10 +23,4 @@ public class H2ServerStarter implements InitializingBean {
         Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092").start();
         logger.info("✅ H2 TCP Server started on port 9092 (dev profile)");
     }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void checkUpdate() {
-        IH2SystemService aClass = SpringUtils.getClass(IH2SystemService.class);
-        aClass.upgradeToVersion1_2();
-    }
 }
