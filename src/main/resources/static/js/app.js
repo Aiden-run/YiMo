@@ -30,6 +30,7 @@ new Vue({
             selectedMethod: '',
             selectedStatus: '',
             searchTimeout: null,
+            scrollTimeout: null, // 滚动防抖定时器
             
             // 对话框控制
             showCreateDialog: false,
@@ -66,6 +67,7 @@ new Vue({
             
             groupForm: {
                 apiGroupId: '',
+                apiGroupName: '',
                 apiBaseUrl: ''
             },
             
@@ -89,7 +91,7 @@ new Vue({
             },
             
             groupRules: {
-                apiGroupId: [
+                apiGroupName: [
                     { required: true, message: '请输入分组名称', trigger: 'blur' }
                 ],
                 apiBaseUrl: [
@@ -136,29 +138,33 @@ new Vue({
 
     updated() {
         if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
-            this.$refs.groupListContainer.addEventListener('scroll', this.handleGroupListScroll);
-            this.groupListListenerAttached = true;
+            // 获取实际的DOM元素
+            const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
+            if (container && container.addEventListener) {
+                container.addEventListener('scroll', this.handleGroupListScroll);
+                this.groupListListenerAttached = true;
+            }
         }
     },
 
     beforeDestroy() {
         if (this.$refs.groupListContainer) {
-            this.$refs.groupListContainer.removeEventListener('scroll', this.handleGroupListScroll);
+            const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
+            if (container && container.removeEventListener) {
+                container.removeEventListener('scroll', this.handleGroupListScroll);
+            }
+        }
+        // 清理定时器
+        if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout);
+        }
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
         }
     },
     
     methods: {
-        async fetchGitHubStars() {
-            try {
-                const response = await axios.get('https://api.github.com/repos/Aiden-run/YiMo');
-                if (response.data && response.data.stargazers_count !== undefined) {
-                    document.getElementById('github-stars').textContent = `Star ${response.data.stargazers_count}`;
-                }
-            } catch (error) {
-                console.error('Failed to fetch GitHub stars:', error);
-                // Keep default text if API fails
-            }
-        },
+
 
         // 加载数据
         async loadData() {
@@ -171,8 +177,7 @@ new Vue({
                 await Promise.all([
                     this.loadGroupList(), // Load paginated list for management view
                     this.loadAllGroupsForDropdown(), // Load all groups for select dropdowns
-                    this.loadApis(), // Load API list
-                    this.fetchGitHubStars() // Fetch stars on load
+                    this.loadApis() // Load API list
                 ]);
             } catch (error) {
                 this.$message.error('加载数据失败: ' + error.message);
@@ -198,9 +203,13 @@ new Vue({
         
         // Load paginated list of groups for the management card
         async loadGroupList() {
-            if (this.groupListLoading || (this.groupList.length > 0 && this.groupList.length >= this.groupListTotal)) {
-                return;
-            }
+            if (this.groupListLoading) return;
+            
+            // 检查是否已经加载完所有数据
+            if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) return;
+            
+            // 如果是第一页或者列表为空，直接替换数据；否则追加数据
+            const isFirstPage = this.groupListCurrentPage === 1 || this.groupList.length === 0;
             
             this.groupListLoading = true;
             try {
@@ -208,7 +217,21 @@ new Vue({
                     params: { pageNum: this.groupListCurrentPage, pageSize: this.groupListPageSize }
                 });
                 if (response.data.code === 200 && response.data.data) {
-                    this.groupList = this.groupList.concat(response.data.data.list || []);
+                    const newData = response.data.data.list || [];
+                    
+                    // 检查返回的数据是否为空
+                    if (newData.length === 0) {
+                        this.groupListTotal = this.groupList.length;
+                        return;
+                    }
+                    
+                    if (isFirstPage) {
+                        // 第一页或重新加载时，替换数据
+                        this.groupList = newData;
+                    } else {
+                        // 后续页面，追加数据
+                        this.groupList = this.groupList.concat(newData);
+                    }
                     this.groupListTotal = response.data.data.total || 0;
                     this.groupListCurrentPage++;
                 }
@@ -360,10 +383,22 @@ new Vue({
             this.$refs.groupForm.validate(async(valid) => {
                 if (valid) {
                     try {
-                        const response = await axios.post('/admin/group/save', this.groupForm);
+                        const url = this.editingGroup ? '/admin/group' : '/admin/group';
+                        const method = this.editingGroup ? 'put' : 'post';
+                        
+                        const response = await axios[method](url, this.groupForm);
                         if (response.data.code === 200) {
-                            this.$message.success('保存成功');
-                            this.groupDialogVisible = false;
+                            this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
+                            this.showGroupDialog = false;
+                            this.resetGroupForm();
+                            
+                            // 重置分组列表状态，确保能重新加载
+                            if (!this.editingGroup) {
+                                this.groupList = [];
+                                this.groupListCurrentPage = 1;
+                                this.groupListTotal = 0;
+                            }
+                            
                             this.loadGroupList();
                             this.loadAllGroupsForDropdown();
                         } else {
@@ -399,9 +434,17 @@ new Vue({
                 const response = await axios.delete(`/admin/group/${groupId}`);
                 if (response.data.code === 200) {
                     this.$message.success('删除成功');
-                    this.loadGroupList();
-                    this.loadAllGroupsForDropdown();
-                    this.loadApis(); // Refresh APIs as they might have been affected
+                    this.showGroupDialog = false; // 关闭编辑窗口
+                    this.resetGroupForm(); // 重置表单状态
+                    
+                    // 重置分组列表状态，确保能重新加载
+                    this.groupList = [];
+                    this.groupListCurrentPage = 1;
+                    this.groupListTotal = 0;
+                    
+                    await this.loadGroupList();
+                    await this.loadAllGroupsForDropdown();
+                    await this.loadApis(); // Refresh APIs as they might have been affected
                 } else {
                     this.$message.error(response.data.message || '删除失败');
                 }
@@ -435,6 +478,7 @@ new Vue({
         resetGroupForm() {
             this.groupForm = {
                 apiGroupId: '',
+                apiGroupName: '',
                 apiBaseUrl: ''
             };
             this.editingGroup = null;
@@ -534,9 +578,26 @@ new Vue({
         handleGroupListScroll() {
             const el = this.$refs.groupListContainer;
             if (!el) return;
+            
+            // 获取实际的DOM元素
+            const container = el.$el || el;
+            if (!container || !container.scrollTop) return;
+            
+            // 检查是否已经加载完所有数据
+            if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) return;
+            
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
+            const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+            
             // Check if scrolled to the bottom (with a buffer)
-            if (el.scrollHeight - el.scrollTop - el.clientHeight < 10) {
-                this.loadGroupList();
+            if (distanceToBottom < 50) { // 增加缓冲区，减少触发频率
+                // 防抖处理，避免频繁触发
+                clearTimeout(this.scrollTimeout);
+                this.scrollTimeout = setTimeout(() => {
+                    this.loadGroupList();
+                }, 300); // 增加防抖时间
             }
         },
         
