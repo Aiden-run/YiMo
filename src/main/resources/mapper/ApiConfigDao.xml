@@ -20,7 +20,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
@@ -103,7 +104,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.API_URL = #{apiUrl} AND AG.API_GROUP_ID = #{groupId}

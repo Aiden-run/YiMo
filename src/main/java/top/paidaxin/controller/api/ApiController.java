@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.paidaxin.dao.entity.ApiConfig;
 import top.paidaxin.service.client.IYiMoApiService;
+import top.paidaxin.service.client.IYiMoResponseTemplate;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,9 @@ public class ApiController {
     public static final String BaseUrl = "/api";
     @Resource
     private IYiMoApiService yiMoApiService;
+
+    @Resource
+    private IYiMoResponseTemplate yiMoResponseTemplate;
 
     @SneakyThrows
     @RequestMapping("/**")
@@ -43,6 +47,10 @@ public class ApiController {
         //4.设置响应头
         response.setHeader("content-type", apiConfig.getContentType());
         response.setStatus(apiConfig.getStatusCode());
-        return apiConfig.getResponse();
+
+        //5.处理内置函数
+        String result = apiConfig.getResponse();
+        if (apiConfig.isTemplate()) result = yiMoResponseTemplate.templateHandle(result);
+        return result;
     }
 }
