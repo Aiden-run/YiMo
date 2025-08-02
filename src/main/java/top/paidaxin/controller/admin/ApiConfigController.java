@@ -5,11 +5,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-import top.paidaxin.controller.vo.HttpResult;
+import top.paidaxin.common.vo.HttpResult;
+import top.paidaxin.common.vo.enums.YiMoResponseTemplateConstant;
 import top.paidaxin.dao.entity.ApiConfig;
 import top.paidaxin.service.admin.ApiConfigService;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -61,5 +64,11 @@ public class ApiConfigController {
     public HttpResult<Void> toggleConfig(@PathVariable String configId) {
         apiConfigService.toggleConfig(configId);
         return HttpResult.success();
+    }
+
+    @Operation(summary = "查看模版说明")
+    @GetMapping("/template/list")
+    public HttpResult<List<YiMoResponseTemplateConstant>> templateList() {
+        return HttpResult.success(Arrays.stream(YiMoResponseTemplateConstant.values()).toList());
     }
 }

@@ -5,7 +5,7 @@ import com.github.pagehelper.PageSerializable;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import top.paidaxin.config.exception.ParamException;
+import top.paidaxin.common.config.exception.ParamException;
 import top.paidaxin.dao.ApiConfigDao;
 import top.paidaxin.dao.entity.ApiConfig;
 

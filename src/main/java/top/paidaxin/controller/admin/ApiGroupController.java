@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-import top.paidaxin.controller.vo.HttpResult;
+import top.paidaxin.common.vo.HttpResult;
 import top.paidaxin.dao.entity.ApiGroup;
 import top.paidaxin.service.admin.ApiGroupService;
 

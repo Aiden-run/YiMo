@@ -20,7 +20,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
@@ -46,7 +47,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.ENABLED = #{status}
@@ -80,7 +82,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.API_CONFIG_ID = #{configId}
@@ -103,7 +106,8 @@
                AC.ENABLED,
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
-               AC.RESPONSE_HEADERS
+               AC.RESPONSE_HEADERS,
+               AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.API_URL = #{apiUrl} AND AG.API_GROUP_ID = #{groupId}
@@ -113,11 +117,11 @@
         INSERT INTO API_CONFIG (
             API_CONFIG_ID, API_GROUP_ID, API_CONFIG_NAME, API_URL, COMMENT,
             RESPONSE, REQUEST, CREATE_TIME, UPDATE_TIME, API_METHOD, CONTENT_TYPE,
-            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS
+            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS,IS_TEMPLATE
         ) VALUES (
             #{apiConfigId}, #{apiGroupId}, #{apiConfigName}, #{apiUrl}, #{comment},
             #{response}, #{request}, #{createTime}, #{updateTime}, #{apiMethod}, #{contentType},
-            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders}
+            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders},#{template}
         )
     </insert>
     
@@ -137,7 +141,8 @@
             ENABLED = #{enabled},
             REQUEST_MATCH = #{requestMatch},
             HEADER_MATCH = #{headerMatch},
-            RESPONSE_HEADERS = #{responseHeaders}
+            RESPONSE_HEADERS = #{responseHeaders},
+            IS_TEMPLATE = #{template}
         WHERE API_CONFIG_ID = #{apiConfigId}
     </update>
     

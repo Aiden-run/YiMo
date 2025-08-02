@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YiMo - Mock服务管理平台</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="lib/element-ui.css">
     <style>
         * {
@@ -367,6 +366,140 @@
             min-height: 300px;
             transition: background-color 0.3s ease;
         }
+        
+        /* 强制对话框垂直居中 */
+        .el-dialog__wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .el-dialog {
+            margin: 0 !important;
+        }
+
+        /* 响应式布局：针对大屏幕优化 */
+        @media (min-width: 1800px) {
+            .main-content {
+                max-width: 1700px; /* 增加大屏幕下的最大宽度 */
+            }
+            .content-wrapper {
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            .content-wrapper > .card:first-child { /* 分组管理卡片 */
+                flex: 1;
+                min-width: 380px;
+            }
+            .content-wrapper > .card:last-child { /* API管理卡片 */
+                flex: 2.5;
+            }
+        }
+
+        /* --- 全新UI美化：青春活力版 --- */
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        html {
+            background-color: #23a6d5; /* 预设底色，防止刷新闪烁 */
+        }
+
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        
+        .header {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            border-bottom: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .refresh-btn.loading {
+            transform: rotate(360deg);
+        }
+
+        .api-item:hover, .group-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-color: #409eff;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        /* 列表项入场动画 */
+        .list-enter-active, .list-leave-active {
+            transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+        }
+        .list-move {
+            transition: transform 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+        }
+        .list-enter, .list-leave-to {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .list-leave-active {
+            position: absolute;
+        }
+
+        /* 骨架屏加载动画 */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+        .skeleton-item {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 15px;
+        }
+        .skeleton-block {
+            background: #f6f7f8;
+            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-repeat: no-repeat;
+            background-size: 800px 104px;
+            display: inline-block;
+            height: 16px;
+            border-radius: 4px;
+            animation: shimmer 1s linear infinite;
+            line-height: 1;
+        }
+        .skeleton-item .api-header, .skeleton-item .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -382,144 +515,132 @@
         </div>
 
         <div class="main-content">
-            <!-- 分组管理 -->
-            <div class="card" v-loading="groupListLoading && !groupList.length">
-                <div class="card-header">
-                    <h2>分组管理</h2>
-                    <div>
-                        <el-button type="primary" @click="showGroupDialog = true">
-                            新建分组
-                        </el-button>
+            
+            <div class="content-wrapper">
+                <!-- 分组管理 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>分组管理</h2>
+                        <div>
+                            <el-button type="primary" @click="showGroupDialog = true" icon="el-icon-plus">新建分组</el-button>
+                        </div>
                     </div>
+                    <div class="card-body content-area">
+                        <div v-if="groupListLoading && !groupList.length" class="loading">
+                           加载中...
+                       </div>
+                       <div v-else-if="groups.length === 0" class="empty-state">
+                           <h4>暂无分组</h4>
+                           <p>可以点击右上角按钮，立即创建一个！</p>
+                       </div>
+                       <div v-else>
+                           <transition-group :name="isInitialLoad ? '' : 'list'" tag="div" class="group-list-container" ref="groupListContainer">
+                               <div v-for="group in groupList" :key="group.apiGroupId || Math.random()" class="group-item">
+                                   <div class="group-header">
+                                       <div>
+                                           <span class="group-name">{{ group.apiGroupName || '' }}</span>
+                                           <span class="group-url">{{ "/api" + group.apiBaseUrl || '' }}</span>
+                                       </div>
+                                       <div class="group-actions">
+                                           <el-button size="mini" @click="editGroup(group)" icon="el-icon-edit">编辑</el-button>
+                                       </div>
+                                   </div>
+                               </div>
+                               <p v-if="groupListLoading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
+                               <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
+                           </transition-group>
+                       </div>
+                   </div>
                 </div>
 
-                <div class="card-body content-area">
-                    <div v-if="groupListLoading && !groupList.length" class="loading">
-                        加载中...
+                <!-- API管理 -->
+                <div class="card">
+                     <div class="card-header">
+                        <h2>API管理</h2>
+                        <div>
+                            <el-button @click="handleRefreshClick" :icon="isRefreshing ? 'el-icon-check' : 'el-icon-refresh'" :disabled="isRefreshing">
+                                {{ isRefreshing ? '已刷新' : '刷新' }}
+                            </el-button>
+                            <el-button type="primary" @click="showCreateDialog = true" icon="el-icon-plus">新建API</el-button>
+                        </div>
                     </div>
+                    <div class="card-body content-area">
+                        <!-- 工具栏 -->
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <el-input v-model="searchKeyword" placeholder="搜索API名称" clearable prefix-icon="el-icon-search"></el-input>
+                            </div>
+                            <div class="filter-group">
+                                <el-select v-model="selectedGroup" placeholder="选择分组" clearable>
+                                    <el-option
+                                        v-for="group in groups"
+                                        :key="group.apiGroupId || Math.random()"
+                                        :label="group.apiGroupName || ''"
+                                        :value="group.apiGroupId">
+                                    </el-option>
+                                </el-select>
+                                <el-select v-model="selectedMethod" placeholder="请求方法" clearable>
+                                    <el-option label="GET" value="GET"></el-option>
+                                    <el-option label="POST" value="POST"></el-option>
+                                    <el-option label="PUT" value="PUT"></el-option>
+                                    <el-option label="DELETE" value="DELETE"></el-option>
+                                </el-select>
+                                <el-select v-model="selectedStatus" placeholder="状态" clearable>
+                                    <el-option label="启用" :value="true"></el-option>
+                                    <el-option label="禁用" :value="false"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
 
-                    <div v-else-if="groups.length === 0" class="empty-state">
-                        <h4>暂无分组</h4>
-                        <p>为什么不去创一个分组呢?</p>
-                        <br>
-                        <el-button type="primary" @click="showGroupDialog = true">创建第一个分组</el-button>
-                    </div>
-
-                    <div v-else
-                         class="group-list-container"
-                         ref="groupListContainer">
-                        <div v-for="group in groupList" :key="group.apiGroupId || Math.random()" class="group-item">
-                            <div class="group-header">
-                                <div>
-                                    <span class="group-name">{{ group.apiGroupName || '' }}</span>
-                                    <span class="group-url">{{ "/api" + group.apiBaseUrl || '' }}</span>
-                                </div>
-                                <div class="group-actions">
-                                    <el-button size="mini" @click="editGroup(group)">编辑</el-button>
+                        <!-- API列表 -->
+                        <div v-if="initialLoading">
+                             <div v-for="n in pageSize" :key="n" class="skeleton-item">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="skeleton-block" style="width: 60px; height: 24px;"></span>
+                                        <span class="skeleton-block" style="width: 300px;"></span>
+                                        <span class="skeleton-block" style="width: 150px;"></span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span class="skeleton-block" style="width: 50px; height: 20px;"></span>
+                                        <span class="skeleton-block" style="width: 60px; height: 28px;"></span>
+                                        <span class="skeleton-block" style="width: 60px; height: 28px;"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <p v-if="groupListLoading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
-<!--                        <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>-->
-                    </div>
-                </div>
-            </div>
-
-            <!-- API管理 -->
-            <div class="card" v-loading="loading">
-                <div class="card-header">
-                    <h2>API管理</h2>
-                    <div>
-                        <el-button type="primary" @click="showCreateDialog = true">
-                            新建API
-                        </el-button>
-                        <el-button @click="showGroupDialog = true">
-                            新建分组
-                        </el-button>
-                    </div>
-                </div>
-
-                <div class="card-body content-area">
-                    <!-- 工具栏 -->
-                    <div class="toolbar">
-                        <div class="search-box">
-                            <el-input
-                                v-model="searchKeyword"
-                                placeholder="搜索API名称"
-                                clearable>
-                            </el-input>
+                        <div v-else-if="apis.length === 0" class="empty-state">
+                            <h4>暂无API配置</h4>
+                            <p>可以点击右上角按钮，立即创建一个！</p>
                         </div>
-                        <div class="filter-group">
-                            <el-select v-model="selectedGroup" placeholder="选择分组" clearable>
-                                <el-option
-                                    v-for="group in groups"
-                                    :key="group.apiGroupId || Math.random()"
-                                    :label="group.apiGroupName || ''"
-                                    :value="group.apiGroupId">
-                                </el-option>
-                            </el-select>
-                            <el-select v-model="selectedMethod" placeholder="请求方法" clearable>
-                                <el-option label="GET" value="GET"></el-option>
-                                <el-option label="POST" value="POST"></el-option>
-                                <el-option label="PUT" value="PUT"></el-option>
-                                <el-option label="DELETE" value="DELETE"></el-option>
-                            </el-select>
-                            <el-select v-model="selectedStatus" placeholder="状态" clearable>
-                                <el-option label="启用" :value="true"></el-option>
-                                <el-option label="禁用" :value="false"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-
-                    <!-- API列表 -->
-                    <div v-if="loading" class="loading">
-                        <p>正在加载...</p>
-                    </div>
-                    <div v-else-if="apis.length === 0" class="empty-state">
-                        <h4>暂无API配置</h4>
-                        <p>为什么不去创一个API呢?</p>
-                        <br>
-                        <br>
-                        <el-button type="primary" @click="showCreateDialog = true">创建第一个API</el-button>
-                    </div>
-
-                    <div v-else>
-                        <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="api-item">
-                            <div class="api-header">
-                                <div>
-                                    <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">
-                                        {{ api.apiMethod || 'GET' }}
-                                    </span>
-                                    <span class="api-url">{{"/api" + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
-                                    <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
-                                </div>
-                                <div class="api-status">
-                                    <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">
-                                        {{ api.enabled ? '启用' : '禁用' }}
-                                    </span>
-                                    <el-button size="mini" type="text" @click="requestApi(api)" style="margin-left: 10px; vertical-align: middle;">
-                                        请求
-                                    </el-button>
-                                    <el-button size="mini" @click="editApi(api)">
-                                        编辑
-                                    </el-button>
-                                    <el-button size="mini" type="danger" @click="deleteApi(api.apiConfigId || 0)">
-                                        删除
-                                    </el-button>
+                        <transition-group v-else :name="isInitialLoad ? '' : 'list'" tag="div">
+                            <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="api-item">
+                                <div class="api-header">
+                                    <div>
+                                        <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">{{ api.apiMethod || 'GET' }}</span>
+                                        <span class="api-url">{{"/api" + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
+                                        <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
+                                    </div>
+                                    <div class="api-status">
+                                        <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">{{ api.enabled ? '启用' : '禁用' }}</span>
+                                        <el-button size="mini" type="text" @click="requestApi(api)" icon="el-icon-s-promotion">请求</el-button>
+                                        <el-button size="mini" @click="editApi(api)" icon="el-icon-edit">编辑</el-button>
+                                        <el-button size="mini" type="danger" @click="deleteApi(api.apiConfigId || 0)" icon="el-icon-delete">删除</el-button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </transition-group>
 
-                    <!-- 分页 -->
-                    <div class="pagination-container">
-                        <el-pagination
-                            @current-change="handleCurrentChange"
-                            :current-page="currentPage"
-                            :page-size="pageSize"
-                            layout="total, prev, pager, next"
-                            :total="total">
-                        </el-pagination>
+                        <!-- 分页 -->
+                        <div class="pagination-container">
+                            <el-pagination
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-size="pageSize"
+                                layout="total, prev, pager, next"
+                                :total="total">
+                            </el-pagination>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -586,14 +707,11 @@
                         :rows="8"
                         placeholder="请输入响应内容，支持模板语法">
                     </el-input>
-                    <div class="template-example" v-pre>
-                        模板示例：
-                         <code>
-                             {
-                                 "name":"YiMo",
-                                 "desc":"开箱即用的mock平台"
-                             }
-                         </code>
+                    <div class="template-example">
+                        <el-button type="text" @click="showTemplateHelp">查看可用变量</el-button>
+                        <div v-pre>
+                             模板示例：<code>{"name": "${name}"}</code>
+                        </div>
                     </div>
                 </el-form-item>
 
@@ -604,11 +722,26 @@
                 <el-form-item label="启用状态">
                     <el-switch v-model="apiForm.enabled"></el-switch>
                 </el-form-item>
+                
+                <el-form-item label="启用模板变量">
+                    <el-switch v-model="apiForm.template"></el-switch>
+                </el-form-item>
             </el-form>
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showCreateDialog = false">取消</el-button>
                 <el-button type="primary" @click="saveApi">确定</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 模板变量说明对话框 -->
+        <el-dialog title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="60%">
+            <el-table :data="templateConstants" style="width: 100%" v-loading="templateLoading">
+                <el-table-column prop="code" label="变量名"></el-table-column>
+                <el-table-column prop="desc" label="说明"></el-table-column>
+            </el-table>
+            <div slot="footer">
+                <el-button @click="showTemplateHelpDialog = false">关闭</el-button>
             </div>
         </el-dialog>
 
