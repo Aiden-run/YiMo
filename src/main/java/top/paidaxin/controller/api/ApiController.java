@@ -31,7 +31,7 @@ public class ApiController {
     @RequestMapping("/**")
     public Object filterHttpRequest(HttpServletRequest request, HttpServletResponse response) {
         //1.查询数据库配置,是否有配置的mock信息
-        String apiUrl = StringUtils.replace(request.getRequestURI(), BaseUrl, Strings.EMPTY);
+        String apiUrl = request.getRequestURI().replaceFirst(BaseUrl, Strings.EMPTY);
         String method = request.getMethod();
         ApiConfig apiConfig = yiMoApiService.queryApiConfigByApiUrl(apiUrl, method);
 
