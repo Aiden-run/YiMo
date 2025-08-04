@@ -2,7 +2,7 @@ name: Maven Package
 
 on:
   release:
-    types: [created]
+    types: [创建]
 
 jobs:
   build:
@@ -26,4 +26,4 @@ jobs:
     - name: Upload Jar to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        文件: target/*.jar
+        file: target/*.jar
