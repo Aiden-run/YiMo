@@ -559,11 +559,22 @@ new Vue({
                     ? this.currentResponse.data 
                     : JSON.stringify(this.currentResponse.data, null, 2);
                 
-                navigator.clipboard.writeText(content).then(() => {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(content).then(() => {
+                        this.$message.success('响应内容已复制到剪贴板');
+                    }).catch(() => {
+                        this.$message.error('复制失败');
+                    });
+                } else {
+                    // 兼容旧浏览器，使用传统方法
+                    const input = document.createElement('input');
+                    input.value = content;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
                     this.$message.success('响应内容已复制到剪贴板');
-                }).catch(() => {
-                    this.$message.error('复制失败');
-                });
+                }
             } catch (error) {
                 this.$message.error('复制失败: ' + error.message);
             }
