@@ -561,12 +561,6 @@ new Vue({
                         await this.handleStreamResponse(apiMethod, requestUrl, headers);
                         // 流式响应处理完成，不需要额外操作
                     } catch (error) {
-                        // 用户主动中止，则不显示错误弹窗
-                        if (error && error.message && error.message.includes('请求被中止')) {
-                            console.log('流式请求被用户中止，不显示二次弹窗。');
-                            return;
-                        }
-
                         console.error('流式请求失败:', error);
                         // 设置错误响应数据用于弹框显示
                         this.currentResponse = {
@@ -735,7 +729,6 @@ new Vue({
                     
                 } else {
                     // 对于非GET请求，也使用fetch实现流式处理
-                    console.log('--- [DEBUG] Starting non-GET stream request ---');
                     const controller = new AbortController();
                     this.currentStreamRequest = controller;
                     
@@ -748,21 +741,19 @@ new Vue({
                         },
                         signal: controller.signal
                     }).then(response => {
-                        console.log('[DEBUG] Received response from fetch:', response);
                         this.currentResponse.status = response.status;
                         
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
                         
-                        // 使用ReadableStream处理流式数据
+                        // 使用ReadableStream处理流式数据 - 参考GET的简单方式
                         const reader = response.body.getReader();
                         const decoder = new TextDecoder();
                         
                         const readStream = () => {
                             return reader.read().then(({ done, value }) => {
                                 if (done) {
-                                    console.log('[DEBUG] Stream finished.');
                                     this.currentResponse.isStreaming = false;
                                     this.currentStreamRequest = null;
                                     resolve({
@@ -773,15 +764,22 @@ new Vue({
                                     return;
                                 }
                                 
-                                // 将新解码的数据块直接追加到响应数据中，不做任何解析
+                                // 解码数据块
                                 const chunk = decoder.decode(value, { stream: true });
-                                console.log('[DEBUG] Received chunk:', chunk);
-                                responseData += chunk;
-                                hasReceivedData = true;
-
-                                // 立即更新UI以显示原始数据
-                                this.currentResponse.data = responseData;
-                                this.currentResponse.responseTime = Date.now() - startTime;
+                                
+                                // 简单处理：直接添加数据，像GET一样
+                                const lines = chunk.split('\n');
+                                for (const line of lines) {
+                                    if (line.trim() && line.startsWith('data: ')) {
+                                        const data = line.substring(6); // 移除 "data: " 前缀
+                                        responseData += data + '\n\n';
+                                        hasReceivedData = true;
+                                        
+                                        // 立即更新UI - 完全模仿GET的方式
+                                        this.currentResponse.data = responseData;
+                                        this.currentResponse.responseTime = Date.now() - startTime;
+                                    }
+                                }
                                 
                                 // 继续读取下一块数据
                                 return readStream();
@@ -791,7 +789,6 @@ new Vue({
                         return readStream();
                         
                     }).catch(error => {
-                        console.error('[DEBUG] Error in fetch stream:', error);
                         this.currentResponse.isStreaming = false;
                         this.currentStreamRequest = null;
                         

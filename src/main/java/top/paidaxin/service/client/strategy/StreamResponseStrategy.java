@@ -1,5 +1,6 @@
 package top.paidaxin.service.client.strategy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Order;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Order(2)
 @Service(MediaType.TEXT_EVENT_STREAM_VALUE)
 public class StreamResponseStrategy implements IResponseStrategy {
@@ -32,6 +34,8 @@ public class StreamResponseStrategy implements IResponseStrategy {
                 .collect(Collectors.toList());
 
         //3.非阻塞返回
-        return Flux.fromIterable(streamData).delayElements(Duration.ofMillis(delay));
+        return Flux.fromIterable(streamData)
+                .delayElements(Duration.ofMillis(delay))
+                .doOnCancel(() -> log.info("客户端取消连接，流被取消"));
     }
 }

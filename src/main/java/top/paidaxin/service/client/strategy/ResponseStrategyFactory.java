@@ -20,6 +20,7 @@ public class ResponseStrategyFactory {
      * 根据不同的返回类型处理返回
      */
     public Object handleResponse(HttpServletResponse response, Integer statusCode, String contentType, String data, Long delay) {
+        response.setStatus(statusCode);
         IResponseStrategy strategyMapOrDefault = responseStrategyMap.getOrDefault(contentType, responseStrategyMap.get(MediaType.APPLICATION_JSON_VALUE));
         return strategyMapOrDefault.writeResponse(data, delay);
     }

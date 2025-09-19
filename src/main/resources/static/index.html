@@ -284,8 +284,19 @@
 
         /* 响应对话框样式 */
         .response-dialog .el-dialog__body {
-            max-height: 70vh;
+            height: 70vh; /* 固定高度 */
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .response-dialog .response-info {
+            flex-shrink: 0; /* 信息区域不缩放 */
+        }
+        
+        .response-dialog .response-content {
+            flex: 1; /* 内容区域占用剩余空间 */
+            min-height: 0;
         }
 
         .response-dialog pre {
@@ -336,16 +347,67 @@
             border: 1px solid #e9ecef;
             border-radius: 4px;
             padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            height: 400px; /* 固定高度，确保有滚动条 */
         }
 
         .response-content pre {
             margin: 0;
             background: transparent;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0; /* 防止flex子元素撑开父容器 */
+            padding: 0;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        /* 流式内容滚动条样式 */
+        .response-content::-webkit-scrollbar,
+        .response-content pre::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .response-content::-webkit-scrollbar-track,
+        .response-content pre::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .response-content::-webkit-scrollbar-thumb,
+        .response-content pre::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .response-content::-webkit-scrollbar-thumb:hover,
+        .response-content pre::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
         }
 
         .hljs {
             background: transparent !important;
             padding: 0 !important;
+        }
+        
+        /* 备用代码样式 */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .group-select-popper {
             max-height: 200px;
@@ -375,6 +437,25 @@
         }
         .el-dialog {
             margin: 0 !important;
+        }
+
+        /* 简洁表单样式 */
+        .api-form-dialog .el-form-item {
+            margin-bottom: 18px;
+        }
+        
+        .api-form-dialog .el-form-item__label {
+            font-size: 13px;
+            color: #606266;
+        }
+        
+        .api-form-dialog .template-example {
+            background: #f5f7fa;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #909399;
         }
 
         /* 响应式布局：针对大屏幕优化 */
@@ -620,6 +701,9 @@
                                         <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">{{ api.apiMethod || 'GET' }}</span>
                                         <span class="api-url">{{"/api" + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
                                         <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
+                                        <el-tooltip content="流式API" placement="top">
+                                            <i v-if="api.contentType === 'text/event-stream'" class="el-icon-connection" style="margin-left: 8px; color: #828288; outline: null"></i>
+                                        </el-tooltip>
                                     </div>
                                     <div class="api-status">
                                         <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">{{ api.enabled ? '启用' : '禁用' }}</span>
@@ -647,17 +731,17 @@
         </div>
 
         <!-- 创建/编辑API对话框 -->
-        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="60%">
-            <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="100px">
-                <el-row :gutter="20">
+        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="50%" class="api-form-dialog">
+            <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
+                <el-row :gutter="16">
                     <el-col :span="12">
                         <el-form-item label="API名称" prop="apiConfigName">
-                            <el-input v-model="apiForm.apiConfigName" placeholder="请输入API名称"></el-input>
+                            <el-input v-model="apiForm.apiConfigName" placeholder="请输入API名称" size="small"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="所属分组" prop="apiGroupId">
-                            <el-select v-model="apiForm.apiGroupId" placeholder="选择分组">
+                            <el-select v-model="apiForm.apiGroupId" placeholder="选择分组" style="width: 100%;" size="small">
                                 <el-option
                                     v-for="group in groups"
                                     :key="group.apiGroupId || Math.random()"
@@ -669,10 +753,10 @@
                     </el-col>
                 </el-row>
 
-                <el-row :gutter="20">
+                <el-row :gutter="16">
                     <el-col :span="12">
                         <el-form-item label="请求方法" prop="apiMethod">
-                            <el-select v-model="apiForm.apiMethod">
+                            <el-select v-model="apiForm.apiMethod" style="width: 100%;" size="small">
                                 <el-option label="GET" value="GET"></el-option>
                                 <el-option label="POST" value="POST"></el-option>
                                 <el-option label="PUT" value="PUT"></el-option>
@@ -682,20 +766,20 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="API路径" prop="apiUrl">
-                            <el-input v-model="apiForm.apiUrl" placeholder="/api/path"></el-input>
+                            <el-input v-model="apiForm.apiUrl" placeholder="/api/path" size="small"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
 
-                <el-row :gutter="20">
+                <el-row :gutter="16">
                     <el-col :span="12">
                         <el-form-item label="状态码" prop="statusCode">
-                            <el-input-number v-model="apiForm.statusCode" :min="100" :max="599"></el-input-number>
+                            <el-input-number v-model="apiForm.statusCode" :min="100" :max="599" style="width: 120px;" size="small"></el-input-number>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="延迟(ms)" prop="delay">
-                            <el-input-number v-model="apiForm.delay" :min="0" :max="10000"></el-input-number>
+                            <el-input-number v-model="apiForm.delay" :min="0" :max="10000" style="width: 120px;" size="small"></el-input-number>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -704,27 +788,37 @@
                     <el-input
                         type="textarea"
                         v-model="apiForm.response"
-                        :rows="8"
-                        placeholder="请输入响应内容，支持模板语法">
+                        :rows="6"
+                        :placeholder="getResponsePlaceholder()">
                     </el-input>
                     <div class="template-example">
-                        <el-button type="text" @click="showTemplateHelp">查看可用变量</el-button>
-                        <div v-pre>
+                        <el-button type="text" size="mini" @click="showTemplateHelp">查看可用变量</el-button>
                              模板示例：<code>{"name": "${name}"}</code>
-                        </div>
                     </div>
                 </el-form-item>
 
                 <el-form-item label="描述">
-                    <el-input v-model="apiForm.comment" placeholder="API描述"></el-input>
+                    <el-input v-model="apiForm.comment" placeholder="API描述（可选）" size="small"></el-input>
                 </el-form-item>
+                
+                <el-row :gutter="16">
+                    <el-col :span="12">
+                        <el-form-item label="模板变量">
+                            <el-switch v-model="apiForm.template"></el-switch>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="流式返回">
+                            <el-switch 
+                                v-model="apiForm.streamEnabled"
+                                @change="onStreamEnabledChange">
+                            </el-switch>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
 
                 <el-form-item label="启用状态">
                     <el-switch v-model="apiForm.enabled"></el-switch>
-                </el-form-item>
-                
-                <el-form-item label="启用模板变量">
-                    <el-switch v-model="apiForm.template"></el-switch>
                 </el-form-item>
             </el-form>
 
@@ -746,7 +840,7 @@
         </el-dialog>
 
         <!-- 创建分组对话框 -->
-        <el-dialog :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="40%">
+        <el-dialog :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="40%" class="api-form-dialog">
             <el-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
                 <el-form-item label="分组名称" prop="apiGroupName">
                     <el-input v-model="groupForm.apiGroupName" placeholder="请输入分组名称"></el-input>
@@ -794,11 +888,19 @@
                     </p>
                     <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
                     <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
+                    <p><strong>响应类型：</strong>{{ currentResponse.contentType || 'application/json' }}</p>
+                    <p v-if="currentResponse.isStreaming" style="color: #409eff;">
+                        <i class="el-icon-loading"></i> 流式数据接收中...
+                    </p>
+                    <p v-else-if="currentResponse.contentType && (currentResponse.contentType.includes('stream') || currentResponse.contentType === 'text/event-stream')" style="color: #67c23a;">
+                        <i class="el-icon-check"></i> 流式数据接收完成
+                    </p>
                 </div>
 
                 <div class="response-content">
                     <h4>响应内容</h4>
-                    <pre><code class="language-json" v-html="formattedResponse"></code></pre>
+                    <pre v-if="currentResponse.isStreaming || (currentResponse.contentType === 'text/event-stream')">{{ currentResponse.data }}{{ currentResponse.isStreaming ? '\n\n⏳ 数据流式传输中...' : '' }}</pre>
+                    <pre v-else><code class="language-json" v-html="formattedResponse"></code></pre>
                 </div>
             </div>
 
