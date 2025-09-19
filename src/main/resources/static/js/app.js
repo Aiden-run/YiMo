@@ -162,18 +162,8 @@ new Vue({
     },
 
     updated() {
-        if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
-            // 获取实际的DOM元素
-            const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
-            console.log('尝试绑定滚动事件监听器，容器:', container);
-            if (container && container.addEventListener) {
-                container.addEventListener('scroll', this.handleGroupListScroll);
-                this.groupListListenerAttached = true;
-                console.log('滚动事件监听器绑定成功');
-            } else {
-                console.log('容器不支持事件监听');
-            }
-        }
+        // updated钩子仍然作为备用方案
+        this.attachScrollListener();
     },
 
     beforeDestroy() {
@@ -193,6 +183,21 @@ new Vue({
     },
     
     methods: {
+        attachScrollListener() {
+            if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
+                // 获取实际的DOM元素
+                const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
+                console.log('尝试绑定滚动事件监听器，容器:', container);
+                if (container && container.addEventListener) {
+                    container.addEventListener('scroll', this.handleGroupListScroll);
+                    this.groupListListenerAttached = true;
+                    console.log('滚动事件监听器绑定成功');
+                } else {
+                    console.log('容器不支持事件监听');
+                }
+            }
+        },
+
         filterByGroup(group) {
             if (group && group.apiGroupId) {
                 // 如果点击的是当前已选中的分组，则取消选中
@@ -354,6 +359,18 @@ new Vue({
             try {
                 await this.$refs.apiForm.validate();
                 
+                // 自动格式化API路径
+                let apiUrl = this.apiForm.apiUrl;
+                if (apiUrl && typeof apiUrl === 'string') {
+                    if (apiUrl.charAt(0) !== '/') {
+                        apiUrl = '/' + apiUrl;
+                    }
+                    if (apiUrl.length > 1 && apiUrl.charAt(apiUrl.length - 1) === '/') {
+                        apiUrl = apiUrl.slice(0, -1);
+                    }
+                    this.apiForm.apiUrl = apiUrl;
+                }
+                
                 // 根据streamEnabled设置contentType
                 const formData = { ...this.apiForm };
                 formData.contentType = formData.streamEnabled ? 'text/event-stream' : 'application/json';
@@ -446,6 +463,18 @@ new Vue({
         async saveGroup() {
             this.$refs.groupForm.validate(async(valid) => {
                 if (valid) {
+                    // 自动格式化基础URL
+                    let apiBaseUrl = this.groupForm.apiBaseUrl;
+                    if (apiBaseUrl && typeof apiBaseUrl === 'string') {
+                        if (apiBaseUrl.charAt(0) !== '/') {
+                            apiBaseUrl = '/' + apiBaseUrl;
+                        }
+                        if (apiBaseUrl.length > 1 && apiBaseUrl.charAt(apiBaseUrl.length - 1) === '/') {
+                            apiBaseUrl = apiBaseUrl.slice(0, -1);
+                        }
+                        this.groupForm.apiBaseUrl = apiBaseUrl;
+                    }
+
                     try {
                         const url = this.editingGroup ? '/admin/group' : '/admin/group';
                         const method = this.editingGroup ? 'put' : 'post';
@@ -456,15 +485,18 @@ new Vue({
                             this.showGroupDialog = false;
                             this.resetGroupForm();
                             
-                            // 重置分组列表状态，确保能重新加载
-                            if (!this.editingGroup) {
-                                this.groupList = [];
-                                this.groupListCurrentPage = 1;
-                                this.groupListTotal = 0;
-                            }
+                            // 重置并重新加载分组列表
+                            this.groupList = [];
+                            this.groupListCurrentPage = 1;
+                            this.groupListTotal = 0;
+                            this.groupListListenerAttached = false; // 关键：重置监听器标志
+                            await this.loadGroupList();
                             
-                            this.loadGroupList();
+                            // 重新加载下拉菜单并尝试重新附加滚动监听器
                             this.loadAllGroupsForDropdown();
+                            this.$nextTick(() => {
+                                this.attachScrollListener();
+                            });
                         } else {
                             this.$message.error(response.data.message || '保存失败');
                         }
