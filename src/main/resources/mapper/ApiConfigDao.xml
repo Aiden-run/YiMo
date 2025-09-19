@@ -53,7 +53,7 @@
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.ENABLED = #{status}
             <if test="groupId != null and groupId != ''">
-                AND AG.API_GROUP_ID like '%' || #{groupId} || '%'
+                AND AG.API_GROUP_ID = #{groupId}
             </if>
             <if test="apiName != null and apiName != ''">
                 AND AC.API_CONFIG_NAME like '%' || #{apiName} || '%'

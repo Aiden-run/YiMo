@@ -6,15 +6,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.paidaxin.dao.entity.ApiConfig;
+import top.paidaxin.service.client.strategy.IResponseStrategy;
 import top.paidaxin.service.client.IYiMoApiService;
 import top.paidaxin.service.client.IYiMoResponseTemplate;
-
-import java.util.concurrent.TimeUnit;
+import top.paidaxin.service.client.strategy.ResponseStrategyFactory;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -28,8 +29,14 @@ public class ApiController {
     @Resource
     private IYiMoResponseTemplate yiMoResponseTemplate;
 
+    @Resource
+    private ResponseStrategyFactory responseStrategyFactory;
+
     @SneakyThrows
-    @RequestMapping("/**")
+    @RequestMapping(value = "/**", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.TEXT_EVENT_STREAM_VALUE
+    })
     public Object filterHttpRequest(HttpServletRequest request, HttpServletResponse response) {
         //1.查询数据库配置,是否有配置的mock信息
         String apiUrl = request.getRequestURI().replaceFirst(BaseUrl, Strings.EMPTY);
@@ -42,16 +49,11 @@ public class ApiController {
             return null;
         }
 
-        //3.设置响应时间
-        TimeUnit.MILLISECONDS.sleep(apiConfig.getDelay());
-
-        //4.设置响应头
-        response.setHeader("content-type", apiConfig.getContentType());
-        response.setStatus(apiConfig.getStatusCode());
-
-        //5.处理内置函数
+        //4.处理内置函数
         String result = apiConfig.getResponse();
         if (apiConfig.isTemplate()) result = yiMoResponseTemplate.templateHandle(result);
-        return result;
+
+        //5.根据不同的content-type做出不同的返回
+        return responseStrategyFactory.handleResponse(response, apiConfig.getStatusCode(), apiConfig.getContentType(), result, apiConfig.getDelay());
     }
 }

@@ -54,7 +54,7 @@ public class ApiConfig extends ApiGroup implements Serializable {
     /**
      * 响应延迟(毫秒)
      */
-    private Integer delay = 0;
+    private Long delay = 0L;
 
     /**
      * 是否启用
