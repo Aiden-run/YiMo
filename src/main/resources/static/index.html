@@ -177,14 +177,23 @@
         .status-inactive { background-color: #909399; }
 
         .group-item {
-            border: 1px solid #ebeef5;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ebeef5;
+            transition: background-color 0.2s;
+            cursor: pointer;
         }
 
-        .group-item:hover {
-            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        .group-item:hover:not(.selected) {
+            background-color: #f5f7fa;
+        }
+
+        .group-item.selected {
+            background-color: #d9ecff;
+            border-left: 4px solid #409eff;
+            padding-left: 11px; /* Adjust padding to account for border */
         }
 
         .group-list-container {
@@ -580,7 +589,10 @@
             justify-content: space-between;
             align-items: center;
         }
-
+        .group-item.selected {
+            background-color: #ecf5ff;
+            border-left: 3px solid #409eff;
+        }
     </style>
 </head>
 <body>
@@ -616,15 +628,16 @@
                        </div>
                        <div v-else>
                            <transition-group :name="isInitialLoad ? '' : 'list'" tag="div" class="group-list-container" ref="groupListContainer">
-                               <div v-for="group in groupList" :key="group.apiGroupId || Math.random()" class="group-item">
-                                   <div class="group-header">
-                                       <div>
-                                           <span class="group-name">{{ group.apiGroupName || '' }}</span>
-                                           <span class="group-url">{{ "/api" + group.apiBaseUrl || '' }}</span>
-                                       </div>
-                                       <div class="group-actions">
-                                           <el-button size="mini" @click="editGroup(group)" icon="el-icon-edit">编辑</el-button>
-                                       </div>
+                               <div v-for="group in groupList" :key="group.apiGroupId" class="group-item" :class="{ 'selected': selectedGroup === group.apiGroupId }" @click="filterByGroup(group)">
+                                   <div class="group-info">
+                                       <span class="group-name" title="点击筛选API">{{ group.apiGroupName }}</span>
+                                       <span class="group-base-url">{{ group.apiBaseUrl }}</span>
+                                   </div>
+                                   <div class="group-actions">
+                                       <el-button type="text" size="mini" @click.stop="editGroup(group)">编辑</el-button>
+                                       <el-popconfirm title="确定要删除这个分组吗？" @confirm="deleteGroup(group.apiGroupId)">
+                                           <el-button slot="reference" type="text" size="mini" style="color: #F56C6C; margin-left: 10px;" @click.stop>删除</el-button>
+                                       </el-popconfirm>
                                    </div>
                                </div>
                                <p v-if="groupListLoading" key="loading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>

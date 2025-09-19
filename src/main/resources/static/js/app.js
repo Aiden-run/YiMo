@@ -189,7 +189,17 @@ new Vue({
     },
     
     methods: {
-
+        filterByGroup(group) {
+            if (group && group.apiGroupId) {
+                // 如果点击的是当前已选中的分组，则取消选中
+                if (this.selectedGroup === group.apiGroupId) {
+                    this.selectedGroup = '';
+                } else {
+                    this.selectedGroup = group.apiGroupId;
+                    this.activeTab = 'api';
+                }
+            }
+        },
 
         // 加载数据
         async loadData() {
