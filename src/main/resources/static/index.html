@@ -752,7 +752,7 @@
                         </transition-group>
 
                         <!-- 分页 -->
-                        <div class="pagination-container">
+                        <div v-if="total > 0" class="pagination-container">
                             <el-pagination
                                 @current-change="handleCurrentChange"
                                 :current-page="currentPage"
