@@ -197,7 +197,7 @@
         }
 
         .group-list-container {
-            max-height: 300px; /* Adjust as needed */
+            max-height: 400px; /* 设置固定最大高度，确保能够滚动 */
             overflow-y: auto;
             padding: 5px; /* Optional: for better spacing */
         }
@@ -593,6 +593,29 @@
             background-color: #ecf5ff;
             border-left: 3px solid #409eff;
         }
+        .card-body.group-card-body {
+            /* Removed fixed height and flex properties */
+        }
+
+        .group-list-container {
+            max-height: 400px; /* Directly set a max-height to enable internal scrolling */
+            overflow-y: auto;
+            padding: 5px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .group-list-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .group-header {
+            padding: 15px;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -618,7 +641,7 @@
                             <el-button type="primary" @click="showGroupDialog = true" icon="el-icon-plus">新建分组</el-button>
                         </div>
                     </div>
-                    <div class="card-body content-area">
+                    <div class="card-body group-card-body">
                         <div v-if="groupListLoading && !groupList.length" class="loading">
                            加载中...
                        </div>

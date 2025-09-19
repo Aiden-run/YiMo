@@ -13,7 +13,7 @@ new Vue({
             groups: [], // For dropdowns
             groupList: [], // For paginated list
             groupListCurrentPage: 1,
-            groupListPageSize: 5,
+            groupListPageSize: 8, // 改为8
             groupListTotal: 0,
             groupListLoading: false,
             groupListListenerAttached: false,
@@ -165,9 +165,13 @@ new Vue({
         if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
             // 获取实际的DOM元素
             const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
+            console.log('尝试绑定滚动事件监听器，容器:', container);
             if (container && container.addEventListener) {
                 container.addEventListener('scroll', this.handleGroupListScroll);
                 this.groupListListenerAttached = true;
+                console.log('滚动事件监听器绑定成功');
+            } else {
+                console.log('容器不支持事件监听');
             }
         }
     },
@@ -243,32 +247,46 @@ new Vue({
             // 检查是否已经加载完所有数据
             if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) return;
             
-            // 如果是第一页或者列表为空，直接替换数据；否则追加数据
-            const isFirstPage = this.groupListCurrentPage === 1 || this.groupList.length === 0;
+            console.log('开始加载分组列表，当前页:', this.groupListCurrentPage, '每页数量:', this.groupListPageSize);
             
             this.groupListLoading = true;
             try {
                 const response = await axios.get('/admin/group/list', {
-                    params: { pageNum: this.groupListCurrentPage, pageSize: this.groupListPageSize }
+                    params: { 
+                        pageNum: this.groupListCurrentPage, 
+                        pageSize: this.groupListPageSize 
+                    }
                 });
+                
+                console.log('分组列表响应:', response.data);
+                
                 if (response.data.code === 200 && response.data.data) {
                     const newData = response.data.data.list || [];
+                    const total = response.data.data.total || 0;
+                    
+                    console.log('获取到新数据:', newData.length, '条，总数:', total);
                     
                     // 检查返回的数据是否为空
-                    if (newData.length === 0) {
-                        this.groupListTotal = this.groupList.length;
+                    if (newData.length === 0 && this.groupListCurrentPage > 1) {
+                        console.log('没有更多数据了');
                         return;
                     }
                     
-                    if (isFirstPage) {
-                        // 第一页或重新加载时，替换数据
+                    // 第一页时替换数据，后续页面追加数据
+                    if (this.groupListCurrentPage === 1) {
                         this.groupList = newData;
                     } else {
-                        // 后续页面，追加数据
-                        this.groupList = this.groupList.concat(newData);
+                        this.groupList = [...this.groupList, ...newData];
                     }
-                    this.groupListTotal = response.data.data.total || 0;
-                    this.groupListCurrentPage++;
+                    
+                    this.groupListTotal = total;
+                    
+                    // 只有在成功加载数据时才增加页码
+                    if (newData.length > 0) {
+                        this.groupListCurrentPage++;
+                    }
+                    
+                    console.log('当前分组列表长度:', this.groupList.length, '下一页:', this.groupListCurrentPage);
                 }
             } catch (error) {
                 this.$message.error('加载分组列表失败');
@@ -866,27 +884,47 @@ new Vue({
         
         handleGroupListScroll() {
             const el = this.$refs.groupListContainer;
+            console.log('滚动事件触发，容器引用:', el);
             if (!el) return;
             
             // 获取实际的DOM元素
             const container = el.$el || el;
-            if (!container || !container.scrollTop) return;
+            console.log('实际容器元素:', container);
+            if (!container || typeof container.scrollTop === 'undefined') return;
             
             // 检查是否已经加载完所有数据
-            if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) return;
+            if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) {
+                console.log('已加载完所有数据，停止滚动加载');
+                return;
+            }
+            
+            // 如果正在加载中，避免重复触发
+            if (this.groupListLoading) {
+                console.log('正在加载中，跳过本次滚动事件');
+                return;
+            }
             
             const scrollTop = container.scrollTop;
             const scrollHeight = container.scrollHeight;
             const clientHeight = container.clientHeight;
             const distanceToBottom = scrollHeight - scrollTop - clientHeight;
             
+            console.log('滚动信息:', {
+                scrollTop,
+                scrollHeight,
+                clientHeight,
+                distanceToBottom
+            });
+            
             // Check if scrolled to the bottom (with a buffer)
-            if (distanceToBottom < 50) { // 增加缓冲区，减少触发频率
+            if (distanceToBottom < 20) { // 减少缓冲区，提高触发灵敏度
+                console.log('接近底部，准备加载更多数据');
                 // 防抖处理，避免频繁触发
                 clearTimeout(this.scrollTimeout);
                 this.scrollTimeout = setTimeout(() => {
+                    console.log('触发滚动加载，当前页:', this.groupListCurrentPage);
                     this.loadGroupList();
-                }, 300); // 增加防抖时间
+                }, 100); // 减少防抖时间，提高响应速度
             }
         },
         
