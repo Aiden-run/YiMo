@@ -22,7 +22,7 @@ public class ApiConfigService implements IApiConfigService {
     private ApiConfigDao apiConfigDao;
 
     @Override
-    public PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupId, String apiName, String method, boolean status) {
+    public PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupId, String apiName, String method, Boolean status) {
         PageHelper.startPage(pageNum, pageSize);
         List<ApiConfig> list = apiConfigDao.queryConfigList(groupId, apiName, method, status);
         return new PageSerializable<>(list);

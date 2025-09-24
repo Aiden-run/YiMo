@@ -28,7 +28,7 @@
           AND AC.API_METHOD = #{method}
           AND AC.ENABLED = true
     </select>
-    
+
     <select id="queryConfigList" resultType="top.paidaxin.dao.entity.ApiConfig">
         SELECT AC.API_CONFIG_ID,
                AC.API_GROUP_ID,
@@ -51,7 +51,10 @@
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        WHERE AC.ENABLED = #{status}
+        <where>
+            <if test="status != null">
+                AC.ENABLED = #{status}
+            </if>
             <if test="groupId != null and groupId != ''">
                 AND AG.API_GROUP_ID = #{groupId}
             </if>
@@ -61,9 +64,10 @@
             <if test="method != null and method != ''">
                 AND AC.API_METHOD = #{method}
             </if>
+        </where>
         ORDER BY AC.CREATE_TIME DESC
     </select>
-    
+
     <select id="queryConfigById" resultType="top.paidaxin.dao.entity.ApiConfig">
         SELECT AC.API_CONFIG_ID,
                AC.API_GROUP_ID,
@@ -124,7 +128,7 @@
             #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders},#{template}
         )
     </insert>
-    
+
     <update id="updateConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
         UPDATE API_CONFIG SET
             API_GROUP_ID = #{apiGroupId},
@@ -145,7 +149,7 @@
             IS_TEMPLATE = #{template}
         WHERE API_CONFIG_ID = #{apiConfigId}
     </update>
-    
+
     <delete id="deleteConfig" parameterType="string">
         DELETE FROM API_CONFIG WHERE API_CONFIG_ID = #{configId}
     </delete>
