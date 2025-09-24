@@ -11,7 +11,7 @@ public interface ApiConfigDao {
     List<ApiConfig> queryConfigList(@Param("groupId") String groupId,
                                     @Param("apiName") String apiName,
                                     @Param("method") String method,
-                                    @Param("status") boolean status);
+                                    @Param("status") Boolean status);
 
     void insertConfig(ApiConfig apiConfig);
 

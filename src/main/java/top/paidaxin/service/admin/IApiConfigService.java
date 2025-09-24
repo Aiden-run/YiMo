@@ -7,7 +7,7 @@ public interface IApiConfigService {
     /**
      * 分页查询API配置列表
      */
-    PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupName, String apiName, String groupId, boolean status);
+    PageSerializable<ApiConfig> queryConfigList(int pageNum, int pageSize, String groupName, String apiName, String groupId, Boolean status);
     
     /**
      * 创建API配置
