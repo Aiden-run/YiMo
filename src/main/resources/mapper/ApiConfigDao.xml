@@ -24,7 +24,7 @@
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
+        WHERE concat(COALESCE(AG.API_BASE_URL, ''), AC.API_URL) = #{apiUrl}
           AND AC.API_METHOD = #{method}
           AND AC.ENABLED = true
         ORDER BY CASE WHEN AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = '' THEN 1 ELSE 0 END ASC,

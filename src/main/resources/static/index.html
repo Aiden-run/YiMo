@@ -843,10 +843,10 @@
                     </div>
                     <div v-for="(rule, index) in apiForm.routeRules" :key="'rule-' + index" style="display: flex; gap: 8px; margin-bottom: 8px;">
                         <el-input v-model="rule.key" size="small" placeholder="参数名"></el-input>
-                        <el-select v-model="rule.op" size="small" style="width: 110px;">
-                            <el-option label="等于" value="eq"></el-option>
-                            <el-option label="不等于" value="ne"></el-option>
-                        </el-select>
+                        <el-radio-group v-model="rule.op" size="small">
+                            <el-radio-button label="eq">等于</el-radio-button>
+                            <el-radio-button label="ne">不等于</el-radio-button>
+                        </el-radio-group>
                         <el-tag :type="getRouteOpTagType(rule.op)" size="mini" style="line-height: 28px; height: 28px;">
                             {{ getRouteOpLabel(rule.op) }}
                         </el-tag>
