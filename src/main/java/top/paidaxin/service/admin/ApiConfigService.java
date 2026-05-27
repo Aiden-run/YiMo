@@ -31,15 +31,13 @@ public class ApiConfigService implements IApiConfigService {
 
     @Override
     public ApiConfig createConfig(ApiConfig apiConfig) {
-        //1.判断url是否唯一
-        String requestMatch = StringUtils.hasText(apiConfig.getRequestMatch()) ? apiConfig.getRequestMatch().trim() : null;
-        apiConfig.setRequestMatch(requestMatch);
-        ApiConfig config = apiConfigDao.queryConfigByApiUrl(apiConfig.getApiGroupId(), apiConfig.getApiUrl(), apiConfig.getApiMethod(), requestMatch);
-        if (!ObjectUtils.isEmpty(config)){
-            throw new ParamException("已存在相同方法 + URL + 路由条件的配置，请修改路由条件后重试");
+        // 唯一性检查：同个分组下 URL+Method 必须唯一（多路由通过 routesConfig 配置，不再拆成多条记录）
+        // requestMatch 传 null 使 SQL 跳过 requestMatch 匹配条件，仅按 URL+Method+Group 检查
+        ApiConfig config = apiConfigDao.queryConfigByApiUrl(apiConfig.getApiGroupId(), apiConfig.getApiUrl(), apiConfig.getApiMethod(), null);
+        if (!ObjectUtils.isEmpty(config)) {
+            throw new ParamException("已存在相同 URL + 方法的配置，请在该配置中编辑路由规则");
         }
 
-        //2.若url不重复则新增
         apiConfigDao.insertConfig(apiConfig);
         return apiConfig;
     }

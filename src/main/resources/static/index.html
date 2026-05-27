@@ -744,6 +744,7 @@
                                     <div class="api-status">
                                         <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">{{ api.enabled ? '启用' : '禁用' }}</span>
                                         <el-button size="mini" type="text" @click="requestApi(api)" icon="el-icon-s-promotion">请求</el-button>
+                                        <el-button size="mini" @click="copyApi(api)" icon="el-icon-document-copy">复制</el-button>
                                         <el-button size="mini" @click="editApi(api)" icon="el-icon-edit">编辑</el-button>
                                         <el-button size="mini" type="danger" @click="deleteApi(api.apiConfigId || 0)" icon="el-icon-delete">删除</el-button>
                                     </div>
@@ -767,7 +768,7 @@
         </div>
 
         <!-- 创建/编辑API对话框 -->
-        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="50%" class="api-form-dialog">
+        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="65%" class="api-form-dialog">
             <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
                 <el-row :gutter="16">
                     <el-col :span="12">
@@ -807,54 +808,95 @@
                     </el-col>
                 </el-row>
 
-                <el-row :gutter="16">
-                    <el-col :span="12">
-                        <el-form-item label="状态码" prop="statusCode">
-                            <el-input-number v-model="apiForm.statusCode" :min="100" :max="599" style="width: 120px;" size="small"></el-input-number>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="延迟(ms)" prop="delay">
-                            <el-input-number v-model="apiForm.delay" :min="0" :max="10000" style="width: 120px;" size="small"></el-input-number>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <el-form-item label="响应内容" prop="response">
-                    <el-input
-                        type="textarea"
-                        v-model="apiForm.response"
-                        :rows="6"
-                        :placeholder="getResponsePlaceholder()">
-                    </el-input>
-                    <div class="template-example">
-                        <el-button type="text" size="mini" @click="showTemplateHelp">查看可用变量</el-button>
-                             模板示例：<code>{"name": "${name}"}</code>
-                    </div>
-                </el-form-item>
-
                 <el-form-item label="描述">
                     <el-input v-model="apiForm.comment" placeholder="API描述（可选）" size="small"></el-input>
                 </el-form-item>
 
-                <el-form-item label="路由条件">
-                    <div style="margin-bottom: 8px; color: #909399; font-size: 12px;">
-                        {{ apiForm.apiMethod === 'GET' ? 'GET：按 URL Query 参数匹配' : '非 GET：按 Body(JSON) 参数匹配' }}
+                <!-- 路由配置 -->
+                <el-divider content-position="left">路由配置</el-divider>
+
+                <!-- 路由选择器 -->
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+                    <el-select v-model="selectedRouteIndex" size="small" style="width: 200px;" placeholder="选择路由">
+                        <el-option label="默认响应" :value="-1"></el-option>
+                        <el-option
+                            v-for="(route, rIdx) in apiForm.routes"
+                            :key="'sel-' + rIdx"
+                            :label="'路由 ' + (rIdx + 1)"
+                            :value="rIdx">
+                        </el-option>
+                    </el-select>
+                    <el-button size="small" icon="el-icon-plus" @click="addRoute">新增路由</el-button>
+                    <el-button v-if="selectedRouteIndex >= 0" size="small" type="danger" plain icon="el-icon-delete"
+                               @click="removeRoute(selectedRouteIndex)">删除当前路由</el-button>
+                </div>
+
+                <!-- 选中路由的条件 + 响应 -->
+                <template v-if="selectedRouteIndex >= 0 && apiForm.routes[selectedRouteIndex]">
+                    <div style="margin-bottom: 6px; color: #606266; font-size: 13px; font-weight: 600;">匹配条件</div>
+                    <div style="border: 1px solid #e4e7ed; border-radius: 6px; padding: 12px; margin-bottom: 10px; background: #fafafa;">
+                        <!-- GET：键值对规则 -->
+                        <template v-if="apiForm.apiMethod === 'GET'">
+                            <div v-for="(rule, index) in apiForm.routes[selectedRouteIndex].rules"
+                                 :key="'rule-' + index"
+                                 style="display: flex; gap: 6px; margin-bottom: 6px; align-items: center;">
+                                <el-input v-model="rule.key" size="small" placeholder="参数名" style="flex: 1;"></el-input>
+                                <el-select v-model="rule.op" size="small" style="width: 90px;" placeholder="运算符">
+                                    <el-option label="等于" value="eq"></el-option>
+                                    <el-option label="不等于" value="ne"></el-option>
+                                </el-select>
+                                <el-input v-model="rule.value" size="small" placeholder="参数值" style="flex: 1;"></el-input>
+                                <el-button type="text" size="mini" icon="el-icon-close"
+                                           @click="removeRouteRule(selectedRouteIndex, index)"
+                                           v-if="apiForm.routes[selectedRouteIndex].rules.length > 1"></el-button>
+                            </div>
+                            <el-button type="text" size="mini" icon="el-icon-plus"
+                                       @click="addRouteRule(selectedRouteIndex)">添加参数</el-button>
+                        </template>
+                        <!-- 非 GET：JSON 文本框 -->
+                        <template v-else>
+                            <el-input type="textarea" v-model="apiForm.routes[selectedRouteIndex].bodyMatch"
+                                      :rows="3" size="small" placeholder='{"role": "admin"}'></el-input>
+                        </template>
                     </div>
-                    <div v-for="(rule, index) in apiForm.routeRules" :key="'rule-' + index" style="display: flex; gap: 8px; margin-bottom: 8px;">
-                        <el-input v-model="rule.key" size="small" placeholder="参数名"></el-input>
-                        <el-radio-group v-model="rule.op" size="small">
-                            <el-radio-button label="eq">等于</el-radio-button>
-                            <el-radio-button label="ne">不等于</el-radio-button>
-                        </el-radio-group>
-                        <el-tag :type="getRouteOpTagType(rule.op)" size="mini" style="line-height: 28px; height: 28px;">
-                            {{ getRouteOpLabel(rule.op) }}
-                        </el-tag>
-                        <el-input v-model="rule.value" size="small" placeholder="参数值"></el-input>
-                        <el-button type="text" icon="el-icon-delete" @click="removeRouteRule(index)"></el-button>
+
+                    <div style="margin-bottom: 6px; color: #606266; font-size: 13px; font-weight: 600;">响应内容</div>
+                    <div style="border: 1px solid #e4e7ed; border-radius: 6px; padding: 12px; margin-bottom: 10px; background: #fafafa;">
+                        <el-input type="textarea" v-model="apiForm.routes[selectedRouteIndex].response"
+                                  :rows="3" size="small" placeholder="命中此路由时返回的响应内容"></el-input>
+                        <div style="display: flex; gap: 20px; margin-top: 8px; align-items: center;">
+                            <span style="font-size: 12px; color: #909399;">状态码</span>
+                            <el-input-number v-model="apiForm.routes[selectedRouteIndex].statusCode" :min="100" :max="599" size="small"></el-input-number>
+                            <span style="font-size: 12px; color: #909399;">延迟(ms)</span>
+                            <el-input-number v-model="apiForm.routes[selectedRouteIndex].delay" :min="0" :max="10000" size="small"></el-input-number>
+                        </div>
                     </div>
-                    <el-button size="mini" icon="el-icon-plus" @click="addRouteRule">新增条件</el-button>
-                </el-form-item>
+                </template>
+
+                <!-- 默认响应（无路由命中时） -->
+                <template v-if="selectedRouteIndex === -1">
+                    <div style="border: 1px dashed #dcdfe6; border-radius: 6px; padding: 12px; margin-bottom: 10px; background: #fdf6ec;">
+                        <span style="font-size: 13px; font-weight: 600; color: #e6a23c;">默认响应（无路由命中时使用）</span>
+                        <el-row :gutter="12" style="margin-top: 8px;">
+                            <el-col :span="14">
+                                <el-input type="textarea" v-model="apiForm.response" :rows="3" size="small"
+                                          :placeholder="getResponsePlaceholder()"></el-input>
+                                <div class="template-example" style="margin-top: 4px;">
+                                    <el-button type="text" size="mini" @click="showTemplateHelp">查看可用变量</el-button>
+                                    模板示例：<code>{"name": "${name}"}</code>
+                                </div>
+                            </el-col>
+                            <el-col :span="5">
+                                <div style="font-size: 11px; color: #909399; margin-bottom: 2px;">状态码</div>
+                                <el-input-number v-model="apiForm.statusCode" :min="100" :max="599" size="small" style="width: 100%;"></el-input-number>
+                            </el-col>
+                            <el-col :span="5">
+                                <div style="font-size: 11px; color: #909399; margin-bottom: 2px;">延迟(ms)</div>
+                                <el-input-number v-model="apiForm.delay" :min="0" :max="10000" size="small" style="width: 100%;"></el-input-number>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </template>
                 
                 <el-row :gutter="16">
                     <el-col :span="12">

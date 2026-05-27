@@ -37,6 +37,7 @@ new Vue({
             showGroupDialog: false,
             showResponseDialog: false,
             showTemplateHelpDialog: false, // 控制模板说明对话框
+            selectedRouteIndex: -1, // 当前选中的路由索引，-1 表示默认响应
             editingApi: null,
             editingGroup: null,
             deletePopoverVisible: false,
@@ -53,7 +54,7 @@ new Vue({
             
             // 表单数据
             apiForm: {
-                apiConfigId: '', // API配置ID
+                apiConfigId: '',
                 apiConfigName: '',
                 apiGroupId: '',
                 apiUrl: '',
@@ -63,13 +64,15 @@ new Vue({
                 response: '',
                 comment: '',
                 enabled: true,
-                template: false, // 控制模板变量替换
+                template: false,
                 contentType: 'application/json',
-                streamEnabled: false, // 控制是否启用流式返回，默认不勾选
+                streamEnabled: false,
                 requestMatch: '',
+                routes: [],
                 routeRules: [
                     { key: '', op: 'eq', value: '' }
-                ]
+                ],
+                bodyMatch: ''
             },
             
             groupForm: {
@@ -344,21 +347,71 @@ new Vue({
             }
         },
         
+        // 复制API
+        copyApi(api) {
+            this.editingApi = null;
+            this.apiForm = {
+                ...this.apiForm,
+                ...api,
+                apiConfigId: '',
+                apiConfigName: (api.apiConfigName || '') + ' - 副本',
+                streamEnabled: (api.contentType === 'text/event-stream')
+            };
+            this.initRouteForm(api.apiMethod, this.apiForm.requestMatch, this.apiForm.routesConfig);
+            this.showCreateDialog = true;
+        },
+
         // 编辑API
         editApi(api) {
             this.editingApi = api;
-            
-            // 使用对象展开，但确保包含所有字段
             this.apiForm = {
-                ...this.apiForm, // 保留默认值
-                ...api, // 覆盖API数据
-                streamEnabled: (api.contentType === 'text/event-stream') // 确保streamEnabled正确
+                ...this.apiForm,
+                ...api,
+                streamEnabled: (api.contentType === 'text/event-stream')
             };
-            this.apiForm.routeRules = this.parseRouteRules(this.apiForm.requestMatch);
-            
+            this.initRouteForm(api.apiMethod, this.apiForm.requestMatch, this.apiForm.routesConfig);
             this.showCreateDialog = true;
         },
-        
+
+        // 根据请求方法初始化路由表单
+        initRouteForm(method, requestMatch, routesConfig) {
+            // 优先从 routesConfig 恢复多路由
+            const routes = this.deserializeRoutes(routesConfig);
+            if (routes.length > 0) {
+                this.apiForm.routes = routes;
+                this.apiForm.routeRules = [{ key: '', op: 'eq', value: '' }];
+                this.apiForm.bodyMatch = '';
+                this.selectedRouteIndex = 0;
+                return;
+            }
+            this.apiForm.routes = [];
+            this.selectedRouteIndex = -1;
+            // 回退：从旧 requestMatch 恢复（兼容旧数据）
+            if (method === 'GET') {
+                this.apiForm.routeRules = this.parseRouteRules(requestMatch);
+                this.apiForm.bodyMatch = '';
+            } else {
+                this.apiForm.bodyMatch = this.parseBodyMatch(requestMatch);
+                this.apiForm.routeRules = [{ key: '', op: 'eq', value: '' }];
+            }
+        },
+
+        // 解析 requestMatch 为非GET的JSON文本
+        parseBodyMatch(requestMatch) {
+            if (!requestMatch) return '';
+            try {
+                const parsed = typeof requestMatch === 'string' ? JSON.parse(requestMatch) : requestMatch;
+                if (parsed && Array.isArray(parsed.rules)) {
+                    const flat = {};
+                    parsed.rules.forEach(r => { if (r.key) flat[r.key] = r.value; });
+                    return JSON.stringify(flat, null, 2);
+                }
+                return JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                return requestMatch || '';
+            }
+        },
+
         // 保存API
         async saveApi() {
             try {
@@ -379,24 +432,11 @@ new Vue({
                 // 根据streamEnabled设置contentType
                 const formData = { ...this.apiForm };
                 formData.contentType = formData.streamEnabled ? 'text/event-stream' : 'application/json';
-                if (formData.requestMatch && formData.requestMatch.trim()) {
-                    JSON.parse(formData.requestMatch);
-                    formData.requestMatch = formData.requestMatch.trim();
-                } else {
-                    const validRules = (formData.routeRules || []).filter(rule => rule.key && rule.key.trim() !== '');
-                    if (validRules.length > 0) {
-                        formData.requestMatch = JSON.stringify({
-                            rules: validRules.map(rule => ({
-                                key: rule.key.trim(),
-                                op: rule.op || 'eq',
-                                value: rule.value == null ? '' : String(rule.value)
-                            }))
-                        });
-                    } else {
-                        formData.requestMatch = '';
-                    }
-                }
-                
+                // 序列化多路由配置
+                formData.routesConfig = this.serializeRoutes();
+                // requestMatch 清空（路由配置已迁移到 routesConfig）
+                formData.requestMatch = '';
+
                 const url = this.editingApi ? '/admin/config' : '/admin/config';
                 const method = this.editingApi ? 'put' : 'post';
                 
@@ -590,26 +630,95 @@ new Vue({
                 contentType: 'application/json',
                 streamEnabled: false, // 控制是否启用流式返回
                 requestMatch: '',
+                routes: [],
                 routeRules: [
                     { key: '', op: 'eq', value: '' }
-                ]
+                ],
+                bodyMatch: ''
             };
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
         },
-        addRouteRule() {
-            this.apiForm.routeRules.push({ key: '', op: 'eq', value: '' });
+        // 路由条目管理
+        newRouteEntry() {
+            return {
+                rules: [{ key: '', op: 'eq', value: '' }],
+                bodyMatch: '',
+                response: '',
+                statusCode: 200,
+                delay: 0
+            };
         },
-        removeRouteRule(index) {
-            this.apiForm.routeRules.splice(index, 1);
-            if (this.apiForm.routeRules.length === 0) this.addRouteRule();
+        addRoute() {
+            this.apiForm.routes.push(this.newRouteEntry());
+            this.selectedRouteIndex = this.apiForm.routes.length - 1;
         },
-        getRouteOpLabel(op) {
-            return op === 'ne' ? '不等于' : '等于';
+        removeRoute(idx) {
+            this.apiForm.routes.splice(idx, 1);
+            if (this.apiForm.routes.length === 0) {
+                this.selectedRouteIndex = -1;
+            } else if (this.selectedRouteIndex >= this.apiForm.routes.length) {
+                this.selectedRouteIndex = this.apiForm.routes.length - 1;
+            }
         },
-        getRouteOpTagType(op) {
-            return op === 'ne' ? 'warning' : 'success';
+        addRouteRule(routeIdx) {
+            this.apiForm.routes[routeIdx].rules.push({ key: '', op: 'eq', value: '' });
         },
+        removeRouteRule(routeIdx, ruleIdx) {
+            const rules = this.apiForm.routes[routeIdx].rules;
+            rules.splice(ruleIdx, 1);
+            if (rules.length === 0) rules.push({ key: '', op: 'eq', value: '' });
+        },
+
+        // 序列化 routes 为 routesConfig JSON
+        serializeRoutes() {
+            const routes = this.apiForm.routes;
+            if (!routes || routes.length === 0) return '';
+            return JSON.stringify(routes.map(route => ({
+                condition: this.apiForm.apiMethod === 'GET'
+                    ? { rules: route.rules.filter(r => r.key && r.key.trim()).map(r => ({ key: r.key.trim(), op: r.op || 'eq', value: r.value || '' })) }
+                    : this.parseJsonSafe(route.bodyMatch),
+                response: route.response || '',
+                statusCode: route.statusCode || 200,
+                delay: route.delay || 0
+            })));
+        },
+
+        // 从 routesConfig 反序列化到 routes
+        deserializeRoutes(routesConfig) {
+            if (!routesConfig) return [];
+            try {
+                const parsed = typeof routesConfig === 'string' ? JSON.parse(routesConfig) : routesConfig;
+                if (!Array.isArray(parsed)) return [];
+                return parsed.map(r => {
+                    const isGet = this.apiForm.apiMethod === 'GET';
+                    const cond = r.condition || {};
+                    return {
+                        rules: isGet && cond.rules
+                            ? cond.rules.map(rule => ({ key: rule.key || '', op: rule.op || 'eq', value: rule.value == null ? '' : String(rule.value) }))
+                            : [{ key: '', op: 'eq', value: '' }],
+                        bodyMatch: !isGet && cond && !cond.rules
+                            ? (typeof cond === 'object' ? JSON.stringify(cond, null, 2) : (r.bodyMatch || ''))
+                            : '',
+                        response: r.response || '',
+                        statusCode: r.statusCode || 200,
+                        delay: r.delay || 0
+                    };
+                });
+            } catch (e) {
+                return [];
+            }
+        },
+
+        parseJsonSafe(str) {
+            if (!str || !str.trim()) return null;
+            try {
+                return JSON.parse(str.trim());
+            } catch (e) {
+                return null;
+            }
+        },
+
         parseRouteRules(requestMatch) {
             if (!requestMatch) return [{ key: '', op: 'eq', value: '' }];
             try {
@@ -665,13 +774,42 @@ new Vue({
                     headers['Accept'] = 'application/json';
                 }
                 
+                // 解析路由规则，作为测试参数发送（优先用第一条路由的条件）
+                let requestParams = {};
+                let requestData = undefined;
+                const routes = this.deserializeRoutes(api.routesConfig);
+                if (routes.length > 0) {
+                    const firstRoute = routes[0];
+                    if (apiMethod.toUpperCase() === 'GET') {
+                        const validRules = firstRoute.rules.filter(r => r.key && r.key.trim());
+                        const testParams = {};
+                        validRules.forEach(r => { testParams[r.key.trim()] = r.value; });
+                        requestParams = testParams;
+                    } else if (firstRoute.bodyMatch) {
+                        const parsed = this.parseJsonSafe(firstRoute.bodyMatch);
+                        if (parsed) requestData = parsed;
+                    }
+                } else if (api.requestMatch) {
+                    const rules = this.parseRouteRules(api.requestMatch);
+                    const validRules = rules.filter(r => r.key && r.key.trim());
+                    if (validRules.length > 0) {
+                        const testParams = {};
+                        validRules.forEach(r => { testParams[r.key.trim()] = r.value; });
+                        if (apiMethod.toUpperCase() === 'GET') {
+                            requestParams = testParams;
+                        } else {
+                            requestData = testParams;
+                        }
+                    }
+                }
+
                 const startTime = Date.now();
-                
+
                 // 对于流式响应，使用特殊处理
                 if (isStreamEnabled) {
                     try {
                         // 流式响应会在handleStreamResponse中直接显示弹框和实时更新
-                        await this.handleStreamResponse(apiMethod, requestUrl, headers);
+                        await this.handleStreamResponse(apiMethod, requestUrl, headers, requestParams, requestData);
                         // 流式响应处理完成，不需要额外操作
                     } catch (error) {
                         // 用户主动中止，则不显示错误弹窗
@@ -699,6 +837,8 @@ new Vue({
                     method: apiMethod.toLowerCase(),
                     url: requestUrl,
                         headers: headers,
+                    params: requestParams,
+                    data: requestData,
                     timeout: 10000
                 });
                 const endTime = Date.now();
@@ -767,7 +907,7 @@ new Vue({
         },
         
         // 处理WebFlux流式响应
-        async handleStreamResponse(method, url, headers) {
+        async handleStreamResponse(method, url, headers, requestParams, requestData) {
             return new Promise((resolve, reject) => {
                 // 立即显示响应弹框，准备实时更新
                 this.currentResponse = {
@@ -780,14 +920,19 @@ new Vue({
                     isStreaming: true
                 };
                 this.showResponseDialog = true;
-                
+
                 const startTime = Date.now();
                 let responseData = '';
                 let hasReceivedData = false;
-                
-                // 对于GET请求，使用EventSource
+
+                // 对于GET请求，使用EventSource（拼接query参数到URL）
                 if (method.toUpperCase() === 'GET') {
-                    const eventSource = new EventSource(url);
+                    let fullUrl = url;
+                    if (requestParams && Object.keys(requestParams).length > 0) {
+                        const qs = Object.keys(requestParams).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(requestParams[k])).join('&');
+                        fullUrl = url + '?' + qs;
+                    }
+                    const eventSource = new EventSource(fullUrl);
                     this.currentStreamRequest = eventSource;
                     
                     eventSource.onopen = (event) => {
@@ -851,16 +996,21 @@ new Vue({
                     console.log('--- [DEBUG] Starting non-GET stream request ---');
                     const controller = new AbortController();
                     this.currentStreamRequest = controller;
-                    
-                    fetch(url, {
+
+                    const fetchOptions = {
                         method: method,
                         headers: {
                             ...headers,
                             'Accept': 'text/event-stream',
-                            'Cache-Control': 'no-cache'
+                            'Cache-Control': 'no-cache',
+                            'Content-Type': 'application/json'
                         },
                         signal: controller.signal
-                    }).then(response => {
+                    };
+                    if (requestData && Object.keys(requestData).length > 0) {
+                        fetchOptions.body = JSON.stringify(requestData);
+                    }
+                    fetch(url, fetchOptions).then(response => {
                         console.log('[DEBUG] Received response from fetch:', response);
                         this.currentResponse.status = response.status;
                         

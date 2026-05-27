@@ -21,6 +21,7 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
@@ -50,6 +51,7 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
@@ -89,6 +91,7 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
@@ -113,27 +116,28 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
         WHERE AC.API_URL = #{apiUrl}
           AND AG.API_GROUP_ID = #{groupId}
           AND AC.API_METHOD = #{method}
-          AND (
-            (#{requestMatch} IS NULL AND (AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = ''))
-                OR AC.REQUEST_MATCH = #{requestMatch}
-            )
+          <if test="requestMatch != null">
+          AND (AC.REQUEST_MATCH = #{requestMatch}
+               OR (#{requestMatch} = '' AND (AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = '')))
+          </if>
     </select>
 
     <insert id="insertConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
         INSERT INTO API_CONFIG (
             API_CONFIG_ID, API_GROUP_ID, API_CONFIG_NAME, API_URL, COMMENT,
             RESPONSE, REQUEST, CREATE_TIME, UPDATE_TIME, API_METHOD, CONTENT_TYPE,
-            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS,IS_TEMPLATE
+            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS, ROUTES_CONFIG, IS_TEMPLATE
         ) VALUES (
             #{apiConfigId}, #{apiGroupId}, #{apiConfigName}, #{apiUrl}, #{comment},
             #{response}, #{request}, #{createTime}, #{updateTime}, #{apiMethod}, #{contentType},
-            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders},#{template}
+            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders}, #{routesConfig}, #{template}
         )
     </insert>
 
@@ -154,6 +158,7 @@
             REQUEST_MATCH = #{requestMatch},
             HEADER_MATCH = #{headerMatch},
             RESPONSE_HEADERS = #{responseHeaders},
+            ROUTES_CONFIG = #{routesConfig},
             IS_TEMPLATE = #{template}
         WHERE API_CONFIG_ID = #{apiConfigId}
     </update>
