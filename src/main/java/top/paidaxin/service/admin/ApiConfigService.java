@@ -5,6 +5,7 @@ import com.github.pagehelper.PageSerializable;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import top.paidaxin.common.config.exception.ParamException;
 import top.paidaxin.dao.ApiConfigDao;
 import top.paidaxin.dao.entity.ApiConfig;
@@ -31,9 +32,11 @@ public class ApiConfigService implements IApiConfigService {
     @Override
     public ApiConfig createConfig(ApiConfig apiConfig) {
         //1.判断url是否唯一
-        ApiConfig config = apiConfigDao.queryConfigByApiUrl(apiConfig.getApiGroupId(), apiConfig.getApiUrl());
+        String requestMatch = StringUtils.hasText(apiConfig.getRequestMatch()) ? apiConfig.getRequestMatch().trim() : null;
+        apiConfig.setRequestMatch(requestMatch);
+        ApiConfig config = apiConfigDao.queryConfigByApiUrl(apiConfig.getApiGroupId(), apiConfig.getApiUrl(), apiConfig.getApiMethod(), requestMatch);
         if (!ObjectUtils.isEmpty(config)){
-            throw new ParamException(config.getApiConfigName() + "已使用相同的URL,请重试");
+            throw new ParamException("已存在相同方法 + URL + 路由条件的配置，请修改路由条件后重试");
         }
 
         //2.若url不重复则新增

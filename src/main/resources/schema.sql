@@ -25,6 +25,5 @@ CREATE TABLE IF NOT EXISTS api_config
     REQUEST_MATCH    CHARACTER LARGE OBJECT,
     HEADER_MATCH     CHARACTER LARGE OBJECT,
     RESPONSE_HEADERS CHARACTER LARGE OBJECT,
-    is_template      tinyint               default 0 comment '0: 不启动模版 1: 启动模版消息',
-    constraint API_CONFIG_UK unique (API_METHOD, API_URL, API_GROUP_ID)
+    is_template      tinyint               default 0 comment '0: 不启动模版 1: 启动模版消息'
 );
