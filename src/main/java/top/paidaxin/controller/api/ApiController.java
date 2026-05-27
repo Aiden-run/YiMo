@@ -17,6 +17,9 @@ import top.paidaxin.service.client.IYiMoApiService;
 import top.paidaxin.service.client.IYiMoResponseTemplate;
 import top.paidaxin.service.client.strategy.ResponseStrategyFactory;
 
+import java.io.BufferedReader;
+import java.util.stream.Collectors;
+
 @CrossOrigin(origins = "*")
 @RestController
 @Tag(name = "YiMo接口")
@@ -41,7 +44,8 @@ public class ApiController {
         //1.查询数据库配置,是否有配置的mock信息
         String apiUrl = request.getRequestURI().replaceFirst(BaseUrl, Strings.EMPTY);
         String method = request.getMethod();
-        ApiConfig apiConfig = yiMoApiService.queryApiConfigByApiUrl(apiUrl, method);
+        String requestBody = readRequestBody(request);
+        ApiConfig apiConfig = yiMoApiService.queryApiConfigByApiUrl(apiUrl, method, request.getQueryString(), requestBody);
 
         //2.判断是否有Mock配置
         if (ObjectUtils.isEmpty(apiConfig)) {
@@ -55,5 +59,13 @@ public class ApiController {
 
         //5.根据不同的content-type做出不同的返回
         return responseStrategyFactory.handleResponse(response, apiConfig.getStatusCode(), apiConfig.getContentType(), result, apiConfig.getDelay());
+    }
+
+    private String readRequestBody(HttpServletRequest request) {
+        try (BufferedReader reader = request.getReader()) {
+            return reader.lines().collect(Collectors.joining());
+        } catch (Exception ex) {
+            return "";
+        }
     }
 }

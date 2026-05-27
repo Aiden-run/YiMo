@@ -836,6 +836,25 @@
                 <el-form-item label="描述">
                     <el-input v-model="apiForm.comment" placeholder="API描述（可选）" size="small"></el-input>
                 </el-form-item>
+
+                <el-form-item label="路由条件">
+                    <div style="margin-bottom: 8px; color: #909399; font-size: 12px;">
+                        {{ apiForm.apiMethod === 'GET' ? 'GET：按 URL Query 参数匹配' : '非 GET：按 Body(JSON) 参数匹配' }}
+                    </div>
+                    <div v-for="(rule, index) in apiForm.routeRules" :key="'rule-' + index" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <el-input v-model="rule.key" size="small" placeholder="参数名"></el-input>
+                        <el-radio-group v-model="rule.op" size="small">
+                            <el-radio-button label="eq">等于</el-radio-button>
+                            <el-radio-button label="ne">不等于</el-radio-button>
+                        </el-radio-group>
+                        <el-tag :type="getRouteOpTagType(rule.op)" size="mini" style="line-height: 28px; height: 28px;">
+                            {{ getRouteOpLabel(rule.op) }}
+                        </el-tag>
+                        <el-input v-model="rule.value" size="small" placeholder="参数值"></el-input>
+                        <el-button type="text" icon="el-icon-delete" @click="removeRouteRule(index)"></el-button>
+                    </div>
+                    <el-button size="mini" icon="el-icon-plus" @click="addRouteRule">新增条件</el-button>
+                </el-form-item>
                 
                 <el-row :gutter="16">
                     <el-col :span="12">

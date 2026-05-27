@@ -9,4 +9,6 @@ public interface H2SystemDao {
                    @Param("column") String column,
                    @Param("type") String type,
                    @Param("default") Object defaultVal);
+
+    void executeSql(@Param("sql") String sql);
 }
