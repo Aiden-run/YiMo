@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.paidaxin.dao.ApiConfigDao">
 
-    <select id="queryApiConfig" resultType="top.paidaxin.dao.entity.ApiConfig">
+    <select id="queryApiConfigCandidates" resultType="top.paidaxin.dao.entity.ApiConfig">
         SELECT AC.API_CONFIG_ID,
                AC.API_GROUP_ID,
                AC.API_CONFIG_NAME,
@@ -27,6 +27,8 @@
         WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
           AND AC.API_METHOD = #{method}
           AND AC.ENABLED = true
+        ORDER BY CASE WHEN AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = '' THEN 1 ELSE 0 END ASC,
+                 AC.CREATE_TIME DESC
     </select>
 
     <select id="queryConfigList" resultType="top.paidaxin.dao.entity.ApiConfig">

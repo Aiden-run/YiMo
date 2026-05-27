@@ -836,6 +836,15 @@
                 <el-form-item label="描述">
                     <el-input v-model="apiForm.comment" placeholder="API描述（可选）" size="small"></el-input>
                 </el-form-item>
+
+                <el-form-item label="路由条件">
+                    <el-input
+                        type="textarea"
+                        v-model="apiForm.requestMatch"
+                        :rows="3"
+                        placeholder='可选：JSON格式。GET按query匹配，POST/PUT/DELETE按body匹配，例如 {"userId":"1001"}'>
+                    </el-input>
+                </el-form-item>
                 
                 <el-row :gutter="16">
                     <el-col :span="12">

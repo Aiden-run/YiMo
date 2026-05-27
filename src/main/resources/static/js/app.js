@@ -65,7 +65,8 @@ new Vue({
                 enabled: true,
                 template: false, // 控制模板变量替换
                 contentType: 'application/json',
-                streamEnabled: false // 控制是否启用流式返回，默认不勾选
+                streamEnabled: false, // 控制是否启用流式返回，默认不勾选
+                requestMatch: ''
             },
             
             groupForm: {
@@ -374,6 +375,12 @@ new Vue({
                 // 根据streamEnabled设置contentType
                 const formData = { ...this.apiForm };
                 formData.contentType = formData.streamEnabled ? 'text/event-stream' : 'application/json';
+                if (formData.requestMatch && formData.requestMatch.trim()) {
+                    JSON.parse(formData.requestMatch);
+                    formData.requestMatch = formData.requestMatch.trim();
+                } else {
+                    formData.requestMatch = '';
+                }
                 
                 const url = this.editingApi ? '/admin/config' : '/admin/config';
                 const method = this.editingApi ? 'put' : 'post';
@@ -566,7 +573,8 @@ new Vue({
                 enabled: true,
                 template: false, // 控制模板变量替换
                 contentType: 'application/json',
-                streamEnabled: false // 控制是否启用流式返回
+                streamEnabled: false, // 控制是否启用流式返回
+                requestMatch: ''
             };
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
