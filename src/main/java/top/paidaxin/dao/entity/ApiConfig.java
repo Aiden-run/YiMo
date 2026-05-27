@@ -77,6 +77,11 @@ public class ApiConfig extends ApiGroup implements Serializable {
     private String responseHeaders;
 
     /**
+     * 路由配置(JSON数组格式，包含多个条件+响应对)
+     */
+    private String routesConfig;
+
+    /**
      * 创建时间
      */
     private Date createTime = new Date();

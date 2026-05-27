@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.paidaxin.dao.ApiConfigDao">
 
-    <select id="queryApiConfig" resultType="top.paidaxin.dao.entity.ApiConfig">
+    <select id="queryApiConfigCandidates" resultType="top.paidaxin.dao.entity.ApiConfig">
         SELECT AC.API_CONFIG_ID,
                AC.API_GROUP_ID,
                AC.API_CONFIG_NAME,
@@ -21,12 +21,15 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        WHERE concat(AG.API_BASE_URL, AC.API_URL) = #{apiUrl}
+        WHERE concat(COALESCE(AG.API_BASE_URL, ''), AC.API_URL) = #{apiUrl}
           AND AC.API_METHOD = #{method}
           AND AC.ENABLED = true
+        ORDER BY CASE WHEN AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = '' THEN 1 ELSE 0 END ASC,
+                 AC.CREATE_TIME DESC
     </select>
 
     <select id="queryConfigList" resultType="top.paidaxin.dao.entity.ApiConfig">
@@ -48,6 +51,7 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  RIGHT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
@@ -87,6 +91,7 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
@@ -111,21 +116,28 @@
                AC.REQUEST_MATCH,
                AC.HEADER_MATCH,
                AC.RESPONSE_HEADERS,
+               AC.ROUTES_CONFIG,
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        WHERE AC.API_URL = #{apiUrl} AND AG.API_GROUP_ID = #{groupId}
+        WHERE AC.API_URL = #{apiUrl}
+          AND AG.API_GROUP_ID = #{groupId}
+          AND AC.API_METHOD = #{method}
+          <if test="requestMatch != null">
+          AND (AC.REQUEST_MATCH = #{requestMatch}
+               OR (#{requestMatch} = '' AND (AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = '')))
+          </if>
     </select>
 
     <insert id="insertConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
         INSERT INTO API_CONFIG (
             API_CONFIG_ID, API_GROUP_ID, API_CONFIG_NAME, API_URL, COMMENT,
             RESPONSE, REQUEST, CREATE_TIME, UPDATE_TIME, API_METHOD, CONTENT_TYPE,
-            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS,IS_TEMPLATE
+            STATUS_CODE, DELAY, ENABLED, REQUEST_MATCH, HEADER_MATCH, RESPONSE_HEADERS, ROUTES_CONFIG, IS_TEMPLATE
         ) VALUES (
             #{apiConfigId}, #{apiGroupId}, #{apiConfigName}, #{apiUrl}, #{comment},
             #{response}, #{request}, #{createTime}, #{updateTime}, #{apiMethod}, #{contentType},
-            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders},#{template}
+            #{statusCode}, #{delay}, #{enabled}, #{requestMatch}, #{headerMatch}, #{responseHeaders}, #{routesConfig}, #{template}
         )
     </insert>
 
@@ -146,6 +158,7 @@
             REQUEST_MATCH = #{requestMatch},
             HEADER_MATCH = #{headerMatch},
             RESPONSE_HEADERS = #{responseHeaders},
+            ROUTES_CONFIG = #{routesConfig},
             IS_TEMPLATE = #{template}
         WHERE API_CONFIG_ID = #{apiConfigId}
     </update>
