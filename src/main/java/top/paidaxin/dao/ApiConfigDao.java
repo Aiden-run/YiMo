@@ -6,7 +6,7 @@ import top.paidaxin.dao.entity.ApiConfig;
 import java.util.List;
 
 public interface ApiConfigDao {
-    ApiConfig queryApiConfig(@Param("apiUrl") String apiUrl, @Param("method") String method);
+    List<ApiConfig> queryApiConfigCandidates(@Param("apiUrl") String apiUrl, @Param("method") String method);
 
     List<ApiConfig> queryConfigList(@Param("groupId") String groupId,
                                     @Param("apiName") String apiName,
@@ -23,5 +23,8 @@ public interface ApiConfigDao {
 
     ApiConfig queryConfigById(@Param("configId") String configId);
 
-    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,@Param("apiUrl") String apiUrl);
+    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,
+                                  @Param("apiUrl") String apiUrl,
+                                  @Param("method") String method,
+                                  @Param("requestMatch") String requestMatch);
 }

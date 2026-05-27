@@ -65,7 +65,11 @@ new Vue({
                 enabled: true,
                 template: false, // 控制模板变量替换
                 contentType: 'application/json',
-                streamEnabled: false // 控制是否启用流式返回，默认不勾选
+                streamEnabled: false, // 控制是否启用流式返回，默认不勾选
+                requestMatch: '',
+                routeRules: [
+                    { key: '', op: 'eq', value: '' }
+                ]
             },
             
             groupForm: {
@@ -350,6 +354,7 @@ new Vue({
                 ...api, // 覆盖API数据
                 streamEnabled: (api.contentType === 'text/event-stream') // 确保streamEnabled正确
             };
+            this.apiForm.routeRules = this.parseRouteRules(this.apiForm.requestMatch);
             
             this.showCreateDialog = true;
         },
@@ -374,6 +379,23 @@ new Vue({
                 // 根据streamEnabled设置contentType
                 const formData = { ...this.apiForm };
                 formData.contentType = formData.streamEnabled ? 'text/event-stream' : 'application/json';
+                if (formData.requestMatch && formData.requestMatch.trim()) {
+                    JSON.parse(formData.requestMatch);
+                    formData.requestMatch = formData.requestMatch.trim();
+                } else {
+                    const validRules = (formData.routeRules || []).filter(rule => rule.key && rule.key.trim() !== '');
+                    if (validRules.length > 0) {
+                        formData.requestMatch = JSON.stringify({
+                            rules: validRules.map(rule => ({
+                                key: rule.key.trim(),
+                                op: rule.op || 'eq',
+                                value: rule.value == null ? '' : String(rule.value)
+                            }))
+                        });
+                    } else {
+                        formData.requestMatch = '';
+                    }
+                }
                 
                 const url = this.editingApi ? '/admin/config' : '/admin/config';
                 const method = this.editingApi ? 'put' : 'post';
@@ -566,10 +588,41 @@ new Vue({
                 enabled: true,
                 template: false, // 控制模板变量替换
                 contentType: 'application/json',
-                streamEnabled: false // 控制是否启用流式返回
+                streamEnabled: false, // 控制是否启用流式返回
+                requestMatch: '',
+                routeRules: [
+                    { key: '', op: 'eq', value: '' }
+                ]
             };
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
+        },
+        addRouteRule() {
+            this.apiForm.routeRules.push({ key: '', op: 'eq', value: '' });
+        },
+        removeRouteRule(index) {
+            this.apiForm.routeRules.splice(index, 1);
+            if (this.apiForm.routeRules.length === 0) this.addRouteRule();
+        },
+        getRouteOpLabel(op) {
+            return op === 'ne' ? '不等于' : '等于';
+        },
+        getRouteOpTagType(op) {
+            return op === 'ne' ? 'warning' : 'success';
+        },
+        parseRouteRules(requestMatch) {
+            if (!requestMatch) return [{ key: '', op: 'eq', value: '' }];
+            try {
+                const parsed = typeof requestMatch === 'string' ? JSON.parse(requestMatch) : requestMatch;
+                if (parsed && Array.isArray(parsed.rules)) {
+                    return parsed.rules.map(rule => ({
+                        key: rule.key || '',
+                        op: rule.op === 'ne' ? 'ne' : 'eq',
+                        value: rule.value == null ? '' : String(rule.value)
+                    }));
+                }
+            } catch (e) {}
+            return [{ key: '', op: 'eq', value: '' }];
         },
         
         // 重置分组表单

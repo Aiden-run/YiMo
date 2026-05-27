@@ -28,5 +28,15 @@ public class H2SystemService implements IH2SystemService {
             h2SystemDao.addColumn(API_CONFIG.name(), "IS_TEMPLATE", "tinyint", 0);
             logger.info("✅ 1.2版本更新 兼容完成 ~ ");
         }
+        upgradeToVersion1_3();
+    }
+
+    private void upgradeToVersion1_3() {
+        try {
+            h2SystemDao.executeSql("ALTER TABLE API_CONFIG DROP CONSTRAINT IF EXISTS API_CONFIG_UK");
+            logger.info("✅ 1.3版本更新 路由参数匹配兼容完成 ~ ");
+        } catch (Exception e) {
+            logger.warn("⚠️ 1.3版本约束更新跳过: {}", e.getMessage());
+        }
     }
 }
