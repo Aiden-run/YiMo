@@ -604,6 +604,12 @@ new Vue({
             this.apiForm.routeRules.splice(index, 1);
             if (this.apiForm.routeRules.length === 0) this.addRouteRule();
         },
+        getRouteOpLabel(op) {
+            return op === 'ne' ? '不等于' : '等于';
+        },
+        getRouteOpTagType(op) {
+            return op === 'ne' ? 'warning' : 'success';
+        },
         parseRouteRules(requestMatch) {
             if (!requestMatch) return [{ key: '', op: 'eq', value: '' }];
             try {
