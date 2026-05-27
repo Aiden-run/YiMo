@@ -838,12 +838,19 @@
                 </el-form-item>
 
                 <el-form-item label="路由条件">
-                    <el-input
-                        type="textarea"
-                        v-model="apiForm.requestMatch"
-                        :rows="3"
-                        placeholder='可选：JSON格式。GET按query匹配，POST/PUT/DELETE按body匹配，例如 {"userId":"1001"}'>
-                    </el-input>
+                    <div style="margin-bottom: 8px; color: #909399; font-size: 12px;">
+                        {{ apiForm.apiMethod === 'GET' ? 'GET：按 URL Query 参数匹配' : '非 GET：按 Body(JSON) 参数匹配' }}
+                    </div>
+                    <div v-for="(rule, index) in apiForm.routeRules" :key="'rule-' + index" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <el-input v-model="rule.key" size="small" placeholder="参数名"></el-input>
+                        <el-select v-model="rule.op" size="small" style="width: 100px;">
+                            <el-option label="等于" value="eq"></el-option>
+                            <el-option label="不等于" value="ne"></el-option>
+                        </el-select>
+                        <el-input v-model="rule.value" size="small" placeholder="参数值"></el-input>
+                        <el-button type="text" icon="el-icon-delete" @click="removeRouteRule(index)"></el-button>
+                    </div>
+                    <el-button size="mini" icon="el-icon-plus" @click="addRouteRule">新增条件</el-button>
                 </el-form-item>
                 
                 <el-row :gutter="16">

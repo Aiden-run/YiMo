@@ -23,5 +23,8 @@ public interface ApiConfigDao {
 
     ApiConfig queryConfigById(@Param("configId") String configId);
 
-    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,@Param("apiUrl") String apiUrl);
+    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,
+                                  @Param("apiUrl") String apiUrl,
+                                  @Param("method") String method,
+                                  @Param("requestMatch") String requestMatch);
 }

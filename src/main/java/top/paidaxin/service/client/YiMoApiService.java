@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class YiMoApiService implements IYiMoApiService {
@@ -41,6 +42,27 @@ public class YiMoApiService implements IYiMoApiService {
         try {
             Map<String, Object> expected = top.paidaxin.common.utils.JacksonUtils.json2Object(matchRule, Map.class);
             if (expected == null || expected.isEmpty()) {
+                return true;
+            }
+            Object rulesObj = expected.get("rules");
+            if (rulesObj instanceof List<?> rules) {
+                for (Object ruleObj : rules) {
+                    if (!(ruleObj instanceof Map<?, ?> ruleMap)) {
+                        continue;
+                    }
+                    Object keyObj = ruleMap.get("key");
+                    Object opObj = ruleMap.get("op");
+                    Object valueObj = ruleMap.get("value");
+                    String key = keyObj == null ? "" : String.valueOf(keyObj);
+                    String op = opObj == null ? "eq" : String.valueOf(opObj);
+                    String value = valueObj == null ? "" : String.valueOf(valueObj);
+                    String actual = Objects.toString(actualParams.get(key), "");
+                    if ("ne".equalsIgnoreCase(op)) {
+                        if (value.equals(actual)) return false;
+                    } else if (!value.equals(actual)) {
+                        return false;
+                    }
+                }
                 return true;
             }
             for (Map.Entry<String, Object> entry : expected.entrySet()) {

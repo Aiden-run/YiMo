@@ -116,7 +116,13 @@
                AC.IS_TEMPLATE template
         FROM API_GROUP AG
                  LEFT JOIN API_CONFIG AC ON AG.API_GROUP_ID = AC.API_GROUP_ID
-        WHERE AC.API_URL = #{apiUrl} AND AG.API_GROUP_ID = #{groupId}
+        WHERE AC.API_URL = #{apiUrl}
+          AND AG.API_GROUP_ID = #{groupId}
+          AND AC.API_METHOD = #{method}
+          AND (
+            (#{requestMatch} IS NULL AND (AC.REQUEST_MATCH IS NULL OR TRIM(AC.REQUEST_MATCH) = ''))
+                OR AC.REQUEST_MATCH = #{requestMatch}
+            )
     </select>
 
     <insert id="insertConfig" parameterType="top.paidaxin.dao.entity.ApiConfig">
