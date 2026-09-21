@@ -6,6 +6,8 @@ new Vue({
             isInitialLoad: true, // 控制首次加载动画
             isRefreshing: false, // 控制刷新按钮状态
             initialLoading: true, // 控制骨架屏
+            // 主题模式：默认白天
+            theme: localStorage.getItem('yimo-theme') || 'light',
             // 标签页控制
             activeTab: 'api',
             // API列表数据
@@ -152,6 +154,14 @@ new Vue({
     },
     
     mounted() {
+        // 移除启动加载动画
+        const bootLoader = document.getElementById('boot-loader');
+        if (bootLoader) {
+            bootLoader.classList.add('is-hidden');
+            setTimeout(() => {
+                if (bootLoader.parentNode) bootLoader.parentNode.removeChild(bootLoader);
+            }, 350);
+        }
         // 确保highlight.js可用
         if (typeof hljs !== 'undefined') {
             console.log('Highlight.js loaded successfully');
@@ -352,6 +362,23 @@ new Vue({
             };
             
             this.showCreateDialog = true;
+        },
+
+        // 打开新建API对话框，默认带入选中的分组
+        openCreateDialog() {
+            this.resetApiForm();
+            // 侧边栏选中了分组时，自动带入选中的分组
+            if (this.selectedGroup) {
+                this.apiForm.apiGroupId = this.selectedGroup;
+            }
+            this.showCreateDialog = true;
+        },
+
+        // 切换白天/夜晚主题
+        toggleTheme() {
+            this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('yimo-theme', this.theme);
+            document.documentElement.setAttribute('data-theme', this.theme);
         },
         
         // 保存API
@@ -727,6 +754,16 @@ new Vue({
                     isStreaming: true
                 };
                 this.showResponseDialog = true;
+
+                // 关闭上一次未关闭的流式请求，避免连接堆积拖慢服务
+                if (this.currentStreamRequest) {
+                    if (this.currentStreamRequest.abort) {
+                        this.currentStreamRequest.abort(); // AbortController
+                    } else if (this.currentStreamRequest.close) {
+                        this.currentStreamRequest.close(); // EventSource
+                    }
+                    this.currentStreamRequest = null;
+                }
                 
                 const startTime = Date.now();
                 let responseData = '';

@@ -5,953 +5,829 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YiMo - Mock服务管理平台</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="lib/element-ui.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ==================== CSS 变量 ==================== */
+        :root {
+            /* === 白天主题（默认） === */
+            color-scheme: light;
+            --bg-base: #f6f8fa;
+            --bg-surface: #ffffff;
+            --bg-surface-2: #f3f4f6;
+            --bg-elevated: #ffffff;
+            --bg-input: #ffffff;
+            --text-primary: #1f2328;
+            --text-secondary: #656d76;
+            --text-tertiary: #8c959f;
+            --border-default: #d0d7de;
+            --border-muted: #eaeef2;
+            --border-focus: #0969da;
+            --accent: #0969da;
+            --accent-hover: #0550ae;
+            --success: #1a7f37;
+            --warning: #9a6700;
+            --danger: #cf222e;
+            --info: #57606a;
+            --method-get: #1a7f37;
+            --method-post: #0969da;
+            --method-put: #9a6700;
+            --method-delete: #cf222e;
+            --scrollbar-thumb: #c1c9d1;
+            --scrollbar-thumb-hover: #a8b1ba;
+            --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            --shadow-sm: 0 1px 2px rgba(31,35,40,.04);
+            --shadow-md: 0 3px 8px rgba(31,35,40,.08);
+            --shadow-lg: 0 12px 32px rgba(31,35,40,.15);
         }
+
+        :root[data-theme="dark"] {
+            /* === 夜晚主题 === */
+            color-scheme: dark;
+            --bg-base: #0d1117;
+            --bg-surface: #161b22;
+            --bg-surface-2: #1c2128;
+            --bg-elevated: #21262d;
+            --bg-input: #0d1117;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-tertiary: #6e7681;
+            --border-default: #30363d;
+            --border-muted: #21262d;
+            --border-focus: #2f81f7;
+            --accent: #2f81f7;
+            --accent-hover: #1f6feb;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --info: #8b949e;
+            --method-get: #3fb950;
+            --method-post: #2f81f7;
+            --method-put: #d29922;
+            --method-delete: #f85149;
+            --scrollbar-thumb: #30363d;
+            --scrollbar-thumb-hover: #484f58;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+            --shadow-md: 0 3px 8px rgba(0,0,0,.35);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        [v-cloak] { display: none; }
+
+        html { overflow-y: scroll; }
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
-            background-color: #f5f7fa;
-        }
-
-        .app-container {
-            min-height: 100vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 300;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .github-link {
-            display: flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.15);
-            border: 1px solid transparent;
-            padding: 6px 12px;
-            border-radius: 6px;
-            color: white;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .github-link:hover {
-            background-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .github-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 6px;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z'/%3e%3c/svg%3e");
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-
-        .main-content {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            padding: 20px;
-            border-bottom: 1px solid #ebeef5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #409eff;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            color: #606266;
-            font-size: 14px;
-        }
-
-        .api-item {
-            border: 1px solid #ebeef5;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-        }
-
-        .api-item:hover {
-            box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-        }
-
-        .api-header {
-            padding: 15px;
-            background: #fafafa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .api-method {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .method-get { background-color: #67c23a; }
-        .method-post { background-color: #409eff; }
-        .method-put { background-color: #e6a23c; }
-        .method-delete { background-color: #f56c6c; }
-
-        .api-url {
-            font-family: 'Courier New', monospace;
-            color: #606266;
-        }
-
-        .api-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .status-active { background-color: #67c23a; }
-        .status-inactive { background-color: #909399; }
-
-        .group-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid #ebeef5;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-
-        .group-item:hover:not(.selected) {
-            background-color: #f5f7fa;
-        }
-
-        .group-item.selected {
-            background-color: #d9ecff;
-            border-left: 4px solid #409eff;
-            padding-left: 11px; /* Adjust padding to account for border */
-        }
-
-        .group-list-container {
-            max-height: 400px; /* 设置固定最大高度，确保能够滚动 */
-            overflow-y: auto;
-            padding: 5px; /* Optional: for better spacing */
-        }
-
-        .group-header {
-            padding: 15px;
-            background: #fafafa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .group-name {
-            font-weight: bold;
-            color: #303133;
-            margin-right: 10px;
-        }
-
-        .group-url {
-            font-family: 'Courier New', monospace;
-            color: #606266;
-        }
-
-        .group-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #909399;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #909399;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 300px;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .pagination-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .template-example {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #495057;
-        }
-
-        .response-preview {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #495057;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        /* 响应对话框样式 */
-        .response-dialog .el-dialog__body {
-            height: 70vh; /* 固定高度 */
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .response-dialog .response-info {
-            flex-shrink: 0; /* 信息区域不缩放 */
-        }
-        
-        .response-dialog .response-content {
-            flex: 1; /* 内容区域占用剩余空间 */
-            min-height: 0;
-        }
-
-        .response-dialog pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .response-dialog h4 {
-            margin: 15px 0 10px 0;
-            color: #303133;
-            font-size: 14px;
-        }
-
-        .response-dialog p {
-            margin: 5px 0;
-            color: #606266;
-        }
-
-        .response-dialog strong {
-            color: #303133;
-        }
-
-        .response-info {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .response-info h4 {
-            margin: 0 0 10px 0;
-            color: #303133;
-            font-size: 14px;
-        }
-
-        .response-info p {
-            margin: 5px 0;
-            color: #606266;
-            font-size: 12px;
-        }
-
-        .response-content {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            height: 400px; /* 固定高度，确保有滚动条 */
-        }
-
-        .response-content pre {
-            margin: 0;
-            background: transparent;
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0; /* 防止flex子元素撑开父容器 */
-            padding: 0;
-            border: none;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        
-        /* 流式内容滚动条样式 */
-        .response-content::-webkit-scrollbar,
-        .response-content pre::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .response-content::-webkit-scrollbar-track,
-        .response-content pre::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        .response-content::-webkit-scrollbar-thumb,
-        .response-content pre::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-        
-        .response-content::-webkit-scrollbar-thumb:hover,
-        .response-content pre::-webkit-scrollbar-thumb:hover {
-            background: #a1a1a1;
-        }
-
-        .hljs {
-            background: transparent !important;
-            padding: 0 !important;
-        }
-        
-        /* 备用代码样式 */
-        pre {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .group-select-popper {
-            max-height: 200px;
-        }
-
-        .group-select-popper .el-scrollbar__wrap {
-            max-height: 200px;
-        }
-
-        .group-select-popper .el-scrollbar__view {
-            /* Add any specific styles for the view if needed */
-        }
-        [v-cloak] {
-            display: none;
-        }
-
-        .content-area {
-            min-height: 300px;
-            transition: background-color 0.3s ease;
-        }
-        
-        /* 强制对话框垂直居中 */
-        .el-dialog__wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .el-dialog {
-            margin: 0 !important;
-        }
-
-        /* 简洁表单样式 */
-        .api-form-dialog .el-form-item {
-            margin-bottom: 18px;
-        }
-        
-        .api-form-dialog .el-form-item__label {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
             font-size: 13px;
-            color: #606266;
-        }
-        
-        .api-form-dialog .template-example {
-            background: #f5f7fa;
-            border-radius: 4px;
-            padding: 8px 12px;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #909399;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* 响应式布局：针对大屏幕优化 */
-        @media (min-width: 1800px) {
-            .main-content {
-                max-width: 1700px; /* 增加大屏幕下的最大宽度 */
-            }
-            .content-wrapper {
-                display: flex;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            .content-wrapper > .card:first-child { /* 分组管理卡片 */
-                flex: 1;
-                min-width: 380px;
-            }
-            .content-wrapper > .card:last-child { /* API管理卡片 */
-                flex: 2.5;
-            }
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
-        /* --- 全新UI美化：青春活力版 --- */
+        .mono { font-family: var(--font-mono); }
 
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* ==================== 布局 ==================== */
+        .ym-app { min-height: 100vh; display: flex; flex-direction: column; }
 
-        html {
-            overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
-        }
-
-        body {
-            background-color: #f0f2f5;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-        }
-        
-        .header {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient-animation 15s ease infinite;
-            border-bottom: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            color: white;
-            padding: 20px 30px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        
-        .header-actions {
+        .ym-header {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-default);
+            padding: 0 24px;
+            height: 56px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .ym-header__brand { display: flex; align-items: center; gap: 10px; }
+        .ym-logo {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, #2f81f7, #6366f1);
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700; color: white;
+        }
+        .ym-header__title { font-size: 16px; font-weight: 600; }
+        .ym-header__subtitle { color: var(--text-secondary); font-size: 12px; margin-left: 4px; }
+        .ym-header__actions { display: flex; align-items: center; gap: 12px; }
+        .ym-theme-toggle {
+            background: transparent; border: 1px solid var(--border-default);
+            border-radius: var(--radius-md); color: var(--text-secondary);
+            width: 32px; height: 32px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .15s;
+        }
+        .ym-theme-toggle:hover { color: var(--text-primary); border-color: var(--accent); }
+        .ym-link {
+            display: flex; align-items: center; gap: 6px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 12px; padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-default);
+            transition: all .15s;
+        }
+        .ym-link:hover { color: var(--text-primary); border-color: var(--border-focus); background: var(--bg-surface-2); }
+
+        .ym-layout { flex: 1; display: flex; overflow: hidden; }
+
+        /* ==================== 侧栏 ==================== */
+        .ym-sidebar {
+            width: 280px; flex-shrink: 0;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-default);
+            display: flex; flex-direction: column;
+        }
+        .ym-sidebar__header {
+            padding: 16px 16px 12px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .ym-sidebar__header h2 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .ym-sidebar__list {
+            flex: 1; overflow-y: auto; padding: 0 8px 8px;
+            scrollbar-width: none;
+        }
+        .ym-sidebar__list::-webkit-scrollbar { display: none; }
+
+        .ym-group-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 12px; border-radius: var(--radius-md);
+            cursor: pointer; transition: background .15s;
+            margin-bottom: 2px;
+        }
+        .ym-group-item:hover { background: var(--bg-surface-2); }
+        .ym-group-item.is-active {
+            background: rgba(47, 129, 247, 0.12);
+            border-left: 3px solid var(--accent);
+            padding-left: 9px;
+        }
+        .ym-group-item__info { flex: 1; min-width: 0; }
+        .ym-group-item__name { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ym-group-item__url { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ym-group-item__actions { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+        .ym-group-item:hover .ym-group-item__actions { opacity: 1; }
+
+        .ym-sidebar__empty { text-align: center; padding: 40px 16px; color: var(--text-tertiary); font-size: 12px; }
+        .ym-sidebar__loading { text-align: center; padding: 12px; color: var(--text-tertiary); font-size: 12px; }
+        .ym-sidebar__loadmore { text-align: center; padding: 10px 8px; border-top: 1px dashed var(--border-muted); }
+        .ym-sidebar__loadmore .ym-btn.ym-btn--loadmore {
+            width: 100%;
+            min-height: 30px;
+            justify-content: center;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px dashed var(--border-default);
+            border-radius: var(--radius-md);
+            transition: all .15s;
+        }
+        .ym-sidebar__loadmore .ym-btn.ym-btn--loadmore:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(47, 129, 247, 0.06);
         }
 
-        .refresh-btn {
-            font-size: 22px;
-            cursor: pointer;
-            transition: transform 0.5s ease;
+        /* ==================== 主区 ==================== */
+        .ym-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .ym-main__toolbar {
+            padding: 16px 24px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid var(--border-default);
+            flex-wrap: wrap;
         }
+        .ym-main__list { flex: 1; overflow-y: auto; padding: 16px 24px; }
 
-        .refresh-btn.loading {
-            transform: rotate(360deg);
-        }
-
-        .api-item:hover, .group-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            border-color: #409eff;
-        }
-
-        .card {
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-        }
-
-        /* 列表项入场动画 */
-        .list-enter-active, .list-leave-active {
-            transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
-        }
-        .list-move {
-            transition: transform 0.5s cubic-bezier(0.55, 0, 0.1, 1);
-        }
-        .list-enter, .list-leave-to {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .list-leave-active {
-            position: absolute;
-        }
-
-        /* 骨架屏加载动画 */
-        @keyframes shimmer {
-            0% { background-position: -468px 0; }
-            100% { background-position: 468px 0; }
-        }
-        .skeleton-item {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
+        .ym-api-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
             margin-bottom: 10px;
-            padding: 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all .15s;
         }
-        .skeleton-block {
-            background: #f6f7f8;
-            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+        .ym-api-item:hover { border-color: var(--border-focus); box-shadow: var(--shadow-md); }
+        .ym-api-item__main { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        .ym-api-item__url { font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ym-api-item__name { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
+        .ym-api-item__actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        .ym-method {
+            padding: 2px 8px; border-radius: var(--radius-sm);
+            font-size: 11px; font-weight: 700; color: white;
+            font-family: var(--font-mono); flex-shrink: 0;
+        }
+        .ym-method.m-get { background: var(--method-get); }
+        .ym-method.m-post { background: var(--method-post); }
+        .ym-method.m-put { background: var(--method-put); }
+        .ym-method.m-delete { background: var(--method-delete); }
+
+        .ym-badge {
+            padding: 2px 8px; border-radius: 10px;
+            font-size: 11px; font-weight: 500;
+        }
+        .ym-badge.is-active { background: rgba(63, 185, 80, 0.15); color: var(--success); }
+        .ym-badge.is-inactive { background: rgba(139, 148, 158, 0.15); color: var(--text-tertiary); }
+
+        .ym-empty { text-align: center; padding: 60px 20px; color: var(--text-tertiary); }
+        .ym-empty h4 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
+        .ym-empty p { font-size: 12px; }
+
+        .ym-main__pagination { padding: 12px 24px; border-top: 1px solid var(--border-default); display: flex; justify-content: center; }
+
+        /* ==================== 按钮 ==================== */
+        .ym-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: var(--radius-md);
+            font-size: 13px; font-weight: 500;
+            border: 1px solid var(--border-default);
+            background: var(--bg-surface-2);
+            color: var(--text-primary);
+            cursor: pointer; transition: all .15s;
+            white-space: nowrap; line-height: 1;
+        }
+        .ym-btn:hover { border-color: var(--border-focus); background: var(--bg-elevated); }
+        .ym-btn--primary { background: var(--accent); border-color: var(--accent); color: white; }
+        .ym-btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+        .ym-btn--danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+        .ym-btn--danger:hover { background: rgba(248, 81, 73, 0.1); }
+        .ym-btn--text { background: transparent; border: none; color: var(--text-secondary); padding: 4px 6px; }
+        .ym-btn--text:hover { color: var(--text-primary); background: transparent; }
+        .ym-btn--text.ym-btn--danger { color: var(--danger); }
+        .ym-btn--sm { padding: 4px 10px; font-size: 12px; }
+        .ym-btn--lg { padding: 10px 20px; font-size: 14px; }
+        .ym-btn.is-disabled, .ym-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ym-btn .ym-icon { display: inline-flex; }
+        .ym-btn .ym-icon svg { width: 14px; height: 14px; }
+
+        /* ==================== Icon ==================== */
+        .ym-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ym-icon svg { width: 100%; height: 100%; display: block; }
+
+        /* ==================== 输入框 ==================== */
+        .ym-input-wrapper { position: relative; display: inline-flex; align-items: center; }
+        .ym-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 7px 12px; font-size: 13px;
+            color: var(--text-primary); font-family: var(--font-sans);
+            outline: none; transition: border-color .15s;
+            width: 100%;
+        }
+        .ym-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12); }
+        .ym-input::placeholder { color: var(--text-tertiary); }
+        .ym-textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+        .ym-input--with-icon { padding-left: 34px; }
+        .ym-input-icon { position: absolute; left: 10px; color: var(--text-tertiary); display: flex; pointer-events: none; }
+        .ym-input-icon svg { width: 14px; height: 14px; }
+        .ym-input-clear { position: absolute; right: 8px; color: var(--text-tertiary); cursor: pointer; display: flex; }
+        .ym-input-clear:hover { color: var(--text-primary); }
+        .ym-input-clear svg { width: 14px; height: 14px; }
+
+        /* ==================== Select ==================== */
+        .ym-select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 7px 28px 7px 12px; font-size: 13px;
+            color: var(--text-primary); font-family: var(--font-sans);
+            outline: none; cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-size: 800px 104px;
-            display: inline-block;
-            height: 16px;
-            border-radius: 4px;
+            background-position: right 8px center;
+            background-size: 14px;
+        }
+        .ym-select:focus { border-color: var(--border-focus); }
+        .ym-select option { background: var(--bg-elevated); color: var(--text-primary); }
+
+        /* ==================== Switch ==================== */
+        .ym-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .ym-switch input { opacity: 0; width: 0; height: 0; }
+        .ym-switch__slider {
+            position: absolute; inset: 0;
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-default);
+            border-radius: 11px; cursor: pointer; transition: .2s;
+        }
+        .ym-switch__slider::before {
+            content: ''; position: absolute;
+            width: 16px; height: 16px; left: 2px; top: 2px;
+            background: var(--text-secondary);
+            border-radius: 50%; transition: .2s;
+        }
+        .ym-switch input:checked + .ym-switch__slider { background: var(--accent); border-color: var(--accent); }
+        .ym-switch input:checked + .ym-switch__slider::before { transform: translateX(18px); background: white; }
+
+        /* ==================== Number Input ==================== */
+        .ym-number { width: 120px; }
+
+        /* ==================== Form ==================== */
+        .ym-form { width: 100%; }
+        .ym-form-item { margin-bottom: 18px; }
+        .ym-form-item__label {
+            display: block; margin-bottom: 6px;
+            font-size: 12px; color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .ym-form-item__content { position: relative; }
+        .ym-form-item__error { color: var(--danger); font-size: 11px; margin-top: 4px; }
+        .ym-form-item.has-error .ym-input,
+        .ym-form-item.has-error .ym-select { border-color: var(--danger); }
+        .ym-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+        .ym-col-6 { grid-column: span 6; }
+        .ym-col-12 { grid-column: span 12; }
+        .ym-form-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+
+        /* ==================== Modal ==================== */
+        .ym-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .ym-modal__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+        .ym-modal__dialog {
+            position: relative; z-index: 1;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            max-height: 90vh; display: flex; flex-direction: column;
+        }
+        .ym-modal__header {
+            padding: 16px 20px; border-bottom: 1px solid var(--border-default);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .ym-modal__title { font-size: 15px; font-weight: 600; }
+        .ym-modal__close {
+            background: transparent; border: none; cursor: pointer;
+            color: var(--text-tertiary); padding: 4px; border-radius: var(--radius-sm);
+            display: flex; transition: all .15s;
+        }
+        .ym-modal__close:hover { color: var(--text-primary); background: var(--bg-surface-2); }
+        .ym-modal__close svg { width: 18px; height: 18px; }
+        .ym-modal__body { padding: 20px; overflow-y: auto; flex: 1; }
+        .ym-modal__footer {
+            padding: 12px 20px; border-top: 1px solid var(--border-default);
+            display: flex; justify-content: flex-end; gap: 8px;
+        }
+        .ym-modal-enter-active, .ym-modal-leave-active { transition: opacity .2s; }
+        .ym-modal-enter-active .ym-modal__dialog, .ym-modal-leave-active .ym-modal__dialog { transition: transform .2s, opacity .2s; }
+        .ym-modal-enter, .ym-modal-leave-to { opacity: 0; }
+        .ym-modal-enter .ym-modal__dialog, .ym-modal-leave-to .ym-modal__dialog { transform: scale(0.95); opacity: 0; }
+
+        /* ==================== Tooltip ==================== */
+        .ym-tooltip { position: relative; display: inline-flex; cursor: help; }
+        .ym-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute; bottom: 100%; left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated); color: var(--text-primary);
+            border: 1px solid var(--border-default);
+            padding: 4px 8px; border-radius: var(--radius-sm);
+            font-size: 11px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity .15s;
+            margin-bottom: 4px; z-index: 100;
+        }
+        .ym-tooltip:hover::after { opacity: 1; }
+
+        /* ==================== Table ==================== */
+        .ym-table { width: 100%; border-collapse: collapse; }
+        .ym-table th, .ym-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-default); font-size: 13px; }
+        .ym-table th { color: var(--text-secondary); font-weight: 600; font-size: 12px; }
+        .ym-table td { color: var(--text-primary); }
+        .ym-table code { font-family: var(--font-mono); color: var(--accent); background: rgba(47, 129, 247, 0.1); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 12px; }
+
+        /* ==================== Pagination ==================== */
+        .ym-pagination { display: flex; align-items: center; gap: 4px; }
+        .ym-pagination__total { color: var(--text-secondary); font-size: 12px; margin-right: 12px; }
+        .ym-pagination__btn {
+            min-width: 30px; height: 30px; padding: 0 6px;
+            border: 1px solid var(--border-default); background: var(--bg-surface);
+            color: var(--text-secondary); border-radius: var(--radius-sm);
+            cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;
+            transition: all .15s;
+        }
+        .ym-pagination__btn:hover:not(:disabled):not(.is-dots) { border-color: var(--border-focus); color: var(--text-primary); }
+        .ym-pagination__btn.is-active { background: var(--accent); border-color: var(--accent); color: white; }
+        .ym-pagination__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .ym-pagination__btn.is-dots { border: none; background: transparent; cursor: default; }
+        .ym-pagination__btn svg { width: 14px; height: 14px; }
+
+        /* ==================== Toast ==================== */
+        .ym-toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
+        .ym-toast {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px; border-radius: var(--radius-md);
+            font-size: 13px; color: var(--text-primary);
+            border: 1px solid var(--border-default);
+            background: var(--bg-elevated);
+            box-shadow: var(--shadow-md);
+            opacity: 0; transform: translateX(30px);
+            transition: all .3s;
+        }
+        .ym-toast--show { opacity: 1; transform: translateY(0); }
+        .ym-toast--success { border-left: 3px solid var(--success); }
+        .ym-toast--success svg { color: var(--success); }
+        .ym-toast--error { border-left: 3px solid var(--danger); }
+        .ym-toast--error svg { color: var(--danger); }
+        .ym-toast--warning { border-left: 3px solid var(--warning); }
+        .ym-toast--warning svg { color: var(--warning); }
+        .ym-toast--info { border-left: 3px solid var(--accent); }
+        .ym-toast--info svg { color: var(--accent); }
+        .ym-toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .ym-toast span { display: flex; align-items: center; }
+
+        /* ==================== Confirm ==================== */
+        .ym-confirm-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+            opacity: 0; transition: opacity .2s;
+        }
+        .ym-confirm-overlay.ym-confirm--show { opacity: 1; }
+        .ym-confirm {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            min-width: 380px; max-width: 460px;
+            transform: scale(0.95); transition: transform .2s;
+        }
+        .ym-confirm-overlay.ym-confirm--show .ym-confirm { transform: scale(1); }
+        .ym-confirm__header { display: flex; align-items: center; gap: 10px; padding: 18px 20px 0; }
+        .ym-confirm__icon { display: flex; }
+        .ym-confirm__title { font-size: 15px; font-weight: 600; }
+        .ym-confirm__msg { padding: 8px 20px 20px; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+        .ym-confirm__footer { padding: 0 20px 18px; display: flex; justify-content: flex-end; gap: 8px; }
+
+        /* ==================== 骨架屏 ==================== */
+        @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+        .skeleton-item { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); margin-bottom: 10px; padding: 14px 16px; }
+        .skeleton-block {
+            background: var(--bg-surface-2);
+            background-image: linear-gradient(to right, var(--bg-surface-2) 0%, var(--bg-elevated) 20%, var(--bg-surface-2) 40%, var(--bg-surface-2) 100%);
+            background-repeat: no-repeat; background-size: 800px 104px;
+            display: inline-block; height: 14px; border-radius: var(--radius-sm);
             animation: shimmer 1s linear infinite;
-            line-height: 1;
-        }
-        .skeleton-item .api-header, .skeleton-item .group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .group-item.selected {
-            background-color: #ecf5ff;
-            border-left: 3px solid #409eff;
-        }
-        .card-body.group-card-body {
-            /* Removed fixed height and flex properties */
         }
 
-        .group-list-container {
-            max-height: 400px; /* Directly set a max-height to enable internal scrolling */
-            overflow-y: auto;
-            padding: 5px;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        /* ==================== 列表动画 ==================== */
+        .list-enter-active, .list-leave-active { transition: all .3s ease; }
+        .list-enter, .list-leave-to { opacity: 0; transform: translateY(10px); }
+        .list-leave-active { position: absolute; }
 
-        .group-list-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
+        /* ==================== 响应信息 ==================== */
+        .response-info { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px; }
+        .response-info h4 { margin: 0 0 10px; font-size: 13px; color: var(--text-primary); }
+        .response-info p { margin: 4px 0; font-size: 12px; color: var(--text-secondary); }
+        .response-info strong { color: var(--text-primary); }
+        .response-content { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 14px; overflow-y: auto; max-height: 400px; }
+        .response-content h4 { margin: 0 0 10px; font-size: 13px; color: var(--text-primary); }
+        .response-content pre { margin: 0; background: transparent; border: none; padding: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; color: var(--text-primary); }
+        .hljs { background: transparent !important; padding: 0 !important; }
 
-        .group-header {
-            padding: 15px;
-            background: #fafafa;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .ym-spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .ym-stream-icon { color: var(--text-tertiary); display: inline-flex; }
+        .ym-stream-icon svg { width: 14px; height: 14px; }
+
+        /* ==================== 启动加载动画 ==================== */
+        .boot-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 20px;
+            transition: opacity .3s ease;
+        }
+        .boot-loader.is-hidden { opacity: 0; pointer-events: none; }
+        .boot-loader__logo {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #2f81f7, #6366f1);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 700; color: white;
+            box-shadow: 0 8px 24px rgba(47, 129, 247, .35);
+            animation: boot-pulse 1.4s ease-in-out infinite;
+        }
+        .boot-loader__ring {
+            width: 36px; height: 36px;
+            border: 3px solid var(--border-default);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .boot-loader__text { color: var(--text-secondary); font-size: 13px; letter-spacing: 1px; }
+        @keyframes boot-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
         }
     </style>
+    <script>
+        // 主题初始化：默认白天模式，优先读取本地存储，避免页面闪屏
+        (function () {
+            var theme = localStorage.getItem('yimo-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
 <body>
-    <div id="app" class="app-container" v-cloak>
-        <div class="header">
-            <h1>YiMo Mock服务管理平台</h1>
-            <div class="header-actions">
-                <a href="https://github.com/Aiden-run/YiMo" target="_blank" class="github-link">
-                    <span class="github-icon"></span>
-                    <span id="github-stars">YiMo</span>
+    <!-- 启动加载动画：JS 加载完成前显示，挂载后移除 -->
+    <div id="boot-loader" class="boot-loader">
+        <div class="boot-loader__logo">Y</div>
+        <div class="boot-loader__ring"></div>
+        <div class="boot-loader__text">YiMo 加载中...</div>
+    </div>
+
+    <div id="app" class="ym-app" v-cloak>
+        <!-- Header -->
+        <header class="ym-header">
+            <div class="ym-header__brand">
+                <div class="ym-logo">Y</div>
+                <span class="ym-header__title">YiMo</span>
+                <span class="ym-header__subtitle">Mock 服务管理平台</span>
+            </div>
+            <div class="ym-header__actions">
+                <button class="ym-theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? '切换为白天模式' : '切换为夜晚模式'">
+                    <ym-icon :name="theme === 'dark' ? 'sun' : 'moon'" size="16"></ym-icon>
+                </button>
+                <a href="https://github.com/Aiden-run/YiMo" target="_blank" class="ym-link">
+                    <ym-icon name="github" size="14"></ym-icon>
+                    <span>YiMo</span>
                 </a>
             </div>
-        </div>
+        </header>
 
-        <div class="main-content">
-            
-            <div class="content-wrapper">
-                <!-- 分组管理 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>分组管理</h2>
-                        <div>
-                            <el-button type="primary" @click="showGroupDialog = true" icon="el-icon-plus">新建分组</el-button>
-                        </div>
-                    </div>
-                    <div class="card-body group-card-body">
-                        <div v-if="groupListLoading && !groupList.length" class="loading">
-                           加载中...
-                       </div>
-                       <div v-else-if="groupList.length === 0 && !groupListLoading" class="empty-state">
-                           <h4>暂无分组</h4>
-                           <p>可以点击右上角按钮，立即创建一个！</p>
-                       </div>
-                       <div v-else>
-                           <transition-group :name="isInitialLoad ? '' : 'list'" tag="div" class="group-list-container" ref="groupListContainer">
-                               <div v-for="group in groupList" :key="group.apiGroupId" class="group-item" :class="{ 'selected': selectedGroup === group.apiGroupId }" @click="filterByGroup(group)">
-                                   <div class="group-info">
-                                       <span class="group-name" title="点击筛选API">{{ group.apiGroupName }}</span>
-                                       <span class="group-base-url">{{ group.apiBaseUrl }}</span>
-                                   </div>
-                                   <div class="group-actions">
-                                       <el-button type="text" size="mini" @click.stop="editGroup(group)">编辑</el-button>
-                                       <el-popconfirm title="确定要删除这个分组吗？" @confirm="deleteGroup(group.apiGroupId)">
-                                           <el-button slot="reference" type="text" size="mini" style="color: #F56C6C; margin-left: 10px;" @click.stop>删除</el-button>
-                                       </el-popconfirm>
-                                   </div>
-                               </div>
-                               <p v-if="groupListLoading" key="loading" class="loading" style="text-align: center; padding: 10px;">加载中...</p>
-                               <p v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" key="no-more" style="text-align: center; color: #909399; padding: 10px;">没有更多了</p>
-                           </transition-group>
-                       </div>
-                   </div>
+        <div class="ym-layout">
+            <!-- 侧栏：分组管理 -->
+            <aside class="ym-sidebar">
+                <div class="ym-sidebar__header">
+                    <h2>分组</h2>
+                    <ym-btn type="primary" size="sm" icon="plus" @click="showGroupDialog = true">新建分组</ym-btn>
                 </div>
-
-                <!-- API管理 -->
-                <div class="card">
-                     <div class="card-header">
-                        <h2>API管理</h2>
-                        <div>
-                            <el-button @click="handleRefreshClick" :icon="isRefreshing ? 'el-icon-check' : 'el-icon-refresh'" :disabled="isRefreshing">
-                                {{ isRefreshing ? '已刷新' : '刷新' }}
-                            </el-button>
-                            <el-button type="primary" @click="showCreateDialog = true" icon="el-icon-plus">新建API</el-button>
-                        </div>
+                <div class="ym-sidebar__list" ref="groupListContainer" @scroll="handleGroupListScroll">
+                    <div v-if="groupListLoading && !groupList.length" class="ym-sidebar__loading">加载中...</div>
+                    <div v-else-if="groupList.length === 0 && !groupListLoading" class="ym-sidebar__empty">
+                        暂无分组<br>点击上方按钮创建
                     </div>
-                    <div class="card-body content-area">
-                        <!-- 工具栏 -->
-                        <div class="toolbar">
-                            <div class="search-box">
-                                <el-input v-model="searchKeyword" placeholder="搜索API名称" clearable prefix-icon="el-icon-search"></el-input>
+                    <transition-group v-else :name="isInitialLoad ? '' : 'list'" tag="div">
+                        <div v-for="group in groupList" :key="group.apiGroupId"
+                             class="ym-group-item"
+                             :class="{ 'is-active': selectedGroup === group.apiGroupId }"
+                             @click="filterByGroup(group)">
+                            <div class="ym-group-item__info">
+                                <div class="ym-group-item__name" :title="group.apiGroupName">{{ group.apiGroupName }}</div>
+                                <div class="ym-group-item__url">{{ group.apiBaseUrl }}</div>
                             </div>
-                            <div class="filter-group">
-                                <el-select v-model="selectedGroup" placeholder="选择分组" clearable>
-                                    <el-option
-                                        v-for="group in groups"
-                                        :key="group.apiGroupId || Math.random()"
-                                        :label="group.apiGroupName || ''"
-                                        :value="group.apiGroupId">
-                                    </el-option>
-                                </el-select>
-                                <el-select v-model="selectedMethod" placeholder="请求方法" clearable>
-                                    <el-option label="GET" value="GET"></el-option>
-                                    <el-option label="POST" value="POST"></el-option>
-                                    <el-option label="PUT" value="PUT"></el-option>
-                                    <el-option label="DELETE" value="DELETE"></el-option>
-                                </el-select>
-                                <el-select v-model="selectedStatus" placeholder="状态" clearable>
-                                    <el-option label="启用" :value="true"></el-option>
-                                    <el-option label="禁用" :value="false"></el-option>
-                                </el-select>
+                            <div class="ym-group-item__actions">
+                                <ym-btn type="text" size="sm" icon="edit" @click.stop="editGroup(group)"></ym-btn>
+                                <ym-btn type="text" size="sm" icon="trash" @click.stop="deleteGroup(group.apiGroupId)"></ym-btn>
                             </div>
                         </div>
-
-                        <!-- API列表 -->
-                        <div v-if="initialLoading">
-                             <div v-for="n in pageSize" :key="n" class="skeleton-item">
-                                <div class="api-header">
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <span class="skeleton-block" style="width: 60px; height: 24px;"></span>
-                                        <span class="skeleton-block" style="width: 300px;"></span>
-                                        <span class="skeleton-block" style="width: 150px;"></span>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <span class="skeleton-block" style="width: 50px; height: 20px;"></span>
-                                        <span class="skeleton-block" style="width: 60px; height: 28px;"></span>
-                                        <span class="skeleton-block" style="width: 60px; height: 28px;"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else-if="apis.length === 0" class="empty-state">
-                            <h4>暂无API配置</h4>
-                            <p>可以点击右上角按钮，立即创建一个！</p>
-                        </div>
-                        <transition-group v-else :name="isInitialLoad ? '' : 'list'" tag="div">
-                            <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="api-item">
-                                <div class="api-header">
-                                    <div>
-                                        <span :class="['api-method', 'method-' + (api.apiMethod || 'get').toLowerCase()]">{{ api.apiMethod || 'GET' }}</span>
-                                        <span class="api-url">{{"/api" + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
-                                        <span style="margin-left: 10px; color: #909399;">{{ api.apiConfigName || '' }}</span>
-                                        <el-tooltip content="流式API" placement="top">
-                                            <i v-if="api.contentType === 'text/event-stream'" class="el-icon-connection" style="margin-left: 8px; color: #828288; outline: null"></i>
-                                        </el-tooltip>
-                                    </div>
-                                    <div class="api-status">
-                                        <span :class="['status-badge', (api.enabled ? 'status-active' : 'status-inactive')]">{{ api.enabled ? '启用' : '禁用' }}</span>
-                                        <el-button size="mini" type="text" @click="requestApi(api)" icon="el-icon-s-promotion">请求</el-button>
-                                        <el-button size="mini" @click="editApi(api)" icon="el-icon-edit">编辑</el-button>
-                                        <el-button size="mini" type="danger" @click="deleteApi(api.apiConfigId || 0)" icon="el-icon-delete">删除</el-button>
-                                    </div>
-                                </div>
-                            </div>
-                        </transition-group>
-
-                        <!-- 分页 -->
-                        <div v-if="total > 0" class="pagination-container">
-                            <el-pagination
-                                @current-change="handleCurrentChange"
-                                :current-page="currentPage"
-                                :page-size="pageSize"
-                                layout="total, prev, pager, next"
-                                :total="total">
-                            </el-pagination>
-                        </div>
+                    </transition-group>
+                    <div v-if="groupListLoading && groupList.length" class="ym-sidebar__loading">加载中...</div>
+                    <div v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" class="ym-sidebar__loading">没有更多了</div>
+                    <div v-if="!groupListLoading && groupList.length > 0 && groupList.length < groupListTotal" class="ym-sidebar__loadmore">
+                        <button class="ym-btn ym-btn--sm ym-btn--loadmore" @click="loadGroupList">
+                            <ym-icon name="chevronDown" size="14"></ym-icon>
+                            <span>加载更多 ({{ groupList.length }}/{{ groupListTotal }})</span>
+                        </button>
                     </div>
                 </div>
-            </div>
+            </aside>
+
+            <!-- 主区：API 管理 -->
+            <main class="ym-main">
+                <div class="ym-main__toolbar">
+                    <div class="ym-input-wrapper" style="flex: 1; max-width: 280px;">
+                        <span class="ym-input-icon"><ym-icon name="search"></ym-icon></span>
+                        <input class="ym-input ym-input--with-icon" v-model="searchKeyword" placeholder="搜索API名称">
+                    </div>
+                    <select class="ym-select" v-model="selectedGroup">
+                        <option value="">全部分组</option>
+                        <option v-for="group in groups" :key="group.apiGroupId || Math.random()" :value="group.apiGroupId">{{ group.apiGroupName || '' }}</option>
+                    </select>
+                    <select class="ym-select" v-model="selectedMethod">
+                        <option value="">全部方法</option>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <select class="ym-select" v-model="selectedStatus">
+                        <option value="">全部状态</option>
+                        <option :value="true">启用</option>
+                        <option :value="false">禁用</option>
+                    </select>
+                    <div style="flex: 1;"></div>
+                    <ym-btn icon="refresh" :disabled="isRefreshing" @click="handleRefreshClick">
+                        {{ isRefreshing ? '已刷新' : '刷新' }}
+                    </ym-btn>
+                    <ym-btn type="primary" icon="plus" @click="openCreateDialog">新建API</ym-btn>
+                </div>
+
+                <div class="ym-main__list">
+                    <!-- 骨架屏 -->
+                    <div v-if="initialLoading">
+                        <div v-for="n in pageSize" :key="n" class="skeleton-item">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="skeleton-block" style="width: 50px; height: 20px;"></span>
+                                <span class="skeleton-block" style="width: 280px;"></span>
+                                <span class="skeleton-block" style="width: 120px;"></span>
+                                <div style="flex: 1;"></div>
+                                <span class="skeleton-block" style="width: 40px; height: 20px;"></span>
+                                <span class="skeleton-block" style="width: 60px; height: 28px;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 空态 -->
+                    <div v-else-if="apis.length === 0" class="ym-empty">
+                        <h4>暂无API配置</h4>
+                        <p>点击右上角按钮，立即创建一个！</p>
+                    </div>
+                    <!-- API 列表 -->
+                    <transition-group v-else :name="isInitialLoad ? '' : 'list'" tag="div">
+                        <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="ym-api-item">
+                            <div class="ym-api-item__main">
+                                <span class="ym-method" :class="'m-' + (api.apiMethod || 'get').toLowerCase()">{{ api.apiMethod || 'GET' }}</span>
+                                <span class="ym-api-item__url">{{ '/api' + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
+                                <span class="ym-api-item__name">{{ api.apiConfigName || '' }}</span>
+                                <span v-if="api.contentType === 'text/event-stream'" class="ym-tooltip" data-tooltip="流式API">
+                                    <span class="ym-stream-icon"><ym-icon name="stream"></ym-icon></span>
+                                </span>
+                            </div>
+                            <div class="ym-api-item__actions">
+                                <span class="ym-badge" :class="api.enabled ? 'is-active' : 'is-inactive'">{{ api.enabled ? '启用' : '禁用' }}</span>
+                                <ym-btn size="sm" icon="play" @click="requestApi(api)">请求</ym-btn>
+                                <ym-btn size="sm" icon="edit" @click="editApi(api)">编辑</ym-btn>
+                                <ym-btn type="danger" size="sm" icon="trash" @click="deleteApi(api.apiConfigId || 0)">删除</ym-btn>
+                            </div>
+                        </div>
+                    </transition-group>
+                </div>
+
+                <div class="ym-main__pagination" v-if="total > 0">
+                    <ym-pagination :current-page="currentPage" :page-size="pageSize" :total="total" @current-change="handleCurrentChange"></ym-pagination>
+                </div>
+            </main>
         </div>
 
-        <!-- 创建/编辑API对话框 -->
-        <el-dialog :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="50%" class="api-form-dialog">
-            <el-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
-                <el-row :gutter="16">
-                    <el-col :span="12">
-                        <el-form-item label="API名称" prop="apiConfigName">
-                            <el-input v-model="apiForm.apiConfigName" placeholder="请输入API名称" size="small"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="所属分组" prop="apiGroupId">
-                            <el-select v-model="apiForm.apiGroupId" placeholder="选择分组" style="width: 100%;" size="small">
-                                <el-option
-                                    v-for="group in groups"
-                                    :key="group.apiGroupId || Math.random()"
-                                    :label="group.apiGroupName || ''"
-                                    :value="group.apiGroupId">
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <el-row :gutter="16">
-                    <el-col :span="12">
-                        <el-form-item label="请求方法" prop="apiMethod">
-                            <el-select v-model="apiForm.apiMethod" style="width: 100%;" size="small">
-                                <el-option label="GET" value="GET"></el-option>
-                                <el-option label="POST" value="POST"></el-option>
-                                <el-option label="PUT" value="PUT"></el-option>
-                                <el-option label="DELETE" value="DELETE"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="API路径" prop="apiUrl">
-                            <el-input v-model="apiForm.apiUrl" placeholder="/api/path" size="small"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <el-row :gutter="16">
-                    <el-col :span="12">
-                        <el-form-item label="状态码" prop="statusCode">
-                            <el-input-number v-model="apiForm.statusCode" :min="100" :max="599" style="width: 120px;" size="small"></el-input-number>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="延迟(ms)" prop="delay">
-                            <el-input-number v-model="apiForm.delay" :min="0" :max="10000" style="width: 120px;" size="small"></el-input-number>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <el-form-item label="响应内容" prop="response">
-                    <el-input
-                        type="textarea"
-                        v-model="apiForm.response"
-                        :rows="6"
-                        :placeholder="getResponsePlaceholder()">
-                    </el-input>
-                    <div class="template-example">
-                        <el-button type="text" size="mini" @click="showTemplateHelp">查看可用变量</el-button>
-                             模板示例：<code>{"name": "${name}"}</code>
+        <!-- 创建/编辑API 对话框 -->
+        <ym-modal :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="640px">
+            <ym-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
+                <div class="ym-grid">
+                    <div class="ym-col-6">
+                        <ym-form-item label="API名称" prop="apiConfigName">
+                            <input class="ym-input" v-model="apiForm.apiConfigName" placeholder="请输入API名称">
+                        </ym-form-item>
                     </div>
-                </el-form-item>
-
-                <el-form-item label="描述">
-                    <el-input v-model="apiForm.comment" placeholder="API描述（可选）" size="small"></el-input>
-                </el-form-item>
-                
-                <el-row :gutter="16">
-                    <el-col :span="12">
-                        <el-form-item label="模板变量">
-                            <el-switch v-model="apiForm.template"></el-switch>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="流式返回">
-                            <el-switch 
-                                v-model="apiForm.streamEnabled"
-                                @change="onStreamEnabledChange">
-                            </el-switch>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-
-                <el-form-item label="启用状态">
-                    <el-switch v-model="apiForm.enabled"></el-switch>
-                </el-form-item>
-            </el-form>
-
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="showCreateDialog = false">取消</el-button>
-                <el-button type="primary" @click="saveApi">确定</el-button>
+                    <div class="ym-col-6">
+                        <ym-form-item label="所属分组" prop="apiGroupId">
+                            <select class="ym-select" v-model="apiForm.apiGroupId" style="width: 100%;">
+                                <option value="">选择分组</option>
+                                <option v-for="group in groups" :key="group.apiGroupId || Math.random()" :value="group.apiGroupId">{{ group.apiGroupName || '' }}</option>
+                            </select>
+                        </ym-form-item>
+                    </div>
+                </div>
+                <div class="ym-grid">
+                    <div class="ym-col-6">
+                        <ym-form-item label="请求方法" prop="apiMethod">
+                            <select class="ym-select" v-model="apiForm.apiMethod" style="width: 100%;">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </ym-form-item>
+                    </div>
+                    <div class="ym-col-6">
+                        <ym-form-item label="API路径" prop="apiUrl">
+                            <input class="ym-input" v-model="apiForm.apiUrl" placeholder="/api/path">
+                        </ym-form-item>
+                    </div>
+                </div>
+                <div class="ym-grid">
+                    <div class="ym-col-6">
+                        <ym-form-item label="状态码" prop="statusCode">
+                            <input type="number" class="ym-input ym-number" v-model="apiForm.statusCode" min="100" max="599">
+                        </ym-form-item>
+                    </div>
+                    <div class="ym-col-6">
+                        <ym-form-item label="延迟(ms)" prop="delay">
+                            <input type="number" class="ym-input ym-number" v-model="apiForm.delay" min="0" max="10000">
+                        </ym-form-item>
+                    </div>
+                </div>
+                <ym-form-item label="响应内容" prop="response">
+                    <textarea class="ym-input ym-textarea" v-model="apiForm.response" :placeholder="getResponsePlaceholder()" rows="6"></textarea>
+                    <div class="ym-form-hint">
+                        <ym-btn type="text" size="sm" @click="showTemplateHelp">查看可用变量</ym-btn>
+                        模板示例：<code>{"name": "${name}"}</code>
+                    </div>
+                </ym-form-item>
+                <ym-form-item label="描述">
+                    <input class="ym-input" v-model="apiForm.comment" placeholder="API描述（可选）">
+                </ym-form-item>
+                <div class="ym-grid">
+                    <div class="ym-col-6">
+                        <ym-form-item label="模板变量">
+                            <label class="ym-switch"><input type="checkbox" v-model="apiForm.template"><span class="ym-switch__slider"></span></label>
+                        </ym-form-item>
+                    </div>
+                    <div class="ym-col-6">
+                        <ym-form-item label="流式返回">
+                            <label class="ym-switch"><input type="checkbox" v-model="apiForm.streamEnabled" @change="onStreamEnabledChange"><span class="ym-switch__slider"></span></label>
+                        </ym-form-item>
+                    </div>
+                </div>
+                <ym-form-item label="启用状态">
+                    <label class="ym-switch"><input type="checkbox" v-model="apiForm.enabled"><span class="ym-switch__slider"></span></label>
+                </ym-form-item>
+            </ym-form>
+            <div slot="footer">
+                <ym-btn @click="showCreateDialog = false">取消</ym-btn>
+                <ym-btn type="primary" @click="saveApi">确定</ym-btn>
             </div>
-        </el-dialog>
+        </ym-modal>
 
         <!-- 模板变量说明对话框 -->
-        <el-dialog title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="60%">
-            <el-table :data="templateConstants" style="width: 100%" v-loading="templateLoading">
-                <el-table-column prop="code" label="变量名"></el-table-column>
-                <el-table-column prop="desc" label="说明"></el-table-column>
-            </el-table>
+        <ym-modal title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="560px">
+            <table class="ym-table">
+                <thead>
+                    <tr><th>变量名</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in templateConstants" :key="item.code">
+                        <td><code>{{ item.code }}</code></td>
+                        <td>{{ item.desc }}</td>
+                    </tr>
+                </tbody>
+            </table>
             <div slot="footer">
-                <el-button @click="showTemplateHelpDialog = false">关闭</el-button>
+                <ym-btn @click="showTemplateHelpDialog = false">关闭</ym-btn>
             </div>
-        </el-dialog>
+        </ym-modal>
 
-        <!-- 创建分组对话框 -->
-        <el-dialog :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="40%" class="api-form-dialog">
-            <el-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
-                <el-form-item label="分组名称" prop="apiGroupName">
-                    <el-input v-model="groupForm.apiGroupName" placeholder="请输入分组名称"></el-input>
-                </el-form-item>
-                <el-form-item label="基础URL" prop="apiBaseUrl">
-                    <el-input v-model="groupForm.apiBaseUrl" placeholder="/api"></el-input>
-                    <!-- Delete Popover Confirmation -->
-                    <div v-if="editingGroup" style="margin-top: 10px; text-align: right;">
-                        <el-popover
-                            placement="top"
-                            width="220"
-                            v-model="deletePopoverVisible">
-                            <p>删除分组后会清空分组下的所有API。 <br/>您确认要继续吗?</p>
-                            <div style="text-align: right; margin: 10px 0 0 0">
-                                <el-button size="mini" type="text" @click="deletePopoverVisible = false">取消</el-button>
-                                <el-button type="primary" size="mini" @click="deleteGroup(editingGroup.apiGroupId)">确定</el-button>
-                            </div>
-                            <a href="#" slot="reference" style="color: #f56c6c; text-decoration: none; font-size: 12px;" @click.prevent>
-                               您真的要删除吗?  <u>删除分组</u>
-                            </a>
-                        </el-popover>
-                    </div>
-                </el-form-item>
-            </el-form>
-
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="showGroupDialog = false">取消</el-button>
-                <el-button type="primary" @click="saveGroup">确定</el-button>
+        <!-- 创建/编辑分组对话框 -->
+        <ym-modal :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="480px">
+            <ym-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
+                <ym-form-item label="分组名称" prop="apiGroupName">
+                    <input class="ym-input" v-model="groupForm.apiGroupName" placeholder="请输入分组名称">
+                </ym-form-item>
+                <ym-form-item label="基础URL" prop="apiBaseUrl">
+                    <input class="ym-input" v-model="groupForm.apiBaseUrl" placeholder="/api">
+                </ym-form-item>
+            </ym-form>
+            <div slot="footer">
+                <ym-btn @click="showGroupDialog = false">取消</ym-btn>
+                <ym-btn v-if="editingGroup" type="danger" @click="deleteGroup(editingGroup.apiGroupId)">删除分组</ym-btn>
+                <ym-btn type="primary" @click="saveGroup">确定</ym-btn>
             </div>
-        </el-dialog>
+        </ym-modal>
 
         <!-- 响应弹框 -->
-        <el-dialog title="API响应结果" :visible.sync="showResponseDialog" width="70%" class="response-dialog">
+        <ym-modal title="API响应结果" :visible.sync="showResponseDialog" width="720px">
             <div v-if="currentResponse">
                 <div class="response-info">
                     <h4>请求信息</h4>
                     <p><strong>请求方法：</strong>{{ currentResponse.method }}</p>
                     <p><strong>请求URL：</strong>{{ currentResponse.url }}
-                      <el-button
-                        size="mini"
-                        type="text"
-                        style="margin-left: 8px;"
-                        @click="copyFullUrl"
-                      >复制路径</el-button>
+                        <ym-btn type="text" size="sm" @click="copyFullUrl">复制路径</ym-btn>
                     </p>
                     <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
                     <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
                     <p><strong>响应类型：</strong>{{ currentResponse.contentType || 'application/json' }}</p>
-                    <p v-if="currentResponse.isStreaming" style="color: #409eff;">
-                        <i class="el-icon-loading"></i> 流式数据接收中...
+                    <p v-if="currentResponse.isStreaming" style="color: var(--accent);">
+                        <span class="ym-spinner" style="display: inline-flex;"><ym-icon name="loader"></ym-icon></span> 流式数据接收中...
                     </p>
-                    <p v-else-if="currentResponse.contentType && (currentResponse.contentType.includes('stream') || currentResponse.contentType === 'text/event-stream')" style="color: #67c23a;">
-                        <i class="el-icon-check"></i> 流式数据接收完成
+                    <p v-else-if="currentResponse.contentType && (currentResponse.contentType.includes('stream') || currentResponse.contentType === 'text/event-stream')" style="color: var(--success);">
+                        <ym-icon name="check"></ym-icon> 流式数据接收完成
                     </p>
                 </div>
-
                 <div class="response-content">
                     <h4>响应内容</h4>
                     <pre v-if="currentResponse.isStreaming || (currentResponse.contentType === 'text/event-stream')">{{ currentResponse.data }}{{ currentResponse.isStreaming ? '\n\n⏳ 数据流式传输中...' : '' }}</pre>
                     <pre v-else><code class="language-json" v-html="formattedResponse"></code></pre>
                 </div>
             </div>
-
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="showResponseDialog = false">关闭</el-button>
-                <el-button type="primary" @click="copyResponse">复制响应</el-button>
+            <div slot="footer">
+                <ym-btn @click="showResponseDialog = false">关闭</ym-btn>
+                <ym-btn type="primary" @click="copyResponse">复制响应</ym-btn>
             </div>
-        </el-dialog>
+        </ym-modal>
     </div>
 
     <script src="lib/vue.js"></script>
-    <script src="lib/element-ui.js"></script>
+    <script src="js/yimo-ui.js"></script>
     <script src="lib/axios.min.js"></script>
     <script src="lib/highlight.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/app.js"></script>
 </body>
-</html> 
+</html>

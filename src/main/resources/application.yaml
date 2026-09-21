@@ -5,6 +5,15 @@ spring:
 
   application:
     name: YiMo
+  # 开启虚拟线程：避免 Thread.sleep(delay) 阻塞 Tomcat 线程池导致长时间运行后越用越慢
+  threads:
+    virtual:
+      enabled: true
+  # 限制 Servlet 异步（SSE 流式）请求的挂起时间，防止连接堆积占用线程
+  mvc:
+    async:
+      request-timeout: 60000
+
   datasource:
     url: jdbc:h2:file:~/.YiMo/data/YiMo
     driver-class-name: org.h2.Driver
