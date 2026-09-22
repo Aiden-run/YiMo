@@ -100,8 +100,8 @@
         .ym-header {
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-default);
-            padding: 0 24px;
-            height: 56px;
+            padding: 0 20px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -114,7 +114,17 @@
             border-radius: var(--radius-md);
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: 700; color: white;
+            border: none; padding: 0; cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+            position: relative;
         }
+        .ym-logo:hover { transform: scale(1.08); box-shadow: 0 2px 8px rgba(47, 129, 247, .35); }
+        .ym-logo .ym-logo__letter { transition: opacity .15s; opacity: 1; }
+        .ym-logo .ym-icon { position: absolute; inset: 0; margin: auto; opacity: 0; transition: opacity .15s; }
+        .ym-logo:hover .ym-logo__letter { opacity: 0; }
+        .ym-logo:hover .ym-icon { opacity: 1; color: white; }
+        .ym-logo.is-moyi { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .ym-logo.is-moyi:hover { box-shadow: 0 2px 8px rgba(139, 92, 246, .4); }
         .ym-header__title { font-size: 16px; font-weight: 600; }
         .ym-header__subtitle { color: var(--text-secondary); font-size: 12px; margin-left: 4px; }
         .ym-header__actions { display: flex; align-items: center; gap: 12px; }
@@ -146,7 +156,7 @@
             display: flex; flex-direction: column;
         }
         .ym-sidebar__header {
-            padding: 16px 16px 12px;
+            padding: 12px 16px 10px;
             display: flex; align-items: center; justify-content: space-between;
         }
         .ym-sidebar__header h2 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
@@ -158,9 +168,8 @@
 
         .ym-group-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 12px; border-radius: var(--radius-md);
+            padding: 8px 10px; border-radius: var(--radius-md);
             cursor: pointer; transition: background .15s;
-            margin-bottom: 2px;
         }
         .ym-group-item:hover { background: var(--bg-surface-2); }
         .ym-group-item.is-active {
@@ -196,27 +205,36 @@
         /* ==================== 主区 ==================== */
         .ym-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .ym-main__toolbar {
-            padding: 16px 24px;
-            display: flex; align-items: center; gap: 12px;
+            padding: 8px 16px;
+            display: flex; align-items: center; gap: 10px;
             border-bottom: 1px solid var(--border-default);
             flex-wrap: wrap;
         }
-        .ym-main__list { flex: 1; overflow-y: auto; padding: 16px 24px; }
+        .ym-main__list { flex: 1; overflow-y: auto; padding: 10px 16px 14px; }
 
         .ym-api-item {
             background: var(--bg-surface);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: 14px 16px;
-            margin-bottom: 10px;
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-md);
+            padding: 9px 14px;
+            margin-bottom: 8px;
             display: flex; align-items: center; justify-content: space-between;
             transition: all .15s;
         }
-        .ym-api-item:hover { border-color: var(--border-focus); box-shadow: var(--shadow-md); }
-        .ym-api-item__main { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        .ym-api-item__url { font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ym-api-item__name { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
-        .ym-api-item__actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .ym-api-item:hover { border-color: var(--border-focus); box-shadow: var(--shadow-sm); }
+        .ym-api-item__main { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .ym-api-item__name {
+            order: 1; font-size: 13px; font-weight: 500; color: var(--text-primary);
+            white-space: nowrap; max-width: 40%;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .ym-api-item__url {
+            order: 2; flex: 1; min-width: 0;
+            font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .ym-api-item__main .ym-tooltip { order: 3; flex-shrink: 0; display: inline-flex; }
+        .ym-api-item__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
         .ym-method {
             padding: 2px 8px; border-radius: var(--radius-sm);
@@ -226,7 +244,10 @@
         .ym-method.m-get { background: var(--method-get); }
         .ym-method.m-post { background: var(--method-post); }
         .ym-method.m-put { background: var(--method-put); }
+        .ym-method.m-patch { background: var(--method-put); }
         .ym-method.m-delete { background: var(--method-delete); }
+        .ym-method.m-head { background: var(--method-get); }
+        .ym-method.m-options { background: var(--info); }
 
         .ym-badge {
             padding: 2px 8px; border-radius: 10px;
@@ -239,7 +260,7 @@
         .ym-empty h4 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
         .ym-empty p { font-size: 12px; }
 
-        .ym-main__pagination { padding: 12px 24px; border-top: 1px solid var(--border-default); display: flex; justify-content: center; }
+        .ym-main__pagination { padding: 8px 16px; border-top: 1px solid var(--border-default); display: flex; justify-content: center; }
 
         /* ==================== 按钮 ==================== */
         .ym-btn {
@@ -527,6 +548,173 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.06); }
         }
+
+        /* ==================== MoYi 调试面板 ==================== */
+        .ym-main--moyi { flex: 1; display: flex; overflow: hidden; min-width: 0; }
+        .ym-request {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 16px 24px 0; min-width: 0;
+            animation: req-fade-in .2s ease;
+        }
+        .ym-sidebar--moyi .ym-sidebar__header h2 { display: inline-flex; align-items: center; gap: 6px; }
+        .ym-sidebar--moyi .ym-sidebar__list { flex: 1; overflow-y: auto; min-height: 0; }
+        .ym-sidebar--moyi .ym-sidebar__empty { padding: 14px 0; text-align: center; font-size: 12px; line-height: 1.8; color: var(--text-tertiary); }
+        .ym-sidebar--moyi .ym-req__fav-item {
+            display: flex; flex-direction: column; gap: 4px;
+            border: 1px solid var(--border-muted); border-radius: var(--radius-md);
+            padding: 6px 10px; cursor: pointer; transition: background .15s;
+        }
+        .ym-sidebar--moyi .ym-req__fav-item:hover { background: var(--bg-surface-2); border-color: var(--border-default); }
+        .ym-req__fav-top { display: flex; align-items: center; gap: 6px; }
+        .ym-req__fav-name {
+            flex: 1; min-width: 0;
+            background: transparent; border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            padding: 2px 6px; font-size: 13px;
+            color: var(--text-primary); outline: none; cursor: text;
+            transition: border-color .15s, background .15s, box-shadow .15s;
+        }
+        .ym-req__fav-item:hover .ym-req__fav-name,
+        .ym-req__fav-name:hover { background: var(--bg-surface-2); }
+        .ym-req__fav-name:focus {
+            background: var(--bg-input);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12);
+        }
+        .ym-req__fav-name::placeholder { color: var(--text-tertiary); }
+        .ym-req__fav-top .ym-btn { opacity: 0; transition: opacity .15s; }
+        .ym-req__fav-item:hover .ym-req__fav-top .ym-btn { opacity: 1; }
+        .ym-req__fav-url {
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            padding-left: 2px;
+        }
+
+        /* 模式切换过渡 */
+        .mode-enter-active, .mode-leave-active { transition: opacity .22s ease, transform .22s ease; }
+        .mode-enter { opacity: 0; transform: translateY(12px) scale(.992); }
+        .mode-leave-to { opacity: 0; transform: translateY(-6px) scale(.992); }
+
+        /* Cookies 面板 */
+        .ym-req__cookies { display: flex; flex-direction: column; gap: 12px; }
+        .ym-req__cookies-hint { font-size: 12px; line-height: 1.8; color: var(--text-secondary); }
+        .ym-req__cookies-hint code { font-family: var(--font-mono); color: var(--accent); }
+        .ym-req__cookies-toggle {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 12px; border: 1px solid var(--border-muted);
+            border-radius: var(--radius-md); background: var(--bg-surface-2);
+            font-size: 13px; cursor: pointer; width: fit-content;
+        }
+        .ym-req__cookies-toggle input { accent-color: var(--accent); cursor: pointer; }
+
+        /* Highlight.js 配色（日/夜主题） */
+        :root {
+            --hl-key: #a86500; --hl-lit: #7a3bb8; --hl-str: #2f7d44;
+            --hl-num: #b0641f; --hl-com: #8a949e; --hl-fn: #2f81f7;
+        }
+        :root[data-theme='dark'] {
+            --hl-key: #e5c07b; --hl-lit: #c678dd; --hl-str: #98c379;
+            --hl-num: #d19a66; --hl-com: #7f8c98; --hl-fn: #61afef;
+        }
+        .hljs-keyword, .hljs-literal, .hljs-selector-tag, .hljs-name { color: var(--hl-lit); }
+        .hljs-attr, .hljs-variable { color: var(--hl-key); }
+        .hljs-string, .hljs-doctag, .hljs-regexp { color: var(--hl-str); }
+        .hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link { color: var(--hl-num); }
+        .hljs-comment, .hljs-quote { color: var(--hl-com); font-style: italic; }
+        .hljs-title, .hljs-function, .hljs-built_in { color: var(--hl-fn); }
+        .hljs-punctuation, .hljs-operator, .hljs-meta { color: var(--text-secondary); }
+        @keyframes req-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        .ym-req__bar { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .ym-req__method {
+            background: var(--bg-input);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 7px 10px; font-size: 12px; font-weight: 700;
+            font-family: var(--font-mono); color: var(--text-primary);
+            outline: none; cursor: pointer; appearance: none;
+        }
+        .ym-req__method option { background: var(--bg-elevated); color: var(--text-primary); }
+        .ym-req__method.m-get { color: var(--method-get); border-color: var(--method-get); }
+        .ym-req__method.m-post { color: var(--method-post); border-color: var(--method-post); }
+        .ym-req__method.m-put { color: var(--method-put); border-color: var(--method-put); }
+        .ym-req__method.m-patch { color: var(--method-put); border-color: var(--method-put); }
+        .ym-req__method.m-delete { color: var(--method-delete); border-color: var(--method-delete); }
+
+        .ym-req__tabs {
+            display: flex; align-items: center; gap: 4px;
+            margin-top: 14px; border-bottom: 1px solid var(--border-default);
+            flex-shrink: 0;
+        }
+        .ym-req__tabs > button {
+            background: transparent; border: none; cursor: pointer;
+            padding: 8px 12px; font-size: 13px; color: var(--text-secondary);
+            border-bottom: 2px solid transparent; margin-bottom: -1px;
+            display: inline-flex; align-items: center; gap: 5px;
+            transition: color .15s;
+        }
+        .ym-req__tabs > button:hover { color: var(--text-primary); }
+        .ym-req__tabs > button.is-active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+        .ym-req__edit { flex: 1; overflow-y: auto; padding: 12px 0; min-height: 0; }
+        .ym-req__kv { display: flex; flex-direction: column; gap: 8px; }
+        .ym-req__kv-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-secondary); font-size: 12px; }
+        .ym-req__kv-empty { color: var(--text-tertiary); font-size: 12px; padding: 18px 0; text-align: center; border: 1px dashed var(--border-default); border-radius: var(--radius-md); }
+        .ym-req__kv-row { display: flex; align-items: center; gap: 8px; }
+        .ym-req__kv-row .ym-input { flex: 1; }
+
+        .ym-req__body { display: flex; flex-direction: column; gap: 10px; }
+        .ym-req__body.is-disabled { opacity: .8; }
+        .ym-req__body-ops { display: flex; align-items: center; gap: 8px; }
+        .ym-req__body textarea { font-family: var(--font-mono); font-size: 12px; }
+        .ym-code-editor {
+            position: relative; min-height: 160px;
+            border: 1px solid var(--border-default); border-radius: var(--radius-lg);
+            background: var(--bg-input); overflow: hidden;
+        }
+        .ym-code-editor:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12); }
+        .ym-code-pre {
+            position: absolute; inset: 0; margin: 0;
+            padding: 8px 12px; overflow: auto; scrollbar-width: none;
+            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+            white-space: pre; color: var(--text-primary); pointer-events: none;
+        }
+        .ym-code-pre::-webkit-scrollbar { display: none; }
+        .ym-code-ta {
+            position: absolute; inset: 0; margin: 0; padding: 8px 12px;
+            overflow: auto; resize: none; border: none; outline: none;
+            background: transparent; color: transparent; caret-color: var(--text-primary);
+            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+            white-space: pre; word-break: normal;
+        }
+        .ym-code-ta::placeholder { color: var(--text-tertiary); }
+
+        .ym-req__response {
+            flex-shrink: 0; height: 42%;
+            display: flex; flex-direction: column;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            margin-bottom: 16px; overflow: hidden;
+            background: var(--bg-surface);
+        }
+        .ym-req__rhead {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 12px; border-bottom: 1px solid var(--border-muted);
+            background: var(--bg-surface-2); flex-shrink: 0;
+        }
+        .ym-req__rstatus { font-size: 12px; font-weight: 700; font-family: var(--font-mono); }
+        .ym-req__rstatus.is-success { color: var(--success); }
+        .ym-req__rstatus.is-error { color: var(--danger); }
+        .ym-req__rstatus.is-info { color: var(--text-secondary); }
+        .ym-req__rmeta { color: var(--text-tertiary); font-size: 11px; font-family: var(--font-mono); }
+        .ym-req__rhead-hint { color: var(--text-tertiary); font-size: 12px; }
+        .ym-req__rbody {
+            flex: 1; overflow: auto; padding: 12px 14px;
+            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+            color: var(--text-primary); white-space: pre-wrap; word-break: break-all;
+            margin: 0;
+        }
+        .ym-req__rbody-empty { color: var(--text-tertiary); }
     </style>
     <script>
         // 主题初始化：默认白天模式，优先读取本地存储，避免页面闪屏
@@ -548,9 +736,13 @@
         <!-- Header -->
         <header class="ym-header">
             <div class="ym-header__brand">
-                <div class="ym-logo">Y</div>
-                <span class="ym-header__title">YiMo</span>
-                <span class="ym-header__subtitle">Mock 服务管理平台</span>
+                <button type="button" class="ym-logo" :class="{ 'is-moyi': requestMode }" @click="toggleRequestMode"
+                        :title="requestMode ? '切换到 YiMo Mock 模式' : '切换到 MoYi 调试模式'">
+                    <span class="ym-logo__letter">{{ requestMode ? 'M' : 'Y' }}</span>
+                    <ym-icon name="swap" size="12"></ym-icon>
+                </button>
+                <span class="ym-header__title">{{ requestMode ? 'MoYi' : 'YiMo' }}</span>
+                <span class="ym-header__subtitle">{{ requestMode ? 'API 调试工具 · 浏览器直连 · 本地保存数据' : 'Mock 服务管理平台' }}</span>
             </div>
             <div class="ym-header__actions">
                 <button class="ym-theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? '切换为白天模式' : '切换为夜晚模式'">
@@ -563,7 +755,8 @@
             </div>
         </header>
 
-        <div class="ym-layout">
+        <transition name="mode" mode="out-in">
+        <div class="ym-layout" v-if="!requestMode">
             <!-- 侧栏：分组管理 -->
             <aside class="ym-sidebar">
                 <div class="ym-sidebar__header">
@@ -677,6 +870,157 @@
             </main>
         </div>
 
+        <!-- MoYi 调试面板：浏览器直连远程接口，数据不入服务器存储 -->
+        <div class="ym-layout" v-else>
+            <aside class="ym-sidebar ym-sidebar--moyi">
+                <!-- 常用请求收藏（占满侧栏） -->
+                <div class="ym-sidebar__header">
+                    <h2><ym-icon name="star" size="14"></ym-icon> 常用请求</h2>
+                    <ym-btn type="text" size="sm" icon="plus" @click="saveCurrentToFavs">收藏当前</ym-btn>
+                </div>
+                <div class="ym-sidebar__list ym-sidebar__list--fav">
+                    <div v-if="requestFavUrls.length === 0" class="ym-sidebar__empty">
+                        点击"收藏当前"保存常用 URL<br>点击记录快速填充到请求栏
+                    </div>
+                    <div v-for="fav in requestFavUrls" :key="fav.id" class="ym-req__fav-item">
+                        <div class="ym-req__fav-top" @click="restoreFavUrl(fav)">
+                            <span class="ym-method" :class="'m-' + (fav.method || 'get').toLowerCase()">{{ fav.method }}</span>
+                            <input class="ym-req__fav-name" v-model="fav.name"
+                                   :placeholder="'未命名 (' + (fav.method || 'GET') + ')'"
+                                   @click.stop @change="saveRequestFavs" spellcheck="false">
+                            <ym-btn type="text" size="sm" icon="x" @click.stop.native="removeFavUrl(fav.id)"></ym-btn>
+                        </div>
+                        <div class="ym-req__fav-url" @click="restoreFavUrl(fav)" :title="fav.url">{{ fav.url }}</div>
+                    </div>
+                </div>
+            </aside>
+            <main class="ym-main ym-main--moyi">
+                <div class="ym-request">
+                <!-- 请求栏 -->
+                <div class="ym-req__bar">
+                    <select class="ym-req__method" v-model="requestMethod" :class="'m-' + requestMethod.toLowerCase()">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="HEAD">HEAD</option>
+                        <option value="OPTIONS">OPTIONS</option>
+                    </select>
+                    <div class="ym-input-wrapper" style="flex: 1;">
+                        <span class="ym-input-icon"><ym-icon name="link"></ym-icon></span>
+                        <input class="ym-input ym-input--with-icon" v-model="requestUrl" @keyup.enter="sendRequest"
+                               placeholder="输入完整的请求 URL，例如 https://api.example.com/users" spellcheck="false">
+                    </div>
+                    <ym-btn type="primary" icon="send" :disabled="requestSending" @click="sendRequest">
+                        {{ requestSending ? '请求中...' : '发送' }}
+                    </ym-btn>
+                </div>
+
+                <!-- 分区标签 -->
+                <div class="ym-req__tabs">
+                    <button type="button" :class="{ 'is-active': activeReqTab === 'params' }" @click="activeReqTab = 'params'">Params</button>
+                    <button type="button" :class="{ 'is-active': activeReqTab === 'headers' }" @click="activeReqTab = 'headers'">Headers</button>
+                    <button type="button" :class="{ 'is-active': activeReqTab === 'body' }" @click="activeReqTab = 'body'">Body</button>
+                    <button type="button" :class="{ 'is-active': activeReqTab === 'cookies' }" @click="activeReqTab = 'cookies'">Cookies</button>
+                    <div style="flex: 1;"></div>
+                    <ym-btn size="sm" icon="copy" @click="copyRequestUrl">复制URL</ym-btn>
+                    <ym-btn size="sm" icon="trash" @click="clearRequestResponse">清空响应</ym-btn>
+                </div>
+
+                <!-- 编辑区 -->
+                <div class="ym-req__edit">
+                    <!-- Params -->
+                    <div v-if="activeReqTab === 'params'" class="ym-req__kv">
+                        <div class="ym-req__kv-head">
+                            <span>参数会追加到 URL 查询串</span>
+                            <ym-btn size="sm" type="primary" icon="plus" @click="addRequestParam">添加参数</ym-btn>
+                        </div>
+                        <div v-if="requestParams.length === 0" class="ym-req__kv-empty">暂无参数，点击"添加参数"创建</div>
+                        <div v-for="(p, i) in requestParams" :key="p.id" class="ym-req__kv-row">
+                            <input class="ym-input" v-model="p.key" placeholder="参数名">
+                            <input class="ym-input" v-model="p.value" placeholder="参数值" @keyup.enter="sendRequest">
+                            <ym-btn type="text" size="sm" icon="trash" @click="removeRequestParam(i)"></ym-btn>
+                        </div>
+                    </div>
+                    <!-- Headers -->
+                    <div v-else-if="activeReqTab === 'headers'" class="ym-req__kv">
+                        <div class="ym-req__kv-head">
+                            <span>自定义请求头（浏览器直连受 CORS 限制）</span>
+                            <ym-btn size="sm" type="primary" icon="plus" @click="addRequestHeader">添加请求头</ym-btn>
+                        </div>
+                        <div v-if="requestHeaders.length === 0" class="ym-req__kv-empty">暂无请求头，点击"添加请求头"创建</div>
+                        <div v-for="(h, i) in requestHeaders" :key="h.id" class="ym-req__kv-row">
+                            <input class="ym-input" v-model="h.key" placeholder="请求头名，如 Authorization">
+                            <input class="ym-input" v-model="h.value" placeholder="请求头值">
+                            <ym-btn type="text" size="sm" icon="trash" @click="removeRequestHeader(i)"></ym-btn>
+                        </div>
+                    </div>
+                    <!-- Body -->
+                    <div v-else-if="activeReqTab === 'body'" class="ym-req__body" :class="{ 'is-disabled' : !requestHasBody }">
+                        <div class="ym-req__kv-head">
+                            <span v-if="requestHasBody">请求体（按请求体类型格式化发送）</span>
+                            <span v-else style="color: var(--warning);">{{ requestMethod }} 请求不支持请求体</span>
+                        </div>
+                        <div v-if="requestHasBody" class="ym-req__body-ops">
+                            <select class="ym-select" v-model="requestBodyType" style="width: 200px;">
+                                <option value="application/json">application/json</option>
+                                <option value="text/plain">text/plain</option>
+                                <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+                            </select>
+                            <ym-btn size="sm" @click="formatRequestBody">格式化 JSON</ym-btn>
+                        </div>
+                        <div v-if="requestHasBody" class="ym-code-editor">
+                            <pre ref="bodyHighlight" class="ym-code-pre" aria-hidden="true"><code v-html="requestBodyHighlightHtml"></code></pre>
+                            <textarea ref="bodyEditor" class="ym-code-ta" v-model="requestBody" wrap="off"
+                                      placeholder='请求体内容，例如：{"name": "张三", "age": 18}'
+                                      spellcheck="false" @scroll="syncBodyScroll"></textarea>
+                        </div>
+                        <textarea v-else class="ym-input ym-textarea" disabled rows="8"
+                                  :placeholder="requestMethod + ' 请求不携带请求体'"></textarea>
+                    </div>
+                    <!-- Cookies -->
+                    <div v-else-if="activeReqTab === 'cookies'" class="ym-req__cookies">
+                        <div class="ym-req__kv-head">
+                            <span>Cookie 由浏览器自动管理</span>
+                        </div>
+                        <div class="ym-req__cookies-hint">
+                            浏览器会自动为<strong>同源</strong>请求附加目标域的 Cookie，无需手动配置。如需跨域携带 Cookie，请勾选下方选项（目标接口必须返回
+                            <code>Access-Control-Allow-Credentials: true</code>，且不能使用通配符域名）。
+                        </div>
+                        <label class="ym-req__cookies-toggle">
+                            <input type="checkbox" v-model="requestWithCredentials">
+                            <span>跨域请求携带 Cookie（credentials: include）</span>
+                        </label>
+                        <div class="ym-req__cookies-hint" style="color: var(--text-tertiary);">
+                            说明：出于浏览器安全策略，页面无法读取远程服务下发的 Set-Cookie，也无法手动伪造 Cookie 请求头；Cookie 一律由浏览器收发管理。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 响应区 -->
+                <div class="ym-req__response">
+                    <div class="ym-req__rhead">
+                        <template v-if="requestResponse">
+                            <span class="ym-req__rstatus" :class="requestResponse.kind">{{ requestResponse.status }} {{ requestResponse.statusText }}</span>
+                            <span class="ym-req__rmeta">用时 {{ requestResponse.responseTime }}ms</span>
+                            <span class="ym-req__rmeta">大小 {{ requestResponse.size }}</span>
+                            <span class="ym-req__rmeta">{{ requestResponse.contentType }}</span>
+                            <div style="flex: 1;"></div>
+                            <ym-btn size="sm" icon="copy" @click="copyRequestResponse">复制响应</ym-btn>
+                        </template>
+                        <span v-else class="ym-req__rhead-hint">发送请求后将在此展示响应内容</span>
+                    </div>
+                    <pre v-if="requestResponse && requestResponse.isLoading" class="ym-req__rbody"><code>⏳ 请求发送中...</code></pre>
+                    <pre v-else-if="requestResponse && requestResponse.isStreaming" class="ym-req__rbody"><code>{{ requestResponse.text }}</code></pre>
+                    <pre v-else-if="requestResponse" class="ym-req__rbody"><code v-html="requestResponseHtml"></code></pre>
+                    <pre v-else class="ym-req__rbody"><code class="ym-req__rbody-empty">// 暂无请求结果</code></pre>
+                </div>
+                </div>
+            </main>
+        </div>
+        </transition>
+
         <!-- 创建/编辑API 对话框 -->
         <ym-modal :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="640px">
             <ym-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
@@ -725,8 +1069,14 @@
                     </div>
                 </div>
                 <ym-form-item label="响应内容" prop="response">
-                    <textarea class="ym-input ym-textarea" v-model="apiForm.response" :placeholder="getResponsePlaceholder()" rows="6"></textarea>
+                    <div class="ym-code-editor">
+                        <pre ref="mockFormHighlight" class="ym-code-pre" aria-hidden="true"><code v-html="mockResponseHighlightHtml"></code></pre>
+                        <textarea ref="mockFormEditor" class="ym-code-ta" v-model="apiForm.response"
+                                  :placeholder="getResponsePlaceholder()" wrap="off"
+                                  spellcheck="false" @scroll="syncMockFormScroll"></textarea>
+                    </div>
                     <div class="ym-form-hint">
+                        <ym-btn type="text" size="sm" @click="formatMockResponse">格式化 JSON</ym-btn>
                         <ym-btn type="text" size="sm" @click="showTemplateHelp">查看可用变量</ym-btn>
                         模板示例：<code>{"name": "${name}"}</code>
                     </div>

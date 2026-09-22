@@ -65,7 +65,7 @@
                 AND AC.API_METHOD = #{method}
             </if>
         </where>
-        ORDER BY AC.CREATE_TIME DESC
+        ORDER BY AC.CREATE_TIME DESC, AC.API_CONFIG_ID DESC
     </select>
 
     <select id="queryConfigById" resultType="top.paidaxin.dao.entity.ApiConfig">
