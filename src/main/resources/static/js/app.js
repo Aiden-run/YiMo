@@ -6,6 +6,8 @@ new Vue({
             isInitialLoad: true, // 控制首次加载动画
             isRefreshing: false, // 控制刷新按钮状态
             initialLoading: true, // 控制骨架屏
+            // 主题模式：默认白天
+            theme: localStorage.getItem('yimo-theme') || 'light',
             // 标签页控制
             activeTab: 'api',
             // API列表数据
@@ -13,7 +15,7 @@ new Vue({
             groups: [], // For dropdowns
             groupList: [], // For paginated list
             groupListCurrentPage: 1,
-            groupListPageSize: 8, // 改为8
+            groupListPageSize: 15,
             groupListTotal: 0,
             groupListLoading: false,
             groupListListenerAttached: false,
@@ -100,7 +102,23 @@ new Vue({
                 apiBaseUrl: [
                     { required: true, message: '请输入基础URL', trigger: 'blur' }
                 ]
-            }
+            },
+            
+            // MoYi 调试模式状态（浏览器直连远程接口，数据仅存本地）
+            requestMode: localStorage.getItem('yimo-mode') === 'moyi',
+            requestMethod: 'GET',
+            requestUrl: '',
+            requestParams: [],
+            requestHeaders: [],
+            requestBody: '',
+            requestBodyType: 'application/json',
+            activeReqTab: 'params',
+            requestSending: false,
+            requestResponse: null,
+            requestFavUrls: [],
+            requestWithCredentials: false,
+            requestRowSeq: 0,
+            requestAbortController: null
         }
     },
     
@@ -148,10 +166,49 @@ new Vue({
                 template.templateDescription.toLowerCase().includes(keyword) ||
                 template.apiUrl.toLowerCase().includes(keyword)
             );
+        },
+        // GET/HEAD/OPTIONS 不支持请求体
+        requestHasBody() {
+            return ['GET', 'HEAD', 'OPTIONS'].indexOf(this.requestMethod) === -1;
+        },
+        // 请求体输入区语法高亮（JSON 按类型着色，其余纯文本）
+        requestBodyHighlightHtml() {
+            const text = this.requestBody || '';
+            const lang = this.requestBodyType === 'application/json' ? 'json' : 'plaintext';
+            return this.safeHighlight(text, lang);
+        },
+        // Mock 表单响应内容输入区语法高亮（JSON 按类型着色，模板变量作为字符串处理）
+        mockResponseHighlightHtml() {
+            const text = this.apiForm.response || '';
+            const lang = this.apiForm.contentType === 'application/json' ? 'json' : 'plaintext';
+            return this.safeHighlight(text, lang);
+        },
+        // 响应内容格式化 + 语法高亮
+        requestResponseHtml() {
+            if (!this.requestResponse || !this.requestResponse.text) {
+                return '';
+            }
+            let text = this.requestResponse.text;
+            // 内容为 JSON 时美化
+            if (/^\s*[{[]/.test(text)) {
+                try {
+                    text = JSON.stringify(JSON.parse(text), null, 2);
+                    return this.safeHighlight(text, 'json');
+                } catch (e) { /* 非合法 JSON，按纯文本处理 */ }
+            }
+            return this.safeHighlight(text, 'plaintext');
         }
     },
     
     mounted() {
+        // 移除启动加载动画
+        const bootLoader = document.getElementById('boot-loader');
+        if (bootLoader) {
+            bootLoader.classList.add('is-hidden');
+            setTimeout(() => {
+                if (bootLoader.parentNode) bootLoader.parentNode.removeChild(bootLoader);
+            }, 350);
+        }
         // 确保highlight.js可用
         if (typeof hljs !== 'undefined') {
             console.log('Highlight.js loaded successfully');
@@ -159,6 +216,7 @@ new Vue({
             console.warn('Highlight.js not available, using fallback formatting');
         }
         this.loadData();
+        this.loadRequestFavs();
     },
 
     updated() {
@@ -352,6 +410,23 @@ new Vue({
             };
             
             this.showCreateDialog = true;
+        },
+
+        // 打开新建API对话框，默认带入选中的分组
+        openCreateDialog() {
+            this.resetApiForm();
+            // 侧边栏选中了分组时，自动带入选中的分组
+            if (this.selectedGroup) {
+                this.apiForm.apiGroupId = this.selectedGroup;
+            }
+            this.showCreateDialog = true;
+        },
+
+        // 切换白天/夜晚主题
+        toggleTheme() {
+            this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('yimo-theme', this.theme);
+            document.documentElement.setAttribute('data-theme', this.theme);
         },
         
         // 保存API
@@ -727,6 +802,16 @@ new Vue({
                     isStreaming: true
                 };
                 this.showResponseDialog = true;
+
+                // 关闭上一次未关闭的流式请求，避免连接堆积拖慢服务
+                if (this.currentStreamRequest) {
+                    if (this.currentStreamRequest.abort) {
+                        this.currentStreamRequest.abort(); // AbortController
+                    } else if (this.currentStreamRequest.close) {
+                        this.currentStreamRequest.close(); // EventSource
+                    }
+                    this.currentStreamRequest = null;
+                }
                 
                 const startTime = Date.now();
                 let responseData = '';
@@ -1083,6 +1168,301 @@ new Vue({
             }).catch(() => {
                 // 取消删除
             });
+        },
+        
+        // ==================== MoYi 调试模式（纯前端请求） ====================
+        
+        // 切换 Mock(YiMo) / 调试(MoYi) 模式
+        toggleRequestMode() {
+            this.requestMode = !this.requestMode;
+            // 持久化当前模式，刷新后保持
+            try {
+                if (this.requestMode) {
+                    localStorage.setItem('yimo-mode', 'moyi');
+                } else {
+                    localStorage.removeItem('yimo-mode');
+                }
+            } catch (error) { /* 忽略 */ }
+            // 切换时中止进行中的请求，避免连接残留
+            if (!this.requestMode && this.requestAbortController) {
+                this.requestAbortController.abort();
+                this.requestAbortController = null;
+            }
+        },
+        
+        // ---- Params / Headers 行编辑 ----
+        addRequestParam() {
+            this.requestParams.push({ id: ++this.requestRowSeq, key: '', value: '' });
+        },
+        removeRequestParam(index) {
+            this.requestParams.splice(index, 1);
+        },
+        addRequestHeader() {
+            this.requestHeaders.push({ id: ++this.requestRowSeq, key: '', value: '' });
+        },
+        removeRequestHeader(index) {
+            this.requestHeaders.splice(index, 1);
+        },
+        
+        // 整理请求 URL：将 Params 追加为查询串
+        buildRequestUrl() {
+            let url = (this.requestUrl || '').trim();
+            if (!url) return '';
+            const pair = this.requestParams.filter(p => p.key);
+            if (pair.length === 0) return url;
+            const qs = pair.map(p => encodeURIComponent(p.key) + '=' + encodeURIComponent(p.value || '')).join('&');
+            return url + (url.indexOf('?') >= 0 ? '&' : '?') + qs;
+        },
+        
+        // 整理请求头：非空行 + 自动补充请求体 Content-Type
+        buildRequestHeaders() {
+            const headers = {};
+            this.requestHeaders.forEach(h => {
+                const key = (h.key || '').trim();
+                if (key) headers[key] = h.value || '';
+            });
+            if (this.requestHasBody && !headers['Content-Type'] && !headers['content-type'] && this.requestBodyType) {
+                headers['Content-Type'] = this.requestBodyType;
+            }
+            return headers;
+        },
+        
+        // 格式化请求体为 JSON
+        formatRequestBody() {
+            if (!this.requestBody.trim()) {
+                this.$message.warning('请求体为空');
+                return;
+            }
+            try {
+                this.requestBody = JSON.stringify(JSON.parse(this.requestBody), null, 2);
+            } catch (error) {
+                this.$message.error('请求体不是合法的 JSON：' + error.message);
+            }
+        },
+        // 格式化 Mock 响应内容为缩进 JSON
+        formatMockResponse() {
+            if (!this.apiForm.response.trim()) {
+                this.$message.warning('响应内容为空');
+                return;
+            }
+            try {
+                this.apiForm.response = JSON.stringify(JSON.parse(this.apiForm.response), null, 2);
+                this.$message.success('已格式化响应内容');
+            } catch (error) {
+                this.$message.error('响应内容不是合法的 JSON：' + error.message);
+            }
+        },
+        // Mock 表单高亮层与输入框滚动同步
+        syncMockFormScroll() {
+            const ta = this.$refs.mockFormEditor;
+            const pre = this.$refs.mockFormHighlight;
+            if (ta && pre) {
+                pre.scrollTop = ta.scrollTop;
+                pre.scrollLeft = ta.scrollLeft;
+            }
+        },
+        
+        // 发送请求（fetch 浏览器直连，30s 超时）
+        async sendRequest() {
+            if (this.requestSending) return;
+            const url = this.buildRequestUrl();
+            if (!url) {
+                this.$message.error('请输入请求 URL');
+                return;
+            }
+            
+            // 关闭上一次未完成的请求
+            if (this.requestAbortController) {
+                this.requestAbortController.abort();
+            }
+            const controller = new AbortController();
+            this.requestAbortController = controller;
+            
+            const method = this.requestMethod.trim().toUpperCase();
+            const startTime = Date.now();
+            this.requestSending = true;
+            this.requestResponse = {
+                status: 0, statusText: '', responseTime: 0, size: 0,
+                text: '', kind: 'is-info', contentType: 'text/plain',
+                isLoading: true, isStreaming: false
+            };
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: this.buildRequestHeaders(),
+                    signal: controller.signal
+                };
+                if (this.requestWithCredentials) {
+                    options.credentials = 'include';
+                }
+                if (this.requestHasBody) {
+                    options.body = this.requestBody;
+                }
+                
+                const timer = setTimeout(() => controller.abort(), 30000);
+                const resp = await fetch(url, options);
+                clearTimeout(timer);
+                
+                const contentType = (resp.headers.get('content-type') || '').split(';')[0] || 'text/plain';
+                const fullText = await resp.text();
+                const responseTime = Date.now() - startTime;
+                const isStreaming = contentType === 'text/event-stream';
+                // 超长响应截断展示，避免整页 HTML 等大内容被一次性铺满
+                const MAX_SHOW = 200000;
+                const text = fullText.length > MAX_SHOW
+                    ? fullText.slice(0, MAX_SHOW) + '\n\n... 响应过长（' + fullText.length + ' 字符），已截断展示'
+                    : fullText;
+                
+                this.requestResponse = {
+                    status: resp.status,
+                    statusText: resp.statusText || (resp.ok ? 'OK' : 'Error'),
+                    responseTime: responseTime,
+                    size: new Blob([fullText]).size > 1024
+                        ? (new Blob([fullText]).size / 1024).toFixed(2) + ' KB'
+                        : new Blob([fullText]).size + ' B',
+                    text: text,
+                    kind: resp.ok ? 'is-success' : 'is-error',
+                    contentType: contentType,
+                    isLoading: false,
+                    isStreaming: isStreaming
+                };
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                let message = '';
+                if (error && error.name === 'AbortError') {
+                    message = '请求超时（30s）或已取消';
+                } else if (error instanceof TypeError) {
+                    message = '网络错误：无法访问目标地址。若目标接口未开启 CORS，浏览器直连会被拦截，请确认目标服务允许跨域请求。';
+                } else {
+                    message = '请求失败：' + (error && error.message ? error.message : error);
+                }
+                this.requestResponse = {
+                    status: 0, statusText: 'Error', responseTime: responseTime,
+                    size: 0, text: message, kind: 'is-error',
+                    contentType: 'text/plain', isLoading: false, isStreaming: false
+                };
+            } finally {
+                this.requestSending = false;
+                this.requestAbortController = null;
+            }
+        },
+
+        // 请求体高亮层与输入框滚动同步
+        syncBodyScroll() {
+            const ta = this.$refs.bodyEditor;
+            const pre = this.$refs.bodyHighlight;
+            if (ta && pre) {
+                pre.scrollTop = ta.scrollTop;
+                pre.scrollLeft = ta.scrollLeft;
+            }
+        },
+
+        // ---- 复制 / 清空 ----
+        copyRequestUrl() {
+            const url = this.buildRequestUrl();
+            if (!url) {
+                this.$message.error('URL 为空');
+                return;
+            }
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => {
+                    this.$message.success('URL 已复制');
+                }).catch(() => {
+                    this.$message.error('复制失败');
+                });
+            } else {
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                this.$message.success('URL 已复制');
+            }
+        },
+        copyRequestResponse() {
+            if (!this.requestResponse || !this.requestResponse.text) {
+                this.$message.error('没有响应内容可复制');
+                return;
+            }
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(this.requestResponse.text).then(() => {
+                    this.$message.success('响应内容已复制');
+                }).catch(() => {
+                    this.$message.error('复制失败');
+                });
+            } else {
+                const input = document.createElement('input');
+                input.value = this.requestResponse.text;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                this.$message.success('响应内容已复制');
+            }
+        },
+        clearRequestResponse() {
+            this.requestResponse = null;
+        },
+        
+        // ---- 常用请求收藏（localStorage） ----
+        loadRequestFavs() {
+            try {
+                const raw = localStorage.getItem('yimo-fav-urls');
+                this.requestFavUrls = raw ? JSON.parse(raw) : [];
+            } catch (error) {
+                console.warn('读取常用请求失败:', error);
+                this.requestFavUrls = [];
+            }
+        },
+        saveRequestFavs() {
+            try {
+                localStorage.setItem('yimo-fav-urls', JSON.stringify(this.requestFavUrls));
+            } catch (error) {
+                console.warn('保存常用请求失败:', error);
+            }
+        },
+        // 依据 URL 生成默认名称（路径最后一段或域名）
+        getFavDefaultName(url) {
+            try {
+                const u = new URL(url);
+                const segs = u.pathname.split('/').filter(Boolean);
+                return segs[segs.length - 1] || u.hostname;
+            } catch (error) {
+                return url;
+            }
+        },
+        saveCurrentToFavs() {
+            const url = this.requestUrl.trim();
+            if (!url) {
+                this.$message.error('URL 为空，无法收藏');
+                return;
+            }
+            const method = this.requestMethod.trim().toUpperCase() || 'GET';
+            if (this.requestFavUrls.some(f => f.method === method && f.url === url)) {
+                this.$message.warning('该请求已在常用列表中');
+                return;
+            }
+            this.requestFavUrls.unshift({
+                id: Date.now() + Math.random(),
+                name: this.getFavDefaultName(url),
+                method: method,
+                url: url
+            });
+            this.requestFavUrls = this.requestFavUrls.slice(0, 20);
+            this.saveRequestFavs();
+            this.$message.success('已收藏常用请求');
+        },
+        removeFavUrl(id) {
+            this.requestFavUrls = this.requestFavUrls.filter(f => f.id !== id);
+            this.saveRequestFavs();
+        },
+        restoreFavUrl(fav) {
+            if (!fav) return;
+            this.requestMethod = fav.method || 'GET';
+            this.requestUrl = fav.url || '';
+            this.$message.success('已还原常用请求');
         }
     },
     

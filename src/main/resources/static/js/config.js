@@ -117,27 +117,6 @@ class YiMoConfig {
     }
 
     /**
-     * 获取完整的基础URL
-     */
-    getBaseUrl() {
-        return this.config.baseUrl;
-    }
-
-    /**
-     * 获取API基础URL
-     */
-    getApiBaseUrl() {
-        return this.config.apiBaseUrl;
-    }
-
-    /**
-     * 获取管理接口基础URL
-     */
-    getAdminBaseUrl() {
-        return this.config.adminBaseUrl;
-    }
-
-    /**
      * 获取服务器端口
      */
     getServerPort() {
