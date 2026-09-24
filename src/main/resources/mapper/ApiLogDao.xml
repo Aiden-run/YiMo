@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.paidaxin.dao.ApiLogDao">
+
+    <insert id="saveApiLogs">
+        INSERT INTO api_logs (IP, GROUP_NAME, API_URL, API_METHOD, API_NAME, STATUS_CODE, RESPONSE_TIME,
+        CALL_TIME, DURATION, QUERY_STRING, REQUEST_BODY, REQUEST_TYPE, RESPONSE_SIZE, UA, REFERER, ERROR_MSG)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ip}, #{item.groupName}, #{item.apiUrl}, #{item.apiMethod}, #{item.apiName}, #{item.statusCode},
+            #{item.responseTime},
+            #{item.requestTime}, #{item.duration}, #{item.queryString}, #{item.requestBody}, #{item.requestType},
+            #{item.responseSize}, #{item.ua}, #{item.referer}, #{item.errorMsg})
+        </foreach>
+    </insert>
+
+    <select id="selectApiLogs" resultType="top.paidaxin.common.vo.response.ApiLog">
+        SELECT IP            AS ip,
+               GROUP_NAME    AS groupName,
+               API_URL       AS apiUrl,
+               API_METHOD    AS apiMethod,
+               API_NAME      AS apiName,
+               STATUS_CODE   AS statusCode,
+               RESPONSE_TIME AS responseTime,
+               CALL_TIME     AS requestTime,
+               DURATION      AS duration,
+               QUERY_STRING  AS queryString,
+               REQUEST_BODY  AS requestBody,
+               REQUEST_TYPE  AS requestType,
+               RESPONSE_SIZE AS responseSize,
+               UA            AS ua,
+               REFERER       AS referer,
+               ERROR_MSG     AS errorMsg
+        FROM api_logs
+        ORDER BY ID DESC
+    </select>
+
+    <!-- 轻量投影：仅取统计需要的分组字段，不拉取请求体/UA 等大字段 -->
+    <select id="selectApiLogStats" resultType="top.paidaxin.common.vo.response.ApiLog">
+        SELECT GROUP_NAME AS groupName,
+               API_METHOD AS apiMethod,
+               API_URL    AS apiUrl,
+               API_NAME   AS apiName
+        FROM api_logs
+    </select>
+
+    <delete id="deleteExpiredApiLogs">
+        DELETE
+        FROM api_logs
+        WHERE RESPONSE_TIME &lt; #{expireDate}
+    </delete>
+
+</mapper>

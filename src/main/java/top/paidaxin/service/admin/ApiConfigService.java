@@ -29,10 +29,15 @@ public class ApiConfigService implements IApiConfigService {
     }
 
     @Override
+    public List<String> listApiMethods() {
+        return apiConfigDao.queryDistinctMethods();
+    }
+
+    @Override
     public ApiConfig createConfig(ApiConfig apiConfig) {
         //1.判断url是否唯一
         ApiConfig config = apiConfigDao.queryConfigByApiUrl(apiConfig.getApiGroupId(), apiConfig.getApiUrl());
-        if (!ObjectUtils.isEmpty(config)){
+        if (!ObjectUtils.isEmpty(config)) {
             throw new ParamException(config.getApiConfigName() + "已使用相同的URL,请重试");
         }
 

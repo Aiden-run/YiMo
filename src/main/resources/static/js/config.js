@@ -22,9 +22,7 @@ class YiMoConfig {
             apiBaseUrl: this.getApiBaseUrl(),
             adminBaseUrl: this.getAdminBaseUrl()
         };
-        
-        console.log('YiMo配置初始化:', this.config);
-        
+
         // 延迟设置axios配置，确保axios已加载
         setTimeout(() => {
             this.setupAxios();
@@ -61,8 +59,6 @@ class YiMoConfig {
      */
     setupAxios() {
         if (typeof axios !== 'undefined') {
-            console.log('设置axios配置...');
-            
             // 设置基础URL为空，使用相对路径
             axios.defaults.baseURL = '';
             axios.defaults.timeout = 10000;
@@ -77,7 +73,6 @@ class YiMoConfig {
                             config.url = '/' + config.url;
                         }
                     }
-                    console.log('发送请求:', config.method?.toUpperCase(), config.url);
                     return config;
                 },
                 error => {
@@ -88,27 +83,13 @@ class YiMoConfig {
             // 响应拦截器
             axios.interceptors.response.use(
                 response => {
-                    console.log('收到响应:', response.status, response.config.url);
                     return response;
                 },
                 error => {
-                    if (error.response) {
-                        // 服务器返回错误状态码
-                        console.error('API错误:', error.response.status, error.response.data);
-                    } else if (error.request) {
-                        // 请求发送失败
-                        console.error('网络错误:', error.request);
-                    } else {
-                        // 其他错误
-                        console.error('请求错误:', error.message);
-                    }
                     return Promise.reject(error);
                 }
             );
-            
-            console.log('axios配置完成');
         } else {
-            console.warn('axios未加载，延迟设置配置');
             // 如果axios还没加载，延迟重试
             setTimeout(() => {
                 this.setupAxios();

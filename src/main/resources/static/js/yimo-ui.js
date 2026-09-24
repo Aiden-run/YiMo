@@ -34,9 +34,11 @@
 
     // ==================== ym-icon 组件 ====================
     Vue.component('ym-icon', {
-        props: { name: String, size: { type: String, default: '16' } },
+        props: {name: String, size: {type: String, default: '16'}},
         computed: {
-            svg: function () { return Icons[this.name] || ''; }
+            svg: function () {
+                return Icons[this.name] || '';
+            }
         },
         template: '<span class="ym-icon" :style="{width: size+\'px\', height: size+\'px\'}" v-html="svg"></span>'
     });
@@ -44,8 +46,8 @@
     // ==================== ym-btn 组件 ====================
     Vue.component('ym-btn', {
         props: {
-            type: { type: String, default: 'default' },
-            size: { type: String, default: '' },
+            type: {type: String, default: 'default'},
+            size: {type: String, default: ''},
             icon: String,
             disabled: Boolean
         },
@@ -62,9 +64,13 @@
 
     // ==================== ym-form + ym-form-item ====================
     Vue.component('ym-form', {
-        props: { model: Object, rules: Object, labelWidth: { type: String, default: '80px' } },
-        data: function () { return { errors: {} }; },
-        provide: function () { return { ymForm: this }; },
+        props: {model: Object, rules: Object, labelWidth: {type: String, default: '80px'}},
+        data: function () {
+            return {errors: {}};
+        },
+        provide: function () {
+            return {ymForm: this};
+        },
         methods: {
             validate: function (cb) {
                 var self = this;
@@ -89,16 +95,20 @@
                     valid ? resolve(true) : reject(errors);
                 });
             },
-            resetFields: function () { this.errors = {}; }
+            resetFields: function () {
+                this.errors = {};
+            }
         },
         template: '<form class="ym-form" @submit.prevent><slot></slot></form>'
     });
 
     Vue.component('ym-form-item', {
-        props: { label: String, prop: String },
+        props: {label: String, prop: String},
         inject: ['ymForm'],
         computed: {
-            error: function () { return this.prop && this.ymForm ? this.ymForm.errors[this.prop] : ''; }
+            error: function () {
+                return this.prop && this.ymForm ? this.ymForm.errors[this.prop] : '';
+            }
         },
         template: '<div class="ym-form-item" :class="{\'has-error\': error}"><label class="ym-form-item__label" v-if="label">{{ label }}</label><div class="ym-form-item__content"><slot></slot><div class="ym-form-item__error" v-if="error">{{ error }}</div></div></div>'
     });
@@ -108,7 +118,7 @@
         props: {
             title: String,
             visible: Boolean,
-            width: { type: String, default: '600px' }
+            width: {type: String, default: '600px'}
         },
         watch: {
             visible: function (val) {
@@ -139,7 +149,9 @@
             total: Number
         },
         computed: {
-            totalPages: function () { return Math.ceil(this.total / this.pageSize) || 1; },
+            totalPages: function () {
+                return Math.ceil(this.total / this.pageSize) || 1;
+            },
             pages: function () {
                 var tp = this.totalPages;
                 var cp = this.currentPage;
@@ -182,13 +194,15 @@
             this._init();
             type = type || 'info';
             duration = duration || 3000;
-            var icons = { success: 'check', error: 'x', warning: 'x', info: 'x' };
+            var icons = {success: 'check', error: 'x', warning: 'x', info: 'x'};
             var el = document.createElement('div');
             el.className = 'ym-toast ym-toast--' + type;
             el.innerHTML = '<ym-icon-span>' + (Icons[icons[type]] || Icons.x) + '</ym-icon-span><span class="ym-toast__msg">' + message + '</span>';
             this.container.appendChild(el);
             // 触发入场动画
-            setTimeout(function () { el.classList.add('ym-toast--show'); }, 10);
+            setTimeout(function () {
+                el.classList.add('ym-toast--show');
+            }, 10);
             // 自动消失
             var self = this;
             setTimeout(function () {
@@ -206,8 +220,8 @@
         show: function (opts) {
             var overlay = document.createElement('div');
             overlay.className = 'ym-confirm-overlay';
-            var typeIcon = { warning: '!', error: 'x', info: 'i', success: 'check' };
-            var typeColor = { warning: '#d29922', error: '#f85149', info: '#2f81f7', success: '#3fb950' };
+            var typeIcon = {warning: '!', error: 'x', info: 'i', success: 'check'};
+            var typeColor = {warning: '#d29922', error: '#f85149', info: '#2f81f7', success: '#3fb950'};
             var t = opts.type || 'info';
             overlay.innerHTML =
                 '<div class="ym-confirm">' +
@@ -224,7 +238,9 @@
                 '</div></div>';
             document.body.appendChild(overlay);
             document.body.style.overflow = 'hidden';
-            setTimeout(function () { overlay.classList.add('ym-confirm--show'); }, 10);
+            setTimeout(function () {
+                overlay.classList.add('ym-confirm--show');
+            }, 10);
 
             function close() {
                 overlay.classList.remove('ym-confirm--show');
@@ -233,12 +249,32 @@
                     if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
                 }, 200);
             }
-            function onEsc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onEsc); if (opts.onCancel) opts.onCancel(); } }
+
+            function onEsc(e) {
+                if (e.key === 'Escape') {
+                    close();
+                    document.removeEventListener('keydown', onEsc);
+                    if (opts.onCancel) opts.onCancel();
+                }
+            }
+
             document.addEventListener('keydown', onEsc);
-            overlay.querySelector('.ym-confirm__cancel').addEventListener('click', function () { close(); document.removeEventListener('keydown', onEsc); if (opts.onCancel) opts.onCancel(); });
-            overlay.querySelector('.ym-confirm__ok').addEventListener('click', function () { close(); document.removeEventListener('keydown', onEsc); if (opts.onConfirm) opts.onConfirm(); });
+            overlay.querySelector('.ym-confirm__cancel').addEventListener('click', function () {
+                close();
+                document.removeEventListener('keydown', onEsc);
+                if (opts.onCancel) opts.onCancel();
+            });
+            overlay.querySelector('.ym-confirm__ok').addEventListener('click', function () {
+                close();
+                document.removeEventListener('keydown', onEsc);
+                if (opts.onConfirm) opts.onConfirm();
+            });
             overlay.querySelector('.ym-confirm__overlay') || overlay.addEventListener('click', function (e) {
-                if (e.target === overlay) { close(); document.removeEventListener('keydown', onEsc); if (opts.onCancel) opts.onCancel(); }
+                if (e.target === overlay) {
+                    close();
+                    document.removeEventListener('keydown', onEsc);
+                    if (opts.onCancel) opts.onCancel();
+                }
             });
         }
     };
@@ -250,11 +286,16 @@
         return YiMoToast.show(opts.message, opts.type || 'info');
     };
     ['success', 'error', 'warning', 'info'].forEach(function (t) {
-        Vue.prototype.$message[t] = function (msg) { YiMoToast.show(msg, t); };
+        Vue.prototype.$message[t] = function (msg) {
+            YiMoToast.show(msg, t);
+        };
     });
 
     Vue.prototype.$confirm = function (message, title, options) {
-        if (typeof title === 'object' && !options) { options = title; title = '提示'; }
+        if (typeof title === 'object' && !options) {
+            options = title;
+            title = '提示';
+        }
         title = title || '提示';
         options = options || {};
         return new Promise(function (resolve, reject) {
@@ -264,8 +305,12 @@
                 type: options.type || 'warning',
                 confirmText: options.confirmButtonText || '确定',
                 cancelText: options.cancelButtonText || '取消',
-                onConfirm: function () { resolve('confirm'); },
-                onCancel: function () { reject('cancel'); }
+                onConfirm: function () {
+                    resolve('confirm');
+                },
+                onCancel: function () {
+                    reject('cancel');
+                }
             });
         });
     };

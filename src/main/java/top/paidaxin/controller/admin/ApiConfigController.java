@@ -38,6 +38,12 @@ public class ApiConfigController {
         return HttpResult.success(apiConfigService.queryConfigList(pageNum, pageSize, groupId, apiName, method, status));
     }
 
+    @Operation(summary = "已配置的全部请求方法（去重，供筛选下拉动态生成）")
+    @GetMapping("/methods")
+    public HttpResult<List<String>> listApiMethods() {
+        return HttpResult.success(apiConfigService.listApiMethods());
+    }
+
     @Operation(summary = "创建API配置")
     @PostMapping
     public HttpResult<ApiConfig> createConfig(@RequestBody ApiConfig apiConfig) {

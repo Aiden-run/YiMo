@@ -5,5 +5,5 @@ package top.paidaxin.common.vo.constant;
  * @date 2025-08-01:15:30
  */
 public enum YiMoTableNames {
-    API_CONFIG,API_GROUP
+    API_CONFIG, API_GROUP
 }
