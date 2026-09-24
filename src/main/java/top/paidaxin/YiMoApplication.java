@@ -3,11 +3,13 @@ package top.paidaxin;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.sql.SQLException;
 
 @SpringBootApplication
 @MapperScan("top.paidaxin.dao")
+@EnableScheduling
 public class YiMoApplication {
     public static void main(String[] args) throws SQLException {
         SpringApplication.run(YiMoApplication.class, args);

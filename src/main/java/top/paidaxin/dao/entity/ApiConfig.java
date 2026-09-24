@@ -19,6 +19,10 @@ public class ApiConfig extends ApiGroup implements Serializable {
      * api分组ID
      */
     private String apiGroupId;
+    /**
+     * api分组名称（联表查询时附带）
+     */
+    private String apiGroupName;
 
     /**
      * api配置名称

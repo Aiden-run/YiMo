@@ -13,6 +13,16 @@ public interface ApiConfigDao {
                                     @Param("method") String method,
                                     @Param("status") Boolean status);
 
+    /**
+     * API 总数（数据看板用）
+     */
+    long countConfigs();
+
+    /**
+     * 已配置的全部请求方法（去重，供前端方法筛选下拉动态生成）
+     */
+    List<String> queryDistinctMethods();
+
     void insertConfig(ApiConfig apiConfig);
 
     void updateConfig(ApiConfig apiConfig);
@@ -23,5 +33,5 @@ public interface ApiConfigDao {
 
     ApiConfig queryConfigById(@Param("configId") String configId);
 
-    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId,@Param("apiUrl") String apiUrl);
+    ApiConfig queryConfigByApiUrl(@Param("groupId") String groupId, @Param("apiUrl") String apiUrl);
 }

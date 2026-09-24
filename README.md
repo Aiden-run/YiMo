@@ -22,12 +22,12 @@ YiMo 是一个**本地运行的 Mock 服务**。
 
 ### 🎯 典型使用场景
 
-| 场景 | 说明 |
-| :---: | :--- |
+|       场景        | 说明                               |
+|:---------------:|:---------------------------------|
 | 🏗️ **前后端并行开发** | 后端还在写接口，前端先配好 Mock 数据即可开工，不再互相阻塞 |
-| 🔧 **接口联调调试** | 后端接口不稳或依赖第三方时，用 Mock 临时替代，保证联调进度 |
-| 🧪 **自动化测试** | 为测试用例提供稳定的 Mock 响应，不受真实环境波动影响 |
-| 🎨 **演示与原型** | 产品演示或原型验证时，无需真实后端即可展示完整交互效果 |
+|  🔧 **接口联调调试**  | 后端接口不稳或依赖第三方时，用 Mock 临时替代，保证联调进度 |
+|  🧪 **自动化测试**   | 为测试用例提供稳定的 Mock 响应，不受真实环境波动影响    |
+|  🎨 **演示与原型**   | 产品演示或原型验证时，无需真实后端即可展示完整交互效果      |
 
 ### ⚡ 工作方式
 
@@ -60,28 +60,28 @@ YiMo 是一个**本地运行的 Mock 服务**。
 
 ## ✨ 主要特性
 
-| 特性 | 说明 |
-| :---: | :--- |
+|        特性         | 说明                                  |
+|:-----------------:|:------------------------------------|
 | 🚀 **动态 Mock 响应** | 支持 JSON、SSE 流式响应，可配置状态码、响应延迟、自定义响应头 |
-| 🗂️ **API 分组管理** | 按业务模块分组，支持分组级 Base URL 配置 |
-| 📨 **模板引擎** | 内置日期、UUID、雪花 ID 等模板函数，响应内容动态生成 |
-| 🖥️ **Web 管理界面** | Vue2 + Element UI，所有依赖本地化，无需外网即可使用 |
-| 🛡️ **零依赖部署** | 内嵌 H2 文件数据库，clone 即用 |
-| 📚 **接口文档** | 集成 Knife4j (OpenAPI3)，启动后自动可用 |
+| 🗂️ **API 分组管理**  | 按业务模块分组，支持分组级 Base URL 配置           |
+|    📨 **模板引擎**    | 内置日期、UUID、雪花 ID 等模板函数，响应内容动态生成      |
+| 🖥️ **Web 管理界面**  | Vue2 + Element UI，所有依赖本地化，无需外网即可使用  |
+|   🛡️ **零依赖部署**   | 内嵌 H2 文件数据库，clone 即用                |
+|    📚 **接口文档**    | 集成 Knife4j (OpenAPI3)，启动后自动可用       |
 
 ---
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 | 版本 |
-| :--- | :--- | :---: |
-| 后端框架 | Spring Boot | 3.4.4 |
-| 持久层 | MyBatis + PageHelper | 3.0.3 / 2.1.0 |
-| 数据库 | H2（文件模式） | 2.3.232 |
-| 接口文档 | Knife4j（OpenAPI3） | 4.4.0 |
-| 前端 | Vue2 + Element UI | — |
-| 工具库 | Hutool / Lombok | 5.8.39 / — |
-| JDK | OpenJDK | 21+ |
+| 层级   | 技术                   |      版本       |
+|:-----|:---------------------|:-------------:|
+| 后端框架 | Spring Boot          |     3.4.4     |
+| 持久层  | MyBatis + PageHelper | 3.0.3 / 2.1.0 |
+| 数据库  | H2（文件模式）             |    2.3.232    |
+| 接口文档 | Knife4j（OpenAPI3）    |     4.4.0     |
+| 前端   | Vue2 + Element UI    |       —       |
+| 工具库  | Hutool / Lombok      |  5.8.39 / —   |
+| JDK  | OpenJDK              |      21+      |
 
 ---
 
@@ -97,12 +97,13 @@ mvn spring-boot:run
 
 启动后访问：
 
-| 入口 | 地址 |
-| :---: | :--- |
+|    入口    | 地址                               |
+|:--------:|:---------------------------------|
 | 🖥️ 管理界面 | http://localhost:9091/index.html |
-| 📚 接口文档 | http://localhost:9091/doc.html |
+| 📚 接口文档  | http://localhost:9091/doc.html   |
 
-> 💡 Mock 请求统一以 `/api/` 为前缀，例如配置了 URL 为 `/user/login` 的接口，请求 `http://localhost:9091/api/user/login` 即可获取 Mock 响应。
+> 💡 Mock 请求统一以 `/api/` 为前缀，例如配置了 URL 为 `/user/login` 的接口，请求 `http://localhost:9091/api/user/login`
+> 即可获取 Mock 响应。
 
 ---
 
@@ -162,19 +163,19 @@ ApiController.filterHttpRequest()
 
 ### API 配置字段
 
-| 字段 | 说明 | 默认值 |
-| :--- | :--- | :---: |
-| `apiUrl` | Mock 接口路径 | — |
-| `apiMethod` | HTTP 方法 | `GET` |
-| `response` | Mock 响应内容 | — |
-| `contentType` | 响应类型 | `application/json` |
-| `statusCode` | HTTP 状态码 | `200` |
-| `delay` | 响应延迟（毫秒） | `0` |
-| `enabled` | 是否启用 | `true` |
-| `isTemplate` | 是否启用模板渲染 | `0` |
-| `responseHeaders` | 自定义响应头（JSON） | — |
-| `requestMatch` | 请求参数匹配条件（JSON） | — |
-| `headerMatch` | 请求头匹配条件（JSON） | — |
+| 字段                | 说明             |        默认值         |
+|:------------------|:---------------|:------------------:|
+| `apiUrl`          | Mock 接口路径      |         —          |
+| `apiMethod`       | HTTP 方法        |       `GET`        |
+| `response`        | Mock 响应内容      |         —          |
+| `contentType`     | 响应类型           | `application/json` |
+| `statusCode`      | HTTP 状态码       |       `200`        |
+| `delay`           | 响应延迟（毫秒）       |        `0`         |
+| `enabled`         | 是否启用           |       `true`       |
+| `isTemplate`      | 是否启用模板渲染       |        `0`         |
+| `responseHeaders` | 自定义响应头（JSON）   |         —          |
+| `requestMatch`    | 请求参数匹配条件（JSON） |         —          |
+| `headerMatch`     | 请求头匹配条件（JSON）  |         —          |
 
 ---
 
@@ -182,13 +183,13 @@ ApiController.filterHttpRequest()
 
 > 在 API 配置中开启 `isTemplate` 后，响应内容中的占位符会被自动替换：
 
-| 占位符 | 说明 | 示例输出 |
-| :---: | :--- | :--- |
-| `${date}` | 当前时间 | `2025-08-01 16:53:00` |
-| `${uuid}` | UUID | `f45a3348-b9e9-4b18-836f-9d95808c6bae` |
-| `${objectId}` | MongoDB ObjectId | `6789abcdef0123456789012` |
-| `${snowflake}` | 雪花算法 ID | `1893748273648293847` |
-| `${randomInt}` | 0~10000 随机数 | `7321` |
+|      占位符       | 说明               | 示例输出                                   |
+|:--------------:|:-----------------|:---------------------------------------|
+|   `${date}`    | 当前时间             | `2025-08-01 16:53:00`                  |
+|   `${uuid}`    | UUID             | `f45a3348-b9e9-4b18-836f-9d95808c6bae` |
+| `${objectId}`  | MongoDB ObjectId | `6789abcdef0123456789012`              |
+| `${snowflake}` | 雪花算法 ID          | `1893748273648293847`                  |
+| `${randomInt}` | 0~10000 随机数      | `7321`                                 |
 
 ---
 
@@ -196,23 +197,23 @@ ApiController.filterHttpRequest()
 
 ### 分组管理 `/admin/group`
 
-| 方法 | 路径 | 说明 |
-| :---: | :--- | :--- |
-| `GET` | `/admin/group/list` | 分页查询分组列表 |
-| `POST` | `/admin/group` | 创建分组 |
-| `PUT` | `/admin/group` | 更新分组 |
-| `DELETE` | `/admin/group/{groupId}` | 删除分组 |
+|    方法    | 路径                       | 说明       |
+|:--------:|:-------------------------|:---------|
+|  `GET`   | `/admin/group/list`      | 分页查询分组列表 |
+|  `POST`  | `/admin/group`           | 创建分组     |
+|  `PUT`   | `/admin/group`           | 更新分组     |
+| `DELETE` | `/admin/group/{groupId}` | 删除分组     |
 
 ### 配置管理 `/admin/config`
 
-| 方法 | 路径 | 说明 |
-| :---: | :--- | :--- |
-| `GET` | `/admin/config/list` | 分页查询配置（支持按分组/名称/方法/状态筛选） |
-| `POST` | `/admin/config` | 创建 API 配置 |
-| `PUT` | `/admin/config` | 更新 API 配置 |
-| `DELETE` | `/admin/config/{configId}` | 删除配置 |
-| `PUT` | `/admin/config/{configId}/toggle` | 启用/禁用切换 |
-| `GET` | `/admin/config/template/list` | 查询可用模板函数列表 |
+|    方法    | 路径                                | 说明                       |
+|:--------:|:----------------------------------|:-------------------------|
+|  `GET`   | `/admin/config/list`              | 分页查询配置（支持按分组/名称/方法/状态筛选） |
+|  `POST`  | `/admin/config`                   | 创建 API 配置                |
+|  `PUT`   | `/admin/config`                   | 更新 API 配置                |
+| `DELETE` | `/admin/config/{configId}`        | 删除配置                     |
+|  `PUT`   | `/admin/config/{configId}/toggle` | 启用/禁用切换                  |
+|  `GET`   | `/admin/config/template/list`     | 查询可用模板函数列表               |
 
 ---
 
@@ -273,7 +274,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 <details>
 <summary><b>如何进行二次开发？</b></summary>
 
-> 使用 dev 配置启动（`-Dspring-boot:run -Dspring-boot.run.profiles=dev`），H2 会以 TCP 模式运行，方便用 H2 Console 或 IDE 数据库工具直接查看数据。
+> 使用 dev 配置启动（`-Dspring-boot:run -Dspring-boot.run.profiles=dev`），H2 会以 TCP 模式运行，方便用 H2 Console 或 IDE
+> 数据库工具直接查看数据。
 
 </details>
 

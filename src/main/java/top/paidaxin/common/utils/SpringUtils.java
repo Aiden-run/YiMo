@@ -21,6 +21,7 @@ public class SpringUtils implements BeanFactoryPostProcessor {
     public static <T> T getClass(String name, Class<T> clazz) {
         return beanFactory.getBean(name, clazz);
     }
+
     public static <T> T getClass(Class<T> clazz) {
         return beanFactory.getBean(clazz);
     }

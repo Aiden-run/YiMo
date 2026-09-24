@@ -33,12 +33,15 @@
             --method-delete: #cf222e;
             --scrollbar-thumb: #c1c9d1;
             --scrollbar-thumb-hover: #a8b1ba;
-            --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-            --shadow-sm: 0 1px 2px rgba(31,35,40,.04);
-            --shadow-md: 0 3px 8px rgba(31,35,40,.08);
-            --shadow-lg: 0 12px 32px rgba(31,35,40,.15);
+            --shadow-sm: 0 1px 2px rgba(31, 35, 40, .04);
+            --shadow-md: 0 3px 8px rgba(31, 35, 40, .08);
+            --shadow-lg: 0 12px 32px rgba(31, 35, 40, .15);
         }
 
         :root[data-theme="dark"] {
@@ -67,16 +70,24 @@
             --method-delete: #f85149;
             --scrollbar-thumb: #30363d;
             --scrollbar-thumb-hover: #484f58;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-            --shadow-md: 0 3px 8px rgba(0,0,0,.35);
-            --shadow-lg: 0 12px 32px rgba(0,0,0,.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+            --shadow-md: 0 3px 8px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, .5);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        [v-cloak] { display: none; }
+        [v-cloak] {
+            display: none;
+        }
 
-        html { overflow-y: scroll; }
+        html {
+            overflow-y: scroll;
+        }
 
         body {
             background-color: var(--bg-base);
@@ -87,15 +98,34 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
 
-        .mono { font-family: var(--font-mono); }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+        }
 
         /* ==================== 布局 ==================== */
-        .ym-app { min-height: 100vh; display: flex; flex-direction: column; }
+        .ym-app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
         .ym-header {
             background: var(--bg-surface);
@@ -107,85 +137,235 @@
             justify-content: space-between;
             flex-shrink: 0;
         }
-        .ym-header__brand { display: flex; align-items: center; gap: 10px; }
+
+        .ym-header__brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .ym-logo {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             background: linear-gradient(135deg, #2f81f7, #6366f1);
             border-radius: var(--radius-md);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: 700; color: white;
-            border: none; padding: 0; cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            border: none;
+            padding: 0;
+            cursor: pointer;
             transition: transform .15s, box-shadow .15s;
             position: relative;
         }
-        .ym-logo:hover { transform: scale(1.08); box-shadow: 0 2px 8px rgba(47, 129, 247, .35); }
-        .ym-logo .ym-logo__letter { transition: opacity .15s; opacity: 1; }
-        .ym-logo .ym-icon { position: absolute; inset: 0; margin: auto; opacity: 0; transition: opacity .15s; }
-        .ym-logo:hover .ym-logo__letter { opacity: 0; }
-        .ym-logo:hover .ym-icon { opacity: 1; color: white; }
-        .ym-logo.is-moyi { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
-        .ym-logo.is-moyi:hover { box-shadow: 0 2px 8px rgba(139, 92, 246, .4); }
-        .ym-header__title { font-size: 16px; font-weight: 600; }
-        .ym-header__subtitle { color: var(--text-secondary); font-size: 12px; margin-left: 4px; }
-        .ym-header__actions { display: flex; align-items: center; gap: 12px; }
+
+        .ym-logo:hover {
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(47, 129, 247, .35);
+        }
+
+        .ym-logo .ym-logo__letter {
+            transition: opacity .15s;
+            opacity: 1;
+        }
+
+        .ym-logo .ym-icon {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        .ym-logo:hover .ym-logo__letter {
+            opacity: 0;
+        }
+
+        .ym-logo:hover .ym-icon {
+            opacity: 1;
+            color: white;
+        }
+
+        .ym-logo.is-moyi {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        }
+
+        .ym-logo.is-moyi:hover {
+            box-shadow: 0 2px 8px rgba(139, 92, 246, .4);
+        }
+
+        .ym-header__title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .ym-header__subtitle {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .ym-header__actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .ym-theme-toggle {
-            background: transparent; border: 1px solid var(--border-default);
-            border-radius: var(--radius-md); color: var(--text-secondary);
-            width: 32px; height: 32px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            background: transparent;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all .15s;
         }
-        .ym-theme-toggle:hover { color: var(--text-primary); border-color: var(--accent); }
+
+        .ym-theme-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
         .ym-link {
-            display: flex; align-items: center; gap: 6px;
-            color: var(--text-secondary); text-decoration: none;
-            font-size: 12px; padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 6px 12px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-default);
             transition: all .15s;
         }
-        .ym-link:hover { color: var(--text-primary); border-color: var(--border-focus); background: var(--bg-surface-2); }
 
-        .ym-layout { flex: 1; display: flex; overflow: hidden; }
+        .ym-link:hover {
+            color: var(--text-primary);
+            border-color: var(--border-focus);
+            background: var(--bg-surface-2);
+        }
+
+        .ym-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
 
         /* ==================== 侧栏 ==================== */
         .ym-sidebar {
-            width: 280px; flex-shrink: 0;
+            width: 280px;
+            flex-shrink: 0;
             background: var(--bg-surface);
             border-right: 1px solid var(--border-default);
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
+
         .ym-sidebar__header {
             padding: 12px 16px 10px;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .ym-sidebar__header h2 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+        .ym-sidebar__header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
         .ym-sidebar__list {
-            flex: 1; overflow-y: auto; padding: 0 8px 8px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 8px;
             scrollbar-width: none;
         }
-        .ym-sidebar__list::-webkit-scrollbar { display: none; }
+
+        .ym-sidebar__list::-webkit-scrollbar {
+            display: none;
+        }
 
         .ym-group-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 8px 10px; border-radius: var(--radius-md);
-            cursor: pointer; transition: background .15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background .15s;
         }
-        .ym-group-item:hover { background: var(--bg-surface-2); }
+
+        .ym-group-item:hover {
+            background: var(--bg-surface-2);
+        }
+
         .ym-group-item.is-active {
             background: rgba(47, 129, 247, 0.12);
             border-left: 3px solid var(--accent);
             padding-left: 9px;
         }
-        .ym-group-item__info { flex: 1; min-width: 0; }
-        .ym-group-item__name { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ym-group-item__url { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ym-group-item__actions { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
-        .ym-group-item:hover .ym-group-item__actions { opacity: 1; }
 
-        .ym-sidebar__empty { text-align: center; padding: 40px 16px; color: var(--text-tertiary); font-size: 12px; }
-        .ym-sidebar__loading { text-align: center; padding: 12px; color: var(--text-tertiary); font-size: 12px; }
-        .ym-sidebar__loadmore { text-align: center; padding: 10px 8px; border-top: 1px dashed var(--border-muted); }
+        .ym-group-item__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ym-group-item__name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ym-group-item__url {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ym-group-item__actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        .ym-group-item:hover .ym-group-item__actions {
+            opacity: 1;
+        }
+
+        .ym-sidebar__empty {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+
+        .ym-sidebar__loading {
+            text-align: center;
+            padding: 12px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+
+        .ym-sidebar__loadmore {
+            text-align: center;
+            padding: 10px 8px;
+            border-top: 1px dashed var(--border-muted);
+        }
+
         .ym-sidebar__loadmore .ym-btn.ym-btn--loadmore {
             width: 100%;
             min-height: 30px;
@@ -196,6 +376,7 @@
             border-radius: var(--radius-md);
             transition: all .15s;
         }
+
         .ym-sidebar__loadmore .ym-btn.ym-btn--loadmore:hover {
             color: var(--accent);
             border-color: var(--accent);
@@ -203,14 +384,27 @@
         }
 
         /* ==================== 主区 ==================== */
-        .ym-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .ym-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         .ym-main__toolbar {
             padding: 8px 16px;
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             border-bottom: 1px solid var(--border-default);
             flex-wrap: wrap;
         }
-        .ym-main__list { flex: 1; overflow-y: auto; padding: 10px 16px 14px; }
+
+        .ym-main__list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 16px 14px;
+        }
 
         .ym-api-item {
             background: var(--bg-surface);
@@ -218,503 +412,1839 @@
             border-radius: var(--radius-md);
             padding: 9px 14px;
             margin-bottom: 8px;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             transition: all .15s;
         }
-        .ym-api-item:hover { border-color: var(--border-focus); box-shadow: var(--shadow-sm); }
-        .ym-api-item__main { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+
+        .ym-api-item:hover {
+            border-color: var(--border-focus);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ym-api-item__main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
         .ym-api-item__name {
-            order: 1; font-size: 13px; font-weight: 500; color: var(--text-primary);
-            white-space: nowrap; max-width: 40%;
-            overflow: hidden; text-overflow: ellipsis;
+            order: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            max-width: 40%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+
         .ym-api-item__url {
-            order: 2; flex: 1; min-width: 0;
-            font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            order: 2;
+            flex: 1;
+            min-width: 0;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .ym-api-item__main .ym-tooltip { order: 3; flex-shrink: 0; display: inline-flex; }
-        .ym-api-item__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+        .ym-api-item__main .ym-tooltip {
+            order: 3;
+            flex-shrink: 0;
+            display: inline-flex;
+        }
+
+        .ym-api-item__actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
 
         .ym-method {
-            padding: 2px 8px; border-radius: var(--radius-sm);
-            font-size: 11px; font-weight: 700; color: white;
-            font-family: var(--font-mono); flex-shrink: 0;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            font-family: var(--font-mono);
+            flex-shrink: 0;
         }
-        .ym-method.m-get { background: var(--method-get); }
-        .ym-method.m-post { background: var(--method-post); }
-        .ym-method.m-put { background: var(--method-put); }
-        .ym-method.m-patch { background: var(--method-put); }
-        .ym-method.m-delete { background: var(--method-delete); }
-        .ym-method.m-head { background: var(--method-get); }
-        .ym-method.m-options { background: var(--info); }
+
+        .ym-method.m-get {
+            background: var(--method-get);
+        }
+
+        .ym-method.m-post {
+            background: var(--method-post);
+        }
+
+        .ym-method.m-put {
+            background: var(--method-put);
+        }
+
+        .ym-method.m-patch {
+            background: var(--method-put);
+        }
+
+        .ym-method.m-delete {
+            background: var(--method-delete);
+        }
+
+        .ym-method.m-head {
+            background: var(--method-get);
+        }
+
+        .ym-method.m-options {
+            background: var(--info);
+        }
 
         .ym-badge {
-            padding: 2px 8px; border-radius: 10px;
-            font-size: 11px; font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
         }
-        .ym-badge.is-active { background: rgba(63, 185, 80, 0.15); color: var(--success); }
-        .ym-badge.is-inactive { background: rgba(139, 148, 158, 0.15); color: var(--text-tertiary); }
 
-        .ym-empty { text-align: center; padding: 60px 20px; color: var(--text-tertiary); }
-        .ym-empty h4 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
-        .ym-empty p { font-size: 12px; }
+        .ym-badge.is-active {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--success);
+        }
 
-        .ym-main__pagination { padding: 8px 16px; border-top: 1px solid var(--border-default); display: flex; justify-content: center; }
+        .ym-badge.is-inactive {
+            background: rgba(139, 148, 158, 0.15);
+            color: var(--text-tertiary);
+        }
+
+        .ym-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-empty h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .ym-empty p {
+            font-size: 12px;
+        }
+
+        .ym-empty__btn {
+            margin-top: 16px;
+        }
+
+        .ym-main__pagination {
+            padding: 8px 16px;
+            border-top: 1px solid var(--border-default);
+            display: flex;
+            justify-content: center;
+        }
 
         /* ==================== 按钮 ==================== */
         .ym-btn {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 7px 14px; border-radius: var(--radius-md);
-            font-size: 13px; font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
             border: 1px solid var(--border-default);
             background: var(--bg-surface-2);
             color: var(--text-primary);
-            cursor: pointer; transition: all .15s;
-            white-space: nowrap; line-height: 1;
+            cursor: pointer;
+            transition: all .15s;
+            white-space: nowrap;
+            line-height: 1;
         }
-        .ym-btn:hover { border-color: var(--border-focus); background: var(--bg-elevated); }
-        .ym-btn--primary { background: var(--accent); border-color: var(--accent); color: white; }
-        .ym-btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-        .ym-btn--danger { background: transparent; border-color: var(--danger); color: var(--danger); }
-        .ym-btn--danger:hover { background: rgba(248, 81, 73, 0.1); }
-        .ym-btn--text { background: transparent; border: none; color: var(--text-secondary); padding: 4px 6px; }
-        .ym-btn--text:hover { color: var(--text-primary); background: transparent; }
-        .ym-btn--text.ym-btn--danger { color: var(--danger); }
-        .ym-btn--sm { padding: 4px 10px; font-size: 12px; }
-        .ym-btn--lg { padding: 10px 20px; font-size: 14px; }
-        .ym-btn.is-disabled, .ym-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ym-btn .ym-icon { display: inline-flex; }
-        .ym-btn .ym-icon svg { width: 14px; height: 14px; }
+
+        .ym-btn:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        .ym-btn--primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .ym-btn--primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .ym-btn--danger {
+            background: transparent;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .ym-btn--danger:hover {
+            background: rgba(248, 81, 73, 0.1);
+        }
+
+        .ym-btn--text {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 4px 6px;
+        }
+
+        .ym-btn--text:hover {
+            color: var(--text-primary);
+            background: transparent;
+        }
+
+        .ym-btn--text.ym-btn--danger {
+            color: var(--danger);
+        }
+
+        .ym-btn--sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .ym-btn--lg {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .ym-btn.is-disabled, .ym-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ym-btn .ym-icon {
+            display: inline-flex;
+        }
+
+        .ym-btn .ym-icon svg {
+            width: 14px;
+            height: 14px;
+        }
 
         /* ==================== Icon ==================== */
-        .ym-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .ym-icon svg { width: 100%; height: 100%; display: block; }
+        .ym-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ym-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
 
         /* ==================== 输入框 ==================== */
-        .ym-input-wrapper { position: relative; display: inline-flex; align-items: center; }
+        .ym-input-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
         .ym-input {
             background: var(--bg-input);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-md);
-            padding: 7px 12px; font-size: 13px;
-            color: var(--text-primary); font-family: var(--font-sans);
-            outline: none; transition: border-color .15s;
+            padding: 7px 12px;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            outline: none;
+            transition: border-color .15s;
             width: 100%;
         }
-        .ym-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12); }
-        .ym-input::placeholder { color: var(--text-tertiary); }
-        .ym-textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
-        .ym-input--with-icon { padding-left: 34px; }
-        .ym-input-icon { position: absolute; left: 10px; color: var(--text-tertiary); display: flex; pointer-events: none; }
-        .ym-input-icon svg { width: 14px; height: 14px; }
-        .ym-input-clear { position: absolute; right: 8px; color: var(--text-tertiary); cursor: pointer; display: flex; }
-        .ym-input-clear:hover { color: var(--text-primary); }
-        .ym-input-clear svg { width: 14px; height: 14px; }
+
+        .ym-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12);
+        }
+
+        .ym-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .ym-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .ym-input--with-icon {
+            padding-left: 34px;
+        }
+
+        .ym-input-icon {
+            position: absolute;
+            left: 10px;
+            color: var(--text-tertiary);
+            display: flex;
+            pointer-events: none;
+        }
+
+        .ym-input-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .ym-input-clear {
+            position: absolute;
+            right: 8px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            display: flex;
+        }
+
+        .ym-input-clear:hover {
+            color: var(--text-primary);
+        }
+
+        .ym-input-clear svg {
+            width: 14px;
+            height: 14px;
+        }
 
         /* ==================== Select ==================== */
         .ym-select {
             background: var(--bg-input);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-md);
-            padding: 7px 28px 7px 12px; font-size: 13px;
-            color: var(--text-primary); font-family: var(--font-sans);
-            outline: none; cursor: pointer;
+            padding: 7px 28px 7px 12px;
+            font-size: 13px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            outline: none;
+            cursor: pointer;
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 8px center;
             background-size: 14px;
         }
-        .ym-select:focus { border-color: var(--border-focus); }
-        .ym-select option { background: var(--bg-elevated); color: var(--text-primary); }
+
+        .ym-select:focus {
+            border-color: var(--border-focus);
+        }
+
+        .ym-select option {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
 
         /* ==================== Switch ==================== */
-        .ym-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .ym-switch input { opacity: 0; width: 0; height: 0; }
+        .ym-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .ym-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .ym-switch__slider {
-            position: absolute; inset: 0;
+            position: absolute;
+            inset: 0;
             background: var(--bg-surface-2);
             border: 1px solid var(--border-default);
-            border-radius: 11px; cursor: pointer; transition: .2s;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: .2s;
         }
+
         .ym-switch__slider::before {
-            content: ''; position: absolute;
-            width: 16px; height: 16px; left: 2px; top: 2px;
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 2px;
+            top: 2px;
             background: var(--text-secondary);
-            border-radius: 50%; transition: .2s;
+            border-radius: 50%;
+            transition: .2s;
         }
-        .ym-switch input:checked + .ym-switch__slider { background: var(--accent); border-color: var(--accent); }
-        .ym-switch input:checked + .ym-switch__slider::before { transform: translateX(18px); background: white; }
+
+        .ym-switch input:checked + .ym-switch__slider {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .ym-switch input:checked + .ym-switch__slider::before {
+            transform: translateX(18px);
+            background: white;
+        }
 
         /* ==================== Number Input ==================== */
-        .ym-number { width: 120px; }
+        .ym-number {
+            width: 120px;
+        }
 
         /* ==================== Form ==================== */
-        .ym-form { width: 100%; }
-        .ym-form-item { margin-bottom: 18px; }
+        .ym-form {
+            width: 100%;
+        }
+
+        .ym-form-item {
+            margin-bottom: 18px;
+        }
+
         .ym-form-item__label {
-            display: block; margin-bottom: 6px;
-            font-size: 12px; color: var(--text-secondary);
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
             font-weight: 500;
         }
-        .ym-form-item__content { position: relative; }
-        .ym-form-item__error { color: var(--danger); font-size: 11px; margin-top: 4px; }
+
+        .ym-form-item__content {
+            position: relative;
+        }
+
+        .ym-form-item__error {
+            color: var(--danger);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
         .ym-form-item.has-error .ym-input,
-        .ym-form-item.has-error .ym-select { border-color: var(--danger); }
-        .ym-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-        .ym-col-6 { grid-column: span 6; }
-        .ym-col-12 { grid-column: span 12; }
-        .ym-form-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+        .ym-form-item.has-error .ym-select {
+            border-color: var(--danger);
+        }
+
+        .ym-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+
+        .ym-col-6 {
+            grid-column: span 6;
+        }
+
+        .ym-col-12 {
+            grid-column: span 12;
+        }
+
+        .ym-form-hint {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
 
         /* ==================== Modal ==================== */
-        .ym-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .ym-modal__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+        .ym-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ym-modal__overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+        }
+
         .ym-modal__dialog {
-            position: relative; z-index: 1;
+            position: relative;
+            z-index: 1;
             background: var(--bg-elevated);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
-            max-height: 90vh; display: flex; flex-direction: column;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
+
         .ym-modal__header {
-            padding: 16px 20px; border-bottom: 1px solid var(--border-default);
-            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .ym-modal__title { font-size: 15px; font-weight: 600; }
+
+        .ym-modal__title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
         .ym-modal__close {
-            background: transparent; border: none; cursor: pointer;
-            color: var(--text-tertiary); padding: 4px; border-radius: var(--radius-sm);
-            display: flex; transition: all .15s;
-        }
-        .ym-modal__close:hover { color: var(--text-primary); background: var(--bg-surface-2); }
-        .ym-modal__close svg { width: 18px; height: 18px; }
-        .ym-modal__body { padding: 20px; overflow-y: auto; flex: 1; }
-        .ym-modal__footer {
-            padding: 12px 20px; border-top: 1px solid var(--border-default);
-            display: flex; justify-content: flex-end; gap: 8px;
-        }
-        .ym-modal-enter-active, .ym-modal-leave-active { transition: opacity .2s; }
-        .ym-modal-enter-active .ym-modal__dialog, .ym-modal-leave-active .ym-modal__dialog { transition: transform .2s, opacity .2s; }
-        .ym-modal-enter, .ym-modal-leave-to { opacity: 0; }
-        .ym-modal-enter .ym-modal__dialog, .ym-modal-leave-to .ym-modal__dialog { transform: scale(0.95); opacity: 0; }
-
-        /* ==================== Tooltip ==================== */
-        .ym-tooltip { position: relative; display: inline-flex; cursor: help; }
-        .ym-tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute; bottom: 100%; left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-elevated); color: var(--text-primary);
-            border: 1px solid var(--border-default);
-            padding: 4px 8px; border-radius: var(--radius-sm);
-            font-size: 11px; white-space: nowrap;
-            opacity: 0; pointer-events: none; transition: opacity .15s;
-            margin-bottom: 4px; z-index: 100;
-        }
-        .ym-tooltip:hover::after { opacity: 1; }
-
-        /* ==================== Table ==================== */
-        .ym-table { width: 100%; border-collapse: collapse; }
-        .ym-table th, .ym-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-default); font-size: 13px; }
-        .ym-table th { color: var(--text-secondary); font-weight: 600; font-size: 12px; }
-        .ym-table td { color: var(--text-primary); }
-        .ym-table code { font-family: var(--font-mono); color: var(--accent); background: rgba(47, 129, 247, 0.1); padding: 2px 6px; border-radius: var(--radius-sm); font-size: 12px; }
-
-        /* ==================== Pagination ==================== */
-        .ym-pagination { display: flex; align-items: center; gap: 4px; }
-        .ym-pagination__total { color: var(--text-secondary); font-size: 12px; margin-right: 12px; }
-        .ym-pagination__btn {
-            min-width: 30px; height: 30px; padding: 0 6px;
-            border: 1px solid var(--border-default); background: var(--bg-surface);
-            color: var(--text-secondary); border-radius: var(--radius-sm);
-            cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            display: flex;
             transition: all .15s;
         }
-        .ym-pagination__btn:hover:not(:disabled):not(.is-dots) { border-color: var(--border-focus); color: var(--text-primary); }
-        .ym-pagination__btn.is-active { background: var(--accent); border-color: var(--accent); color: white; }
-        .ym-pagination__btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .ym-pagination__btn.is-dots { border: none; background: transparent; cursor: default; }
-        .ym-pagination__btn svg { width: 14px; height: 14px; }
+
+        .ym-modal__close:hover {
+            color: var(--text-primary);
+            background: var(--bg-surface-2);
+        }
+
+        .ym-modal__close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .ym-modal__body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .ym-modal__footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-default);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .ym-modal-enter-active, .ym-modal-leave-active {
+            transition: opacity .2s;
+        }
+
+        .ym-modal-enter-active .ym-modal__dialog, .ym-modal-leave-active .ym-modal__dialog {
+            transition: transform .2s, opacity .2s;
+        }
+
+        .ym-modal-enter, .ym-modal-leave-to {
+            opacity: 0;
+        }
+
+        .ym-modal-enter .ym-modal__dialog, .ym-modal-leave-to .ym-modal__dialog {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        /* ==================== Tooltip ==================== */
+        .ym-tooltip {
+            position: relative;
+            display: inline-flex;
+            cursor: help;
+        }
+
+        .ym-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s;
+            margin-bottom: 4px;
+            z-index: 100;
+        }
+
+        .ym-tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* ==================== Table ==================== */
+        .ym-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ym-table th, .ym-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-default);
+            font-size: 13px;
+        }
+
+        .ym-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .ym-table td {
+            color: var(--text-primary);
+        }
+
+        .ym-table code {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            background: rgba(47, 129, 247, 0.1);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+        }
+
+        /* ==================== Pagination ==================== */
+        .ym-pagination {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ym-pagination__total {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-right: 12px;
+        }
+
+        .ym-pagination__btn {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 6px;
+            border: 1px solid var(--border-default);
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s;
+        }
+
+        .ym-pagination__btn:hover:not(:disabled):not(.is-dots) {
+            border-color: var(--border-focus);
+            color: var(--text-primary);
+        }
+
+        .ym-pagination__btn.is-active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .ym-pagination__btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .ym-pagination__btn.is-dots {
+            border: none;
+            background: transparent;
+            cursor: default;
+        }
+
+        .ym-pagination__btn svg {
+            width: 14px;
+            height: 14px;
+        }
 
         /* ==================== Toast ==================== */
-        .ym-toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
+        .ym-toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
         .ym-toast {
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 16px; border-radius: var(--radius-md);
-            font-size: 13px; color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: var(--text-primary);
             border: 1px solid var(--border-default);
             background: var(--bg-elevated);
             box-shadow: var(--shadow-md);
-            opacity: 0; transform: translateX(30px);
+            opacity: 0;
+            transform: translateX(30px);
             transition: all .3s;
         }
-        .ym-toast--show { opacity: 1; transform: translateY(0); }
-        .ym-toast--success { border-left: 3px solid var(--success); }
-        .ym-toast--success svg { color: var(--success); }
-        .ym-toast--error { border-left: 3px solid var(--danger); }
-        .ym-toast--error svg { color: var(--danger); }
-        .ym-toast--warning { border-left: 3px solid var(--warning); }
-        .ym-toast--warning svg { color: var(--warning); }
-        .ym-toast--info { border-left: 3px solid var(--accent); }
-        .ym-toast--info svg { color: var(--accent); }
-        .ym-toast svg { width: 16px; height: 16px; flex-shrink: 0; }
-        .ym-toast span { display: flex; align-items: center; }
+
+        .ym-toast--show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ym-toast--success {
+            border-left: 3px solid var(--success);
+        }
+
+        .ym-toast--success svg {
+            color: var(--success);
+        }
+
+        .ym-toast--error {
+            border-left: 3px solid var(--danger);
+        }
+
+        .ym-toast--error svg {
+            color: var(--danger);
+        }
+
+        .ym-toast--warning {
+            border-left: 3px solid var(--warning);
+        }
+
+        .ym-toast--warning svg {
+            color: var(--warning);
+        }
+
+        .ym-toast--info {
+            border-left: 3px solid var(--accent);
+        }
+
+        .ym-toast--info svg {
+            color: var(--accent);
+        }
+
+        .ym-toast svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .ym-toast span {
+            display: flex;
+            align-items: center;
+        }
 
         /* ==================== Confirm ==================== */
         .ym-confirm-overlay {
-            position: fixed; inset: 0; z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
-            opacity: 0; transition: opacity .2s;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity .2s;
         }
-        .ym-confirm-overlay.ym-confirm--show { opacity: 1; }
+
+        .ym-confirm-overlay.ym-confirm--show {
+            opacity: 1;
+        }
+
         .ym-confirm {
             background: var(--bg-elevated);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-lg);
-            min-width: 380px; max-width: 460px;
-            transform: scale(0.95); transition: transform .2s;
+            min-width: 380px;
+            max-width: 460px;
+            transform: scale(0.95);
+            transition: transform .2s;
         }
-        .ym-confirm-overlay.ym-confirm--show .ym-confirm { transform: scale(1); }
-        .ym-confirm__header { display: flex; align-items: center; gap: 10px; padding: 18px 20px 0; }
-        .ym-confirm__icon { display: flex; }
-        .ym-confirm__title { font-size: 15px; font-weight: 600; }
-        .ym-confirm__msg { padding: 8px 20px 20px; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
-        .ym-confirm__footer { padding: 0 20px 18px; display: flex; justify-content: flex-end; gap: 8px; }
+
+        .ym-confirm-overlay.ym-confirm--show .ym-confirm {
+            transform: scale(1);
+        }
+
+        .ym-confirm__header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px 0;
+        }
+
+        .ym-confirm__icon {
+            display: flex;
+        }
+
+        .ym-confirm__title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .ym-confirm__msg {
+            padding: 8px 20px 20px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .ym-confirm__footer {
+            padding: 0 20px 18px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
 
         /* ==================== 骨架屏 ==================== */
-        @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
-        .skeleton-item { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); margin-bottom: 10px; padding: 14px 16px; }
+        @keyframes shimmer {
+            0% {
+                background-position: -468px 0;
+            }
+            100% {
+                background-position: 468px 0;
+            }
+        }
+
+        .skeleton-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            margin-bottom: 10px;
+            padding: 14px 16px;
+        }
+
         .skeleton-block {
             background: var(--bg-surface-2);
             background-image: linear-gradient(to right, var(--bg-surface-2) 0%, var(--bg-elevated) 20%, var(--bg-surface-2) 40%, var(--bg-surface-2) 100%);
-            background-repeat: no-repeat; background-size: 800px 104px;
-            display: inline-block; height: 14px; border-radius: var(--radius-sm);
+            background-repeat: no-repeat;
+            background-size: 800px 104px;
+            display: inline-block;
+            height: 14px;
+            border-radius: var(--radius-sm);
             animation: shimmer 1s linear infinite;
         }
 
         /* ==================== 列表动画 ==================== */
-        .list-enter-active, .list-leave-active { transition: all .3s ease; }
-        .list-enter, .list-leave-to { opacity: 0; transform: translateY(10px); }
-        .list-leave-active { position: absolute; }
+        .list-enter-active, .list-leave-active {
+            transition: all .3s ease;
+        }
+
+        .list-enter, .list-leave-to {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .list-leave-active {
+            position: absolute;
+        }
 
         /* ==================== 响应信息 ==================== */
-        .response-info { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px; }
-        .response-info h4 { margin: 0 0 10px; font-size: 13px; color: var(--text-primary); }
-        .response-info p { margin: 4px 0; font-size: 12px; color: var(--text-secondary); }
-        .response-info strong { color: var(--text-primary); }
-        .response-content { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 14px; overflow-y: auto; max-height: 400px; }
-        .response-content h4 { margin: 0 0 10px; font-size: 13px; color: var(--text-primary); }
-        .response-content pre { margin: 0; background: transparent; border: none; padding: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; color: var(--text-primary); }
-        .hljs { background: transparent !important; padding: 0 !important; }
+        .response-info {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
 
-        .ym-spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .response-info h4 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
 
-        .ym-stream-icon { color: var(--text-tertiary); display: inline-flex; }
-        .ym-stream-icon svg { width: 14px; height: 14px; }
+        .response-info p {
+            margin: 4px 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .response-info strong {
+            color: var(--text-primary);
+        }
+
+        .response-content {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .response-content h4 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .response-content pre {
+            margin: 0;
+            background: transparent;
+            border: none;
+            padding: 0;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text-primary);
+        }
+
+        .hljs {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .ym-spinner {
+            animation: spin 1s linear infinite;
+            display: inline-flex;
+            align-items: center;
+            line-height: 0;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .ym-stream-icon {
+            color: var(--text-tertiary);
+            display: inline-flex;
+        }
+
+        .ym-stream-icon svg {
+            width: 14px;
+            height: 14px;
+        }
 
         /* ==================== 启动加载动画 ==================== */
         .boot-loader {
-            position: fixed; inset: 0; z-index: 9999;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
             background: var(--bg-base);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             gap: 20px;
             transition: opacity .3s ease;
         }
-        .boot-loader.is-hidden { opacity: 0; pointer-events: none; }
+
+        .boot-loader.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .boot-loader__logo {
-            width: 56px; height: 56px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #2f81f7, #6366f1);
             border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; font-weight: 700; color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
             box-shadow: 0 8px 24px rgba(47, 129, 247, .35);
             animation: boot-pulse 1.4s ease-in-out infinite;
         }
+
         .boot-loader__ring {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             border: 3px solid var(--border-default);
             border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        .boot-loader__text { color: var(--text-secondary); font-size: 13px; letter-spacing: 1px; }
+
+        .boot-loader__text {
+            color: var(--text-secondary);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
         @keyframes boot-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.06);
+            }
         }
 
         /* ==================== MoYi 调试面板 ==================== */
-        .ym-main--moyi { flex: 1; display: flex; overflow: hidden; min-width: 0; }
+        .ym-main--moyi {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            min-width: 0;
+        }
+
         .ym-request {
-            flex: 1; display: flex; flex-direction: column;
-            padding: 16px 24px 0; min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 24px 0;
+            min-width: 0;
             animation: req-fade-in .2s ease;
         }
-        .ym-sidebar--moyi .ym-sidebar__header h2 { display: inline-flex; align-items: center; gap: 6px; }
-        .ym-sidebar--moyi .ym-sidebar__list { flex: 1; overflow-y: auto; min-height: 0; }
-        .ym-sidebar--moyi .ym-sidebar__empty { padding: 14px 0; text-align: center; font-size: 12px; line-height: 1.8; color: var(--text-tertiary); }
-        .ym-sidebar--moyi .ym-req__fav-item {
-            display: flex; flex-direction: column; gap: 4px;
-            border: 1px solid var(--border-muted); border-radius: var(--radius-md);
-            padding: 6px 10px; cursor: pointer; transition: background .15s;
+
+        .ym-sidebar--moyi .ym-sidebar__header h2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .ym-sidebar--moyi .ym-req__fav-item:hover { background: var(--bg-surface-2); border-color: var(--border-default); }
-        .ym-req__fav-top { display: flex; align-items: center; gap: 6px; }
-        .ym-req__fav-name {
-            flex: 1; min-width: 0;
-            background: transparent; border: 1px solid transparent;
+
+        .ym-sidebar--moyi .ym-sidebar__list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .ym-sidebar--moyi .ym-sidebar__empty {
+            padding: 14px 0;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-tertiary);
+        }
+
+        .ym-sidebar--moyi .ym-req__fav-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid var(--border-muted);
             border-radius: var(--radius-md);
-            padding: 2px 6px; font-size: 13px;
-            color: var(--text-primary); outline: none; cursor: text;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .ym-sidebar--moyi .ym-req__fav-item:hover {
+            background: var(--bg-surface-2);
+            border-color: var(--border-default);
+        }
+
+        .ym-req__fav-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ym-req__fav-name {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            padding: 2px 6px;
+            font-size: 13px;
+            color: var(--text-primary);
+            outline: none;
+            cursor: text;
             transition: border-color .15s, background .15s, box-shadow .15s;
         }
+
         .ym-req__fav-item:hover .ym-req__fav-name,
-        .ym-req__fav-name:hover { background: var(--bg-surface-2); }
+        .ym-req__fav-name:hover {
+            background: var(--bg-surface-2);
+        }
+
         .ym-req__fav-name:focus {
             background: var(--bg-input);
             border-color: var(--border-focus);
             box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12);
         }
-        .ym-req__fav-name::placeholder { color: var(--text-tertiary); }
-        .ym-req__fav-top .ym-btn { opacity: 0; transition: opacity .15s; }
-        .ym-req__fav-item:hover .ym-req__fav-top .ym-btn { opacity: 1; }
+
+        .ym-req__fav-name::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .ym-req__fav-top .ym-btn {
+            opacity: 0;
+            transition: opacity .15s;
+        }
+
+        .ym-req__fav-item:hover .ym-req__fav-top .ym-btn {
+            opacity: 1;
+        }
+
         .ym-req__fav-url {
-            font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             padding-left: 2px;
         }
 
         /* 模式切换过渡 */
-        .mode-enter-active, .mode-leave-active { transition: opacity .22s ease, transform .22s ease; }
-        .mode-enter { opacity: 0; transform: translateY(12px) scale(.992); }
-        .mode-leave-to { opacity: 0; transform: translateY(-6px) scale(.992); }
+        .mode-enter-active, .mode-leave-active {
+            transition: opacity .22s ease, transform .22s ease;
+        }
+
+        .mode-enter {
+            opacity: 0;
+            transform: translateY(12px) scale(.992);
+        }
+
+        .mode-leave-to {
+            opacity: 0;
+            transform: translateY(-6px) scale(.992);
+        }
 
         /* Cookies 面板 */
-        .ym-req__cookies { display: flex; flex-direction: column; gap: 12px; }
-        .ym-req__cookies-hint { font-size: 12px; line-height: 1.8; color: var(--text-secondary); }
-        .ym-req__cookies-hint code { font-family: var(--font-mono); color: var(--accent); }
-        .ym-req__cookies-toggle {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 12px; border: 1px solid var(--border-muted);
-            border-radius: var(--radius-md); background: var(--bg-surface-2);
-            font-size: 13px; cursor: pointer; width: fit-content;
+        .ym-req__cookies {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .ym-req__cookies-toggle input { accent-color: var(--accent); cursor: pointer; }
+
+        .ym-req__cookies-hint {
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .ym-req__cookies-hint code {
+            font-family: var(--font-mono);
+            color: var(--accent);
+        }
+
+        .ym-req__cookies-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-md);
+            background: var(--bg-surface-2);
+            font-size: 13px;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .ym-req__cookies-toggle input {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
 
         /* Highlight.js 配色（日/夜主题） */
         :root {
-            --hl-key: #a86500; --hl-lit: #7a3bb8; --hl-str: #2f7d44;
-            --hl-num: #b0641f; --hl-com: #8a949e; --hl-fn: #2f81f7;
+            --hl-key: #a86500;
+            --hl-lit: #7a3bb8;
+            --hl-str: #2f7d44;
+            --hl-num: #b0641f;
+            --hl-com: #8a949e;
+            --hl-fn: #2f81f7;
         }
-        :root[data-theme='dark'] {
-            --hl-key: #e5c07b; --hl-lit: #c678dd; --hl-str: #98c379;
-            --hl-num: #d19a66; --hl-com: #7f8c98; --hl-fn: #61afef;
-        }
-        .hljs-keyword, .hljs-literal, .hljs-selector-tag, .hljs-name { color: var(--hl-lit); }
-        .hljs-attr, .hljs-variable { color: var(--hl-key); }
-        .hljs-string, .hljs-doctag, .hljs-regexp { color: var(--hl-str); }
-        .hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link { color: var(--hl-num); }
-        .hljs-comment, .hljs-quote { color: var(--hl-com); font-style: italic; }
-        .hljs-title, .hljs-function, .hljs-built_in { color: var(--hl-fn); }
-        .hljs-punctuation, .hljs-operator, .hljs-meta { color: var(--text-secondary); }
-        @keyframes req-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-        .ym-req__bar { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        :root[data-theme='dark'] {
+            --hl-key: #e5c07b;
+            --hl-lit: #c678dd;
+            --hl-str: #98c379;
+            --hl-num: #d19a66;
+            --hl-com: #7f8c98;
+            --hl-fn: #61afef;
+        }
+
+        .hljs-keyword, .hljs-literal, .hljs-selector-tag, .hljs-name {
+            color: var(--hl-lit);
+        }
+
+        .hljs-attr, .hljs-variable {
+            color: var(--hl-key);
+        }
+
+        .hljs-string, .hljs-doctag, .hljs-regexp {
+            color: var(--hl-str);
+        }
+
+        .hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link {
+            color: var(--hl-num);
+        }
+
+        .hljs-comment, .hljs-quote {
+            color: var(--hl-com);
+            font-style: italic;
+        }
+
+        .hljs-title, .hljs-function, .hljs-built_in {
+            color: var(--hl-fn);
+        }
+
+        .hljs-punctuation, .hljs-operator, .hljs-meta {
+            color: var(--text-secondary);
+        }
+
+        @keyframes req-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .ym-req__bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
         .ym-req__method {
             background: var(--bg-input);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-md);
-            padding: 7px 10px; font-size: 12px; font-weight: 700;
-            font-family: var(--font-mono); color: var(--text-primary);
-            outline: none; cursor: pointer; appearance: none;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
         }
-        .ym-req__method option { background: var(--bg-elevated); color: var(--text-primary); }
-        .ym-req__method.m-get { color: var(--method-get); border-color: var(--method-get); }
-        .ym-req__method.m-post { color: var(--method-post); border-color: var(--method-post); }
-        .ym-req__method.m-put { color: var(--method-put); border-color: var(--method-put); }
-        .ym-req__method.m-patch { color: var(--method-put); border-color: var(--method-put); }
-        .ym-req__method.m-delete { color: var(--method-delete); border-color: var(--method-delete); }
+
+        .ym-req__method option {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .ym-req__method.m-get {
+            color: var(--method-get);
+            border-color: var(--method-get);
+        }
+
+        .ym-req__method.m-post {
+            color: var(--method-post);
+            border-color: var(--method-post);
+        }
+
+        .ym-req__method.m-put {
+            color: var(--method-put);
+            border-color: var(--method-put);
+        }
+
+        .ym-req__method.m-patch {
+            color: var(--method-put);
+            border-color: var(--method-put);
+        }
+
+        .ym-req__method.m-delete {
+            color: var(--method-delete);
+            border-color: var(--method-delete);
+        }
 
         .ym-req__tabs {
-            display: flex; align-items: center; gap: 4px;
-            margin-top: 14px; border-bottom: 1px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 14px;
+            border-bottom: 1px solid var(--border-default);
             flex-shrink: 0;
         }
+
         .ym-req__tabs > button {
-            background: transparent; border: none; cursor: pointer;
-            padding: 8px 12px; font-size: 13px; color: var(--text-secondary);
-            border-bottom: 2px solid transparent; margin-bottom: -1px;
-            display: inline-flex; align-items: center; gap: 5px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             transition: color .15s;
         }
-        .ym-req__tabs > button:hover { color: var(--text-primary); }
-        .ym-req__tabs > button.is-active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
-        .ym-req__edit { flex: 1; overflow-y: auto; padding: 12px 0; min-height: 0; }
-        .ym-req__kv { display: flex; flex-direction: column; gap: 8px; }
-        .ym-req__kv-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-secondary); font-size: 12px; }
-        .ym-req__kv-empty { color: var(--text-tertiary); font-size: 12px; padding: 18px 0; text-align: center; border: 1px dashed var(--border-default); border-radius: var(--radius-md); }
-        .ym-req__kv-row { display: flex; align-items: center; gap: 8px; }
-        .ym-req__kv-row .ym-input { flex: 1; }
+        .ym-req__tabs > button:hover {
+            color: var(--text-primary);
+        }
 
-        .ym-req__body { display: flex; flex-direction: column; gap: 10px; }
-        .ym-req__body.is-disabled { opacity: .8; }
-        .ym-req__body-ops { display: flex; align-items: center; gap: 8px; }
-        .ym-req__body textarea { font-family: var(--font-mono); font-size: 12px; }
+        .ym-req__tabs > button.is-active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ym-req__edit {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+            min-height: 0;
+        }
+
+        .ym-req__kv {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ym-req__kv-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .ym-req__kv-empty {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            padding: 18px 0;
+            text-align: center;
+            border: 1px dashed var(--border-default);
+            border-radius: var(--radius-md);
+        }
+
+        .ym-req__kv-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ym-req__kv-row .ym-input {
+            flex: 1;
+        }
+
+        .ym-req__body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ym-req__body.is-disabled {
+            opacity: .8;
+        }
+
+        .ym-req__body-ops {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ym-req__body textarea {
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
         .ym-code-editor {
-            position: relative; min-height: 160px;
-            border: 1px solid var(--border-default); border-radius: var(--radius-lg);
-            background: var(--bg-input); overflow: hidden;
-        }
-        .ym-code-editor:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12); }
-        .ym-code-pre {
-            position: absolute; inset: 0; margin: 0;
-            padding: 8px 12px; overflow: auto; scrollbar-width: none;
-            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
-            white-space: pre; color: var(--text-primary); pointer-events: none;
-        }
-        .ym-code-pre::-webkit-scrollbar { display: none; }
-        .ym-code-ta {
-            position: absolute; inset: 0; margin: 0; padding: 8px 12px;
-            overflow: auto; resize: none; border: none; outline: none;
-            background: transparent; color: transparent; caret-color: var(--text-primary);
-            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
-            white-space: pre; word-break: normal;
-        }
-        .ym-code-ta::placeholder { color: var(--text-tertiary); }
-
-        .ym-req__response {
-            flex-shrink: 0; height: 42%;
-            display: flex; flex-direction: column;
+            position: relative;
+            min-height: 160px;
             border: 1px solid var(--border-default);
             border-radius: var(--radius-lg);
-            margin-bottom: 16px; overflow: hidden;
+            background: var(--bg-input);
+            overflow: hidden;
+        }
+
+        .ym-code-editor:focus-within {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.12);
+        }
+
+        .ym-code-pre {
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            padding: 8px 12px;
+            overflow: auto;
+            scrollbar-width: none;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre;
+            color: var(--text-primary);
+            pointer-events: none;
+        }
+
+        .ym-code-pre::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ym-code-ta {
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            padding: 8px 12px;
+            overflow: auto;
+            resize: none;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: transparent;
+            caret-color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre;
+            word-break: normal;
+        }
+
+        .ym-code-ta::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .ym-req__response {
+            flex-shrink: 0;
+            height: 42%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            margin-bottom: 16px;
+            overflow: hidden;
             background: var(--bg-surface);
         }
+
         .ym-req__rhead {
-            display: flex; align-items: center; gap: 12px;
-            padding: 8px 12px; border-bottom: 1px solid var(--border-muted);
-            background: var(--bg-surface-2); flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-muted);
+            background: var(--bg-surface-2);
+            flex-shrink: 0;
         }
-        .ym-req__rstatus { font-size: 12px; font-weight: 700; font-family: var(--font-mono); }
-        .ym-req__rstatus.is-success { color: var(--success); }
-        .ym-req__rstatus.is-error { color: var(--danger); }
-        .ym-req__rstatus.is-info { color: var(--text-secondary); }
-        .ym-req__rmeta { color: var(--text-tertiary); font-size: 11px; font-family: var(--font-mono); }
-        .ym-req__rhead-hint { color: var(--text-tertiary); font-size: 12px; }
+
+        .ym-req__rstatus {
+            font-size: 12px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .ym-req__rstatus.is-success {
+            color: var(--success);
+        }
+
+        .ym-req__rstatus.is-error {
+            color: var(--danger);
+        }
+
+        .ym-req__rstatus.is-info {
+            color: var(--text-secondary);
+        }
+
+        .ym-req__rmeta {
+            color: var(--text-tertiary);
+            font-size: 11px;
+            font-family: var(--font-mono);
+        }
+
+        .ym-req__rhead-hint {
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+
         .ym-req__rbody {
-            flex: 1; overflow: auto; padding: 12px 14px;
-            font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
-            color: var(--text-primary); white-space: pre-wrap; word-break: break-all;
+            flex: 1;
+            overflow: auto;
+            padding: 12px 14px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-all;
             margin: 0;
         }
-        .ym-req__rbody-empty { color: var(--text-tertiary); }
+
+        .ym-req__rbody-empty {
+            color: var(--text-tertiary);
+        }
+
+        .ym-req__loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ym-log-summary {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            padding: 8px 14px;
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-md);
+        }
+
+        .ym-log-summary__item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .ym-log-summary__label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .ym-log-summary b {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .ym-log-summary__divider {
+            width: 1px;
+            height: 16px;
+            background: var(--border-default);
+            opacity: .55;
+        }
+
+        .ym-log-summary__hint {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-empty {
+            text-align: center;
+            padding: 28px 0;
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+
+        .ym-log-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* 调用日志弹窗：同层左右两栏（左=明细表格，右=今日概览面板） */
+        .ym-log-cols {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .ym-log-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* 右侧今日概览：卡片化面板，与左侧摘要条同语言 */
+        .ym-log-side {
+            width: 332px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-muted);
+            border-radius: var(--radius-md);
+            padding: 12px 12px 8px;
+        }
+
+        .ym-log-side__head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .ym-log-side__head-title {
+            position: relative;
+            padding-left: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ym-log-side__head-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            bottom: 2px;
+            width: 3px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+
+        .ym-log-side__head-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-side__sec {
+            padding-bottom: 6px;
+        }
+
+        .ym-log-side__sec + .ym-log-side__sec {
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-muted);
+        }
+
+        .ym-log-side__sec-title {
+            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .6px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-side .ym-log-empty {
+            padding: 18px 0;
+        }
+
+        .ym-log-side__row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 24px;
+            padding: 0 4px;
+            margin: 0 -4px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            transition: background .15s ease;
+        }
+
+        .ym-log-side__row:hover {
+            background: var(--bg-elevated);
+        }
+
+        .ym-log-side__rank {
+            flex-shrink: 0;
+            width: 18px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-side__rank.is-top {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .ym-log-side__name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ym-log-side__name--mono {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .ym-log-side__bar {
+            flex-shrink: 0;
+            width: 52px;
+            height: 4px;
+            background: rgba(127, 127, 127, .14);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .ym-log-side__bar--flex {
+            flex: 1;
+            width: auto;
+        }
+
+        .ym-log-side__bar i {
+            display: block;
+            height: 100%;
+            border-radius: 2px;
+            background: var(--accent);
+            opacity: .82;
+            transition: width .35s ease;
+        }
+
+        .ym-log-side__pct {
+            flex-shrink: 0;
+            width: 30px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-side__count {
+            flex-shrink: 0;
+            min-width: 22px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ym-log-table th, .ym-log-table td {
+            padding: 7px 10px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .ym-log-table-wrap {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        /* 表格自适应弹窗宽度：各列限宽、超长省略号截断，保证所有列（含 IP）直接可见，无需横向滚动 */
+        .ym-log-table {
+            width: 100%;
+        }
+
+        /* 行点击打开详情 */
+        .ym-log-table tbody tr.ym-log-row {
+            cursor: pointer;
+        }
+
+        /* 名称 / 分组 / URL / IP 列：内部 span 限宽 + 省略号截断 */
+        .ym-log-table .ym-log-cell {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: bottom;
+        }
+
+        .ym-log-table .ym-log-name .ym-log-cell {
+            max-width: 130px;
+        }
+
+        .ym-log-table .ym-log-group .ym-log-cell {
+            max-width: 90px;
+        }
+
+        .ym-log-table .ym-log-url .ym-log-cell {
+            max-width: 170px;
+        }
+
+        .ym-log-table .ym-log-ip .ym-log-cell {
+            max-width: 120px;
+        }
+
+        .ym-log-table .ym-log-date {
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .ym-log-table .ym-log-duration {
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .ym-log-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .ym-log-detail__row {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .ym-log-detail__row .ym-log-detail__label {
+            flex-shrink: 0;
+            width: 90px;
+            color: var(--text-tertiary);
+            text-align: right;
+        }
+
+        .ym-log-detail__row .ym-log-detail__value {
+            word-break: break-all;
+        }
+
+        .ym-log-detail__error {
+            color: var(--danger);
+        }
+
+        .ym-log-detail__value--wrap {
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+
+        .ym-log-detail__group {
+            margin-left: 8px;
+            padding: 1px 6px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg-surface-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .ym-log-detail__pre {
+            margin: 6px 0 0 100px;
+            padding: 8px 10px;
+            max-height: 180px;
+            overflow: auto;
+            background: var(--bg-surface-2);
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .ym-log-detail .ym-log-status {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+        }
+
+        .ym-log-table .ym-log-status {
+            font-family: var(--font-mono);
+        }
+
+        .ym-log-table .ym-log-status.ok {
+            color: var(--success);
+        }
+
+        .ym-log-table .ym-log-status.bad {
+            color: var(--danger);
+        }
+
+        .ym-log-table .ym-log-status.def {
+            color: var(--text-tertiary);
+        }
+
+        .ym-log-table tbody tr:hover {
+            background: var(--bg-surface-2);
+        }
+
+        .ym-log-table tbody tr:hover .ym-log-url {
+            color: var(--text-primary);
+        }
     </style>
     <script>
         // 主题初始化：默认白天模式，优先读取本地存储，避免页面闪屏
@@ -725,37 +2255,39 @@
     </script>
 </head>
 <body>
-    <!-- 启动加载动画：JS 加载完成前显示，挂载后移除 -->
-    <div id="boot-loader" class="boot-loader">
-        <div class="boot-loader__logo">Y</div>
-        <div class="boot-loader__ring"></div>
-        <div class="boot-loader__text">YiMo 加载中...</div>
-    </div>
+<!-- 启动加载动画：JS 加载完成前显示，挂载后移除 -->
+<div id="boot-loader" class="boot-loader">
+    <div class="boot-loader__logo">Y</div>
+    <div class="boot-loader__ring"></div>
+    <div class="boot-loader__text">YiMo 加载中...</div>
+</div>
 
-    <div id="app" class="ym-app" v-cloak>
-        <!-- Header -->
-        <header class="ym-header">
-            <div class="ym-header__brand">
-                <button type="button" class="ym-logo" :class="{ 'is-moyi': requestMode }" @click="toggleRequestMode"
-                        :title="requestMode ? '切换到 YiMo Mock 模式' : '切换到 MoYi 调试模式'">
-                    <span class="ym-logo__letter">{{ requestMode ? 'M' : 'Y' }}</span>
-                    <ym-icon name="swap" size="12"></ym-icon>
-                </button>
-                <span class="ym-header__title">{{ requestMode ? 'MoYi' : 'YiMo' }}</span>
-                <span class="ym-header__subtitle">{{ requestMode ? 'API 调试工具 · 浏览器直连 · 本地保存数据' : 'Mock 服务管理平台' }}</span>
-            </div>
-            <div class="ym-header__actions">
-                <button class="ym-theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? '切换为白天模式' : '切换为夜晚模式'">
-                    <ym-icon :name="theme === 'dark' ? 'sun' : 'moon'" size="16"></ym-icon>
-                </button>
-                <a href="https://github.com/Aiden-run/YiMo" target="_blank" class="ym-link">
-                    <ym-icon name="github" size="14"></ym-icon>
-                    <span>YiMo</span>
-                </a>
-            </div>
-        </header>
+<div id="app" class="ym-app" v-cloak>
+    <!-- Header -->
+    <header class="ym-header">
+        <div class="ym-header__brand">
+            <button type="button" class="ym-logo" :class="{ 'is-moyi': requestMode }" @click="toggleRequestMode"
+                    :title="requestMode ? '切换到 YiMo Mock 模式' : '切换到 MoYi 调试模式'">
+                <span class="ym-logo__letter">{{ requestMode ? 'M' : 'Y' }}</span>
+                <ym-icon name="swap" size="12"></ym-icon>
+            </button>
+            <span class="ym-header__title">{{ requestMode ? 'MoYi' : 'YiMo' }}</span>
+            <span class="ym-header__subtitle">{{ requestMode ? 'API 调试工具 · 浏览器直连 · 本地保存数据' : 'Mock 服务管理平台'
+                }}</span>
+        </div>
+        <div class="ym-header__actions">
+            <button class="ym-theme-toggle" @click="toggleTheme"
+                    :title="theme === 'dark' ? '切换为白天模式' : '切换为夜晚模式'">
+                <ym-icon :name="theme === 'dark' ? 'sun' : 'moon'" size="16"></ym-icon>
+            </button>
+            <a href="https://github.com/Aiden-run/YiMo" target="_blank" class="ym-link">
+                <ym-icon name="github" size="14"></ym-icon>
+                <span>YiMo</span>
+            </a>
+        </div>
+    </header>
 
-        <transition name="mode" mode="out-in">
+    <transition name="mode" mode="out-in">
         <div class="ym-layout" v-if="!requestMode">
             <!-- 侧栏：分组管理 -->
             <aside class="ym-sidebar">
@@ -763,7 +2295,7 @@
                     <h2>分组</h2>
                     <ym-btn type="primary" size="sm" icon="plus" @click="showGroupDialog = true">新建分组</ym-btn>
                 </div>
-                <div class="ym-sidebar__list" ref="groupListContainer" @scroll="handleGroupListScroll">
+                <div class="ym-sidebar__list">
                     <div v-if="groupListLoading && !groupList.length" class="ym-sidebar__loading">加载中...</div>
                     <div v-else-if="groupList.length === 0 && !groupListLoading" class="ym-sidebar__empty">
                         暂无分组<br>点击上方按钮创建
@@ -774,18 +2306,23 @@
                              :class="{ 'is-active': selectedGroup === group.apiGroupId }"
                              @click="filterByGroup(group)">
                             <div class="ym-group-item__info">
-                                <div class="ym-group-item__name" :title="group.apiGroupName">{{ group.apiGroupName }}</div>
+                                <div class="ym-group-item__name" :title="group.apiGroupName">{{ group.apiGroupName }}
+                                </div>
                                 <div class="ym-group-item__url">{{ group.apiBaseUrl }}</div>
                             </div>
                             <div class="ym-group-item__actions">
                                 <ym-btn type="text" size="sm" icon="edit" @click.stop="editGroup(group)"></ym-btn>
-                                <ym-btn type="text" size="sm" icon="trash" @click.stop="deleteGroup(group.apiGroupId)"></ym-btn>
+                                <ym-btn type="text" size="sm" icon="trash"
+                                        @click.stop="deleteGroup(group.apiGroupId)"></ym-btn>
                             </div>
                         </div>
                     </transition-group>
                     <div v-if="groupListLoading && groupList.length" class="ym-sidebar__loading">加载中...</div>
-                    <div v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0" class="ym-sidebar__loading">没有更多了</div>
-                    <div v-if="!groupListLoading && groupList.length > 0 && groupList.length < groupListTotal" class="ym-sidebar__loadmore">
+                    <div v-if="!groupListLoading && groupList.length >= groupListTotal && groupList.length > 0"
+                         class="ym-sidebar__loading">没有更多了
+                    </div>
+                    <div v-if="!groupListLoading && groupList.length > 0 && groupList.length < groupListTotal"
+                         class="ym-sidebar__loadmore">
                         <button class="ym-btn ym-btn--sm ym-btn--loadmore" @click="loadGroupList">
                             <ym-icon name="chevronDown" size="14"></ym-icon>
                             <span>加载更多 ({{ groupList.length }}/{{ groupListTotal }})</span>
@@ -803,14 +2340,13 @@
                     </div>
                     <select class="ym-select" v-model="selectedGroup">
                         <option value="">全部分组</option>
-                        <option v-for="group in groups" :key="group.apiGroupId || Math.random()" :value="group.apiGroupId">{{ group.apiGroupName || '' }}</option>
+                        <option v-for="group in groups" :key="group.apiGroupId || Math.random()"
+                                :value="group.apiGroupId">{{ group.apiGroupName || '' }}
+                        </option>
                     </select>
                     <select class="ym-select" v-model="selectedMethod">
                         <option value="">全部方法</option>
-                        <option value="GET">GET</option>
-                        <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="DELETE">DELETE</option>
+                        <option v-for="m in apiMethodOptions" :key="m" :value="m">{{ m }}</option>
                     </select>
                     <select class="ym-select" v-model="selectedStatus">
                         <option value="">全部状态</option>
@@ -821,6 +2357,7 @@
                     <ym-btn icon="refresh" :disabled="isRefreshing" @click="handleRefreshClick">
                         {{ isRefreshing ? '已刷新' : '刷新' }}
                     </ym-btn>
+                    <ym-btn icon="clock" @click="showApiLogs" title="查看调用日志">调用日志</ym-btn>
                     <ym-btn type="primary" icon="plus" @click="openCreateDialog">新建API</ym-btn>
                 </div>
 
@@ -838,34 +2375,49 @@
                             </div>
                         </div>
                     </div>
-                    <!-- 空态 -->
-                    <div v-else-if="apis.length === 0" class="ym-empty">
+                    <!-- 空态：无任何API -->
+                    <div v-else-if="apis.length === 0 && !hasActiveFilters" class="ym-empty">
                         <h4>暂无API配置</h4>
                         <p>点击右上角按钮，立即创建一个！</p>
+                    </div>
+                    <!-- 空态：筛选/搜索无匹配 -->
+                    <div v-else-if="apis.length === 0" class="ym-empty">
+                        <h4>没有匹配的API</h4>
+                        <p>试试调整搜索关键词或筛选条件</p>
+                        <ym-btn type="primary" size="md" class="ym-empty__btn" @click.native="clearApiFilters">清空筛选</ym-btn>
                     </div>
                     <!-- API 列表 -->
                     <transition-group v-else :name="isInitialLoad ? '' : 'list'" tag="div">
                         <div v-for="api in apis" :key="api.apiConfigId || Math.random()" class="ym-api-item">
                             <div class="ym-api-item__main">
-                                <span class="ym-method" :class="'m-' + (api.apiMethod || 'get').toLowerCase()">{{ api.apiMethod || 'GET' }}</span>
-                                <span class="ym-api-item__url">{{ '/api' + (api.apiBaseUrl || '') + (api.apiUrl || '') }}</span>
+                                <span class="ym-method"
+                                      :class="'m-' + (api.apiMethod || 'get').toLowerCase()">{{ api.apiMethod || 'GET'
+                                    }}</span>
+                                <span class="ym-api-item__url">{{ '/api' + (api.apiBaseUrl || '') + (api.apiUrl || '')
+                                    }}</span>
                                 <span class="ym-api-item__name">{{ api.apiConfigName || '' }}</span>
-                                <span v-if="api.contentType === 'text/event-stream'" class="ym-tooltip" data-tooltip="流式API">
+                                <span v-if="api.contentType === 'text/event-stream'" class="ym-tooltip"
+                                      data-tooltip="流式API">
                                     <span class="ym-stream-icon"><ym-icon name="stream"></ym-icon></span>
                                 </span>
                             </div>
                             <div class="ym-api-item__actions">
-                                <span class="ym-badge" :class="api.enabled ? 'is-active' : 'is-inactive'">{{ api.enabled ? '启用' : '禁用' }}</span>
+                                <span class="ym-badge"
+                                      :class="api.enabled ? 'is-active' : 'is-inactive'">{{ api.enabled ? '启用' : '禁用'
+                                    }}</span>
                                 <ym-btn size="sm" icon="play" @click="requestApi(api)">请求</ym-btn>
                                 <ym-btn size="sm" icon="edit" @click="editApi(api)">编辑</ym-btn>
-                                <ym-btn type="danger" size="sm" icon="trash" @click="deleteApi(api.apiConfigId || 0)">删除</ym-btn>
+                                <ym-btn type="danger" size="sm" icon="trash" @click="deleteApi(api.apiConfigId || 0)">
+                                    删除
+                                </ym-btn>
                             </div>
                         </div>
                     </transition-group>
                 </div>
 
                 <div class="ym-main__pagination" v-if="total > 0">
-                    <ym-pagination :current-page="currentPage" :page-size="pageSize" :total="total" @current-change="handleCurrentChange"></ym-pagination>
+                    <ym-pagination :current-page="currentPage" :page-size="pageSize" :total="total"
+                                   @current-change="handleCurrentChange"></ym-pagination>
                 </div>
             </main>
         </div>
@@ -875,16 +2427,20 @@
             <aside class="ym-sidebar ym-sidebar--moyi">
                 <!-- 常用请求收藏（占满侧栏） -->
                 <div class="ym-sidebar__header">
-                    <h2><ym-icon name="star" size="14"></ym-icon> 常用请求</h2>
+                    <h2>
+                        <ym-icon name="star" size="14"></ym-icon>
+                        常用请求
+                    </h2>
                     <ym-btn type="text" size="sm" icon="plus" @click="saveCurrentToFavs">收藏当前</ym-btn>
                 </div>
                 <div class="ym-sidebar__list ym-sidebar__list--fav">
                     <div v-if="requestFavUrls.length === 0" class="ym-sidebar__empty">
-                        点击"收藏当前"保存常用 URL<br>点击记录快速填充到请求栏
+                        暂无收藏的请求<br>点击上方「收藏当前」保存，收藏后会显示在这里
                     </div>
                     <div v-for="fav in requestFavUrls" :key="fav.id" class="ym-req__fav-item">
                         <div class="ym-req__fav-top" @click="restoreFavUrl(fav)">
-                            <span class="ym-method" :class="'m-' + (fav.method || 'get').toLowerCase()">{{ fav.method }}</span>
+                            <span class="ym-method" :class="'m-' + (fav.method || 'get').toLowerCase()">{{ fav.method
+                                }}</span>
                             <input class="ym-req__fav-name" v-model="fav.name"
                                    :placeholder="'未命名 (' + (fav.method || 'GET') + ')'"
                                    @click.stop @change="saveRequestFavs" spellcheck="false">
@@ -896,288 +2452,536 @@
             </aside>
             <main class="ym-main ym-main--moyi">
                 <div class="ym-request">
-                <!-- 请求栏 -->
-                <div class="ym-req__bar">
-                    <select class="ym-req__method" v-model="requestMethod" :class="'m-' + requestMethod.toLowerCase()">
-                        <option value="GET">GET</option>
-                        <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="PATCH">PATCH</option>
-                        <option value="DELETE">DELETE</option>
-                        <option value="HEAD">HEAD</option>
-                        <option value="OPTIONS">OPTIONS</option>
-                    </select>
-                    <div class="ym-input-wrapper" style="flex: 1;">
-                        <span class="ym-input-icon"><ym-icon name="link"></ym-icon></span>
-                        <input class="ym-input ym-input--with-icon" v-model="requestUrl" @keyup.enter="sendRequest"
-                               placeholder="输入完整的请求 URL，例如 https://api.example.com/users" spellcheck="false">
+                    <!-- 请求栏 -->
+                    <div class="ym-req__bar">
+                        <select class="ym-req__method" v-model="requestMethod"
+                                :class="'m-' + requestMethod.toLowerCase()">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="OPTIONS">OPTIONS</option>
+                        </select>
+                        <div class="ym-input-wrapper" style="flex: 1;">
+                            <span class="ym-input-icon"><ym-icon name="link"></ym-icon></span>
+                            <input class="ym-input ym-input--with-icon" v-model="requestUrl" @keyup.enter="sendRequest"
+                                   placeholder="输入完整的请求 URL，例如 https://api.example.com/users"
+                                   spellcheck="false">
+                        </div>
+                        <ym-btn type="primary" icon="send" :disabled="requestSending" @click="sendRequest">
+                            {{ requestSending ? '请求中...' : '发送' }}
+                        </ym-btn>
                     </div>
-                    <ym-btn type="primary" icon="send" :disabled="requestSending" @click="sendRequest">
-                        {{ requestSending ? '请求中...' : '发送' }}
-                    </ym-btn>
-                </div>
 
-                <!-- 分区标签 -->
-                <div class="ym-req__tabs">
-                    <button type="button" :class="{ 'is-active': activeReqTab === 'params' }" @click="activeReqTab = 'params'">Params</button>
-                    <button type="button" :class="{ 'is-active': activeReqTab === 'headers' }" @click="activeReqTab = 'headers'">Headers</button>
-                    <button type="button" :class="{ 'is-active': activeReqTab === 'body' }" @click="activeReqTab = 'body'">Body</button>
-                    <button type="button" :class="{ 'is-active': activeReqTab === 'cookies' }" @click="activeReqTab = 'cookies'">Cookies</button>
-                    <div style="flex: 1;"></div>
-                    <ym-btn size="sm" icon="copy" @click="copyRequestUrl">复制URL</ym-btn>
-                    <ym-btn size="sm" icon="trash" @click="clearRequestResponse">清空响应</ym-btn>
-                </div>
+                    <!-- 分区标签 -->
+                    <div class="ym-req__tabs">
+                        <button type="button" :class="{ 'is-active': activeReqTab === 'params' }"
+                                @click="activeReqTab = 'params'">Params
+                        </button>
+                        <button type="button" :class="{ 'is-active': activeReqTab === 'headers' }"
+                                @click="activeReqTab = 'headers'">Headers
+                        </button>
+                        <button type="button" :class="{ 'is-active': activeReqTab === 'body' }"
+                                @click="activeReqTab = 'body'">Body
+                        </button>
+                        <button type="button" :class="{ 'is-active': activeReqTab === 'cookies' }"
+                                @click="activeReqTab = 'cookies'">Cookies
+                        </button>
+                        <div style="flex: 1;"></div>
+                        <ym-btn size="sm" icon="copy" @click="copyRequestUrl">复制URL</ym-btn>
+                        <ym-btn size="sm" icon="trash" @click="clearRequestResponse">清空响应</ym-btn>
+                    </div>
 
-                <!-- 编辑区 -->
-                <div class="ym-req__edit">
-                    <!-- Params -->
-                    <div v-if="activeReqTab === 'params'" class="ym-req__kv">
-                        <div class="ym-req__kv-head">
-                            <span>参数会追加到 URL 查询串</span>
-                            <ym-btn size="sm" type="primary" icon="plus" @click="addRequestParam">添加参数</ym-btn>
+                    <!-- 编辑区 -->
+                    <div class="ym-req__edit">
+                        <!-- Params -->
+                        <div v-if="activeReqTab === 'params'" class="ym-req__kv">
+                            <div class="ym-req__kv-head">
+                                <span>参数会追加到 URL 查询串</span>
+                                <ym-btn size="sm" type="primary" icon="plus" @click="addRequestParam">添加参数</ym-btn>
+                            </div>
+                            <div v-if="requestParams.length === 0" class="ym-req__kv-empty">
+                                暂无参数，点击"添加参数"创建
+                            </div>
+                            <div v-for="(p, i) in requestParams" :key="p.id" class="ym-req__kv-row">
+                                <input class="ym-input" v-model="p.key" placeholder="参数名">
+                                <input class="ym-input" v-model="p.value" placeholder="参数值"
+                                       @keyup.enter="sendRequest">
+                                <ym-btn type="text" size="sm" icon="trash" @click="removeRequestParam(i)"></ym-btn>
+                            </div>
                         </div>
-                        <div v-if="requestParams.length === 0" class="ym-req__kv-empty">暂无参数，点击"添加参数"创建</div>
-                        <div v-for="(p, i) in requestParams" :key="p.id" class="ym-req__kv-row">
-                            <input class="ym-input" v-model="p.key" placeholder="参数名">
-                            <input class="ym-input" v-model="p.value" placeholder="参数值" @keyup.enter="sendRequest">
-                            <ym-btn type="text" size="sm" icon="trash" @click="removeRequestParam(i)"></ym-btn>
+                        <!-- Headers -->
+                        <div v-else-if="activeReqTab === 'headers'" class="ym-req__kv">
+                            <div class="ym-req__kv-head">
+                                <span>自定义请求头（浏览器直连受 CORS 限制）</span>
+                                <ym-btn size="sm" type="primary" icon="plus" @click="addRequestHeader">添加请求头
+                                </ym-btn>
+                            </div>
+                            <div v-if="requestHeaders.length === 0" class="ym-req__kv-empty">
+                                暂无请求头，点击"添加请求头"创建
+                            </div>
+                            <div v-for="(h, i) in requestHeaders" :key="h.id" class="ym-req__kv-row">
+                                <input class="ym-input" v-model="h.key" placeholder="请求头名，如 Authorization">
+                                <input class="ym-input" v-model="h.value" placeholder="请求头值">
+                                <ym-btn type="text" size="sm" icon="trash" @click="removeRequestHeader(i)"></ym-btn>
+                            </div>
+                        </div>
+                        <!-- Body -->
+                        <div v-else-if="activeReqTab === 'body'" class="ym-req__body"
+                             :class="{ 'is-disabled' : !requestHasBody }">
+                            <div class="ym-req__kv-head">
+                                <span v-if="requestHasBody">请求体（按请求体类型格式化发送）</span>
+                                <span v-else style="color: var(--warning);">{{ requestMethod }} 请求不支持请求体</span>
+                            </div>
+                            <div v-if="requestHasBody" class="ym-req__body-ops">
+                                <select class="ym-select" v-model="requestBodyType" style="width: 200px;">
+                                    <option value="application/json">application/json</option>
+                                    <option value="text/plain">text/plain</option>
+                                    <option value="application/x-www-form-urlencoded">
+                                        application/x-www-form-urlencoded
+                                    </option>
+                                </select>
+                                <ym-btn size="sm" @click="formatRequestBody">格式化 JSON</ym-btn>
+                            </div>
+                            <div v-if="requestHasBody" class="ym-code-editor">
+                                <pre ref="bodyHighlight" class="ym-code-pre" aria-hidden="true"><code
+                                        v-html="requestBodyHighlightHtml"></code></pre>
+                                <textarea ref="bodyEditor" class="ym-code-ta" v-model="requestBody" wrap="off"
+                                          placeholder='请求体内容，例如：{"name": "张三", "age": 18}'
+                                          spellcheck="false" @scroll="syncBodyScroll"></textarea>
+                            </div>
+                            <textarea v-else class="ym-input ym-textarea" disabled rows="8"
+                                      :placeholder="requestMethod + ' 请求不携带请求体'"></textarea>
+                        </div>
+                        <!-- Cookies -->
+                        <div v-else-if="activeReqTab === 'cookies'" class="ym-req__cookies">
+                            <div class="ym-req__kv-head">
+                                <span>Cookie 由浏览器自动管理</span>
+                            </div>
+                            <div class="ym-req__cookies-hint">
+                                浏览器会自动为<strong>同源</strong>请求附加目标域的 Cookie，无需手动配置。如需跨域携带
+                                Cookie，请勾选下方选项（目标接口必须返回
+                                <code>Access-Control-Allow-Credentials: true</code>，且不能使用通配符域名）。
+                            </div>
+                            <label class="ym-req__cookies-toggle">
+                                <input type="checkbox" v-model="requestWithCredentials">
+                                <span>跨域请求携带 Cookie（credentials: include）</span>
+                            </label>
+                            <div class="ym-req__cookies-hint" style="color: var(--text-tertiary);">
+                                说明：出于浏览器安全策略，页面无法读取远程服务下发的 Set-Cookie，也无法手动伪造 Cookie
+                                请求头；Cookie 一律由浏览器收发管理。
+                            </div>
                         </div>
                     </div>
-                    <!-- Headers -->
-                    <div v-else-if="activeReqTab === 'headers'" class="ym-req__kv">
-                        <div class="ym-req__kv-head">
-                            <span>自定义请求头（浏览器直连受 CORS 限制）</span>
-                            <ym-btn size="sm" type="primary" icon="plus" @click="addRequestHeader">添加请求头</ym-btn>
-                        </div>
-                        <div v-if="requestHeaders.length === 0" class="ym-req__kv-empty">暂无请求头，点击"添加请求头"创建</div>
-                        <div v-for="(h, i) in requestHeaders" :key="h.id" class="ym-req__kv-row">
-                            <input class="ym-input" v-model="h.key" placeholder="请求头名，如 Authorization">
-                            <input class="ym-input" v-model="h.value" placeholder="请求头值">
-                            <ym-btn type="text" size="sm" icon="trash" @click="removeRequestHeader(i)"></ym-btn>
-                        </div>
-                    </div>
-                    <!-- Body -->
-                    <div v-else-if="activeReqTab === 'body'" class="ym-req__body" :class="{ 'is-disabled' : !requestHasBody }">
-                        <div class="ym-req__kv-head">
-                            <span v-if="requestHasBody">请求体（按请求体类型格式化发送）</span>
-                            <span v-else style="color: var(--warning);">{{ requestMethod }} 请求不支持请求体</span>
-                        </div>
-                        <div v-if="requestHasBody" class="ym-req__body-ops">
-                            <select class="ym-select" v-model="requestBodyType" style="width: 200px;">
-                                <option value="application/json">application/json</option>
-                                <option value="text/plain">text/plain</option>
-                                <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
-                            </select>
-                            <ym-btn size="sm" @click="formatRequestBody">格式化 JSON</ym-btn>
-                        </div>
-                        <div v-if="requestHasBody" class="ym-code-editor">
-                            <pre ref="bodyHighlight" class="ym-code-pre" aria-hidden="true"><code v-html="requestBodyHighlightHtml"></code></pre>
-                            <textarea ref="bodyEditor" class="ym-code-ta" v-model="requestBody" wrap="off"
-                                      placeholder='请求体内容，例如：{"name": "张三", "age": 18}'
-                                      spellcheck="false" @scroll="syncBodyScroll"></textarea>
-                        </div>
-                        <textarea v-else class="ym-input ym-textarea" disabled rows="8"
-                                  :placeholder="requestMethod + ' 请求不携带请求体'"></textarea>
-                    </div>
-                    <!-- Cookies -->
-                    <div v-else-if="activeReqTab === 'cookies'" class="ym-req__cookies">
-                        <div class="ym-req__kv-head">
-                            <span>Cookie 由浏览器自动管理</span>
-                        </div>
-                        <div class="ym-req__cookies-hint">
-                            浏览器会自动为<strong>同源</strong>请求附加目标域的 Cookie，无需手动配置。如需跨域携带 Cookie，请勾选下方选项（目标接口必须返回
-                            <code>Access-Control-Allow-Credentials: true</code>，且不能使用通配符域名）。
-                        </div>
-                        <label class="ym-req__cookies-toggle">
-                            <input type="checkbox" v-model="requestWithCredentials">
-                            <span>跨域请求携带 Cookie（credentials: include）</span>
-                        </label>
-                        <div class="ym-req__cookies-hint" style="color: var(--text-tertiary);">
-                            说明：出于浏览器安全策略，页面无法读取远程服务下发的 Set-Cookie，也无法手动伪造 Cookie 请求头；Cookie 一律由浏览器收发管理。
-                        </div>
-                    </div>
-                </div>
 
-                <!-- 响应区 -->
-                <div class="ym-req__response">
-                    <div class="ym-req__rhead">
-                        <template v-if="requestResponse">
-                            <span class="ym-req__rstatus" :class="requestResponse.kind">{{ requestResponse.status }} {{ requestResponse.statusText }}</span>
-                            <span class="ym-req__rmeta">用时 {{ requestResponse.responseTime }}ms</span>
-                            <span class="ym-req__rmeta">大小 {{ requestResponse.size }}</span>
-                            <span class="ym-req__rmeta">{{ requestResponse.contentType }}</span>
-                            <div style="flex: 1;"></div>
-                            <ym-btn size="sm" icon="copy" @click="copyRequestResponse">复制响应</ym-btn>
-                        </template>
-                        <span v-else class="ym-req__rhead-hint">发送请求后将在此展示响应内容</span>
+                    <!-- 响应区 -->
+                    <div class="ym-req__response">
+                        <div class="ym-req__rhead">
+                            <template v-if="requestResponse">
+                                <span class="ym-req__rstatus" :class="requestResponse.kind">{{ requestResponse.status }} {{ requestResponse.statusText
+                                    }}</span>
+                                <span class="ym-req__rmeta">用时 {{ requestResponse.responseTime }}ms</span>
+                                <span class="ym-req__rmeta">大小 {{ requestResponse.size }}</span>
+                                <span class="ym-req__rmeta">{{ requestResponse.contentType }}</span>
+                                <div style="flex: 1;"></div>
+                                <ym-btn size="sm" icon="copy" @click="copyRequestResponse">复制响应</ym-btn>
+                            </template>
+                            <span v-else class="ym-req__rhead-hint">发送请求后将在此展示响应内容</span>
+                        </div>
+                        <pre v-if="requestResponse && requestResponse.isLoading"
+                             class="ym-req__rbody"><code class="ym-req__loading"><span class="ym-spinner"><ym-icon name="loader"></ym-icon></span>请求发送中...</code></pre>
+                        <pre v-else-if="requestResponse && requestResponse.isStreaming"
+                             class="ym-req__rbody"><code>{{ requestResponse.text }}</code></pre>
+                        <pre v-else-if="requestResponse" class="ym-req__rbody"><code
+                                v-html="requestResponseHtml"></code></pre>
+                        <pre v-else class="ym-req__rbody"><code class="ym-req__rbody-empty">// 暂无请求结果</code></pre>
                     </div>
-                    <pre v-if="requestResponse && requestResponse.isLoading" class="ym-req__rbody"><code>⏳ 请求发送中...</code></pre>
-                    <pre v-else-if="requestResponse && requestResponse.isStreaming" class="ym-req__rbody"><code>{{ requestResponse.text }}</code></pre>
-                    <pre v-else-if="requestResponse" class="ym-req__rbody"><code v-html="requestResponseHtml"></code></pre>
-                    <pre v-else class="ym-req__rbody"><code class="ym-req__rbody-empty">// 暂无请求结果</code></pre>
-                </div>
                 </div>
             </main>
         </div>
-        </transition>
+    </transition>
 
-        <!-- 创建/编辑API 对话框 -->
-        <ym-modal :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="640px">
-            <ym-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
-                <div class="ym-grid">
-                    <div class="ym-col-6">
-                        <ym-form-item label="API名称" prop="apiConfigName">
-                            <input class="ym-input" v-model="apiForm.apiConfigName" placeholder="请输入API名称">
-                        </ym-form-item>
-                    </div>
-                    <div class="ym-col-6">
-                        <ym-form-item label="所属分组" prop="apiGroupId">
-                            <select class="ym-select" v-model="apiForm.apiGroupId" style="width: 100%;">
-                                <option value="">选择分组</option>
-                                <option v-for="group in groups" :key="group.apiGroupId || Math.random()" :value="group.apiGroupId">{{ group.apiGroupName || '' }}</option>
-                            </select>
-                        </ym-form-item>
-                    </div>
+    <!-- 创建/编辑API 对话框 -->
+    <ym-modal :title="editingApi ? '编辑API' : '新建API'" :visible.sync="showCreateDialog" width="640px">
+        <ym-form :model="apiForm" :rules="apiRules" ref="apiForm" label-width="80px">
+            <div class="ym-grid">
+                <div class="ym-col-6">
+                    <ym-form-item label="API名称" prop="apiConfigName">
+                        <input class="ym-input" v-model="apiForm.apiConfigName" placeholder="请输入API名称">
+                    </ym-form-item>
                 </div>
-                <div class="ym-grid">
-                    <div class="ym-col-6">
-                        <ym-form-item label="请求方法" prop="apiMethod">
-                            <select class="ym-select" v-model="apiForm.apiMethod" style="width: 100%;">
-                                <option value="GET">GET</option>
-                                <option value="POST">POST</option>
-                                <option value="PUT">PUT</option>
-                                <option value="DELETE">DELETE</option>
-                            </select>
-                        </ym-form-item>
-                    </div>
-                    <div class="ym-col-6">
-                        <ym-form-item label="API路径" prop="apiUrl">
-                            <input class="ym-input" v-model="apiForm.apiUrl" placeholder="/api/path">
-                        </ym-form-item>
-                    </div>
-                </div>
-                <div class="ym-grid">
-                    <div class="ym-col-6">
-                        <ym-form-item label="状态码" prop="statusCode">
-                            <input type="number" class="ym-input ym-number" v-model="apiForm.statusCode" min="100" max="599">
-                        </ym-form-item>
-                    </div>
-                    <div class="ym-col-6">
-                        <ym-form-item label="延迟(ms)" prop="delay">
-                            <input type="number" class="ym-input ym-number" v-model="apiForm.delay" min="0" max="10000">
-                        </ym-form-item>
-                    </div>
-                </div>
-                <ym-form-item label="响应内容" prop="response">
-                    <div class="ym-code-editor">
-                        <pre ref="mockFormHighlight" class="ym-code-pre" aria-hidden="true"><code v-html="mockResponseHighlightHtml"></code></pre>
-                        <textarea ref="mockFormEditor" class="ym-code-ta" v-model="apiForm.response"
-                                  :placeholder="getResponsePlaceholder()" wrap="off"
-                                  spellcheck="false" @scroll="syncMockFormScroll"></textarea>
-                    </div>
-                    <div class="ym-form-hint">
-                        <ym-btn type="text" size="sm" @click="formatMockResponse">格式化 JSON</ym-btn>
-                        <ym-btn type="text" size="sm" @click="showTemplateHelp">查看可用变量</ym-btn>
-                        模板示例：<code>{"name": "${name}"}</code>
-                    </div>
-                </ym-form-item>
-                <ym-form-item label="描述">
-                    <input class="ym-input" v-model="apiForm.comment" placeholder="API描述（可选）">
-                </ym-form-item>
-                <div class="ym-grid">
-                    <div class="ym-col-6">
-                        <ym-form-item label="模板变量">
-                            <label class="ym-switch"><input type="checkbox" v-model="apiForm.template"><span class="ym-switch__slider"></span></label>
-                        </ym-form-item>
-                    </div>
-                    <div class="ym-col-6">
-                        <ym-form-item label="流式返回">
-                            <label class="ym-switch"><input type="checkbox" v-model="apiForm.streamEnabled" @change="onStreamEnabledChange"><span class="ym-switch__slider"></span></label>
-                        </ym-form-item>
-                    </div>
-                </div>
-                <ym-form-item label="启用状态">
-                    <label class="ym-switch"><input type="checkbox" v-model="apiForm.enabled"><span class="ym-switch__slider"></span></label>
-                </ym-form-item>
-            </ym-form>
-            <div slot="footer">
-                <ym-btn @click="showCreateDialog = false">取消</ym-btn>
-                <ym-btn type="primary" @click="saveApi">确定</ym-btn>
-            </div>
-        </ym-modal>
-
-        <!-- 模板变量说明对话框 -->
-        <ym-modal title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="560px">
-            <table class="ym-table">
-                <thead>
-                    <tr><th>变量名</th><th>说明</th></tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in templateConstants" :key="item.code">
-                        <td><code>{{ item.code }}</code></td>
-                        <td>{{ item.desc }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div slot="footer">
-                <ym-btn @click="showTemplateHelpDialog = false">关闭</ym-btn>
-            </div>
-        </ym-modal>
-
-        <!-- 创建/编辑分组对话框 -->
-        <ym-modal :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="480px">
-            <ym-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
-                <ym-form-item label="分组名称" prop="apiGroupName">
-                    <input class="ym-input" v-model="groupForm.apiGroupName" placeholder="请输入分组名称">
-                </ym-form-item>
-                <ym-form-item label="基础URL" prop="apiBaseUrl">
-                    <input class="ym-input" v-model="groupForm.apiBaseUrl" placeholder="/api">
-                </ym-form-item>
-            </ym-form>
-            <div slot="footer">
-                <ym-btn @click="showGroupDialog = false">取消</ym-btn>
-                <ym-btn v-if="editingGroup" type="danger" @click="deleteGroup(editingGroup.apiGroupId)">删除分组</ym-btn>
-                <ym-btn type="primary" @click="saveGroup">确定</ym-btn>
-            </div>
-        </ym-modal>
-
-        <!-- 响应弹框 -->
-        <ym-modal title="API响应结果" :visible.sync="showResponseDialog" width="720px">
-            <div v-if="currentResponse">
-                <div class="response-info">
-                    <h4>请求信息</h4>
-                    <p><strong>请求方法：</strong>{{ currentResponse.method }}</p>
-                    <p><strong>请求URL：</strong>{{ currentResponse.url }}
-                        <ym-btn type="text" size="sm" @click="copyFullUrl">复制路径</ym-btn>
-                    </p>
-                    <p><strong>状态码：</strong>{{ currentResponse.status }}</p>
-                    <p><strong>响应时间：</strong>{{ currentResponse.responseTime }}ms</p>
-                    <p><strong>响应类型：</strong>{{ currentResponse.contentType || 'application/json' }}</p>
-                    <p v-if="currentResponse.isStreaming" style="color: var(--accent);">
-                        <span class="ym-spinner" style="display: inline-flex;"><ym-icon name="loader"></ym-icon></span> 流式数据接收中...
-                    </p>
-                    <p v-else-if="currentResponse.contentType && (currentResponse.contentType.includes('stream') || currentResponse.contentType === 'text/event-stream')" style="color: var(--success);">
-                        <ym-icon name="check"></ym-icon> 流式数据接收完成
-                    </p>
-                </div>
-                <div class="response-content">
-                    <h4>响应内容</h4>
-                    <pre v-if="currentResponse.isStreaming || (currentResponse.contentType === 'text/event-stream')">{{ currentResponse.data }}{{ currentResponse.isStreaming ? '\n\n⏳ 数据流式传输中...' : '' }}</pre>
-                    <pre v-else><code class="language-json" v-html="formattedResponse"></code></pre>
+                <div class="ym-col-6">
+                    <ym-form-item label="所属分组" prop="apiGroupId">
+                        <select class="ym-select" v-model="apiForm.apiGroupId" style="width: 100%;">
+                            <option value="">选择分组</option>
+                            <option v-for="group in groups" :key="group.apiGroupId || Math.random()"
+                                    :value="group.apiGroupId">{{ group.apiGroupName || '' }}
+                            </option>
+                        </select>
+                    </ym-form-item>
                 </div>
             </div>
-            <div slot="footer">
-                <ym-btn @click="showResponseDialog = false">关闭</ym-btn>
-                <ym-btn type="primary" @click="copyResponse">复制响应</ym-btn>
+            <div class="ym-grid">
+                <div class="ym-col-6">
+                    <ym-form-item label="请求方法" prop="apiMethod">
+                        <select class="ym-select" v-model="apiForm.apiMethod" style="width: 100%;">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </ym-form-item>
+                </div>
+                <div class="ym-col-6">
+                    <ym-form-item label="API路径" prop="apiUrl">
+                        <input class="ym-input" v-model="apiForm.apiUrl" placeholder="/api/path">
+                    </ym-form-item>
+                </div>
             </div>
-        </ym-modal>
-    </div>
+            <div class="ym-grid">
+                <div class="ym-col-6">
+                    <ym-form-item label="状态码" prop="statusCode">
+                        <input type="number" class="ym-input ym-number" v-model="apiForm.statusCode" min="100"
+                               max="599">
+                    </ym-form-item>
+                </div>
+                <div class="ym-col-6">
+                    <ym-form-item label="延迟(ms)" prop="delay">
+                        <input type="number" class="ym-input ym-number" v-model="apiForm.delay" min="0" max="10000">
+                    </ym-form-item>
+                </div>
+            </div>
+            <ym-form-item label="响应内容" prop="response">
+                <div class="ym-code-editor">
+                    <pre ref="mockFormHighlight" class="ym-code-pre" aria-hidden="true"><code
+                            v-html="mockResponseHighlightHtml"></code></pre>
+                    <textarea ref="mockFormEditor" class="ym-code-ta" v-model="apiForm.response"
+                              :placeholder="getResponsePlaceholder()" wrap="off"
+                              spellcheck="false" @scroll="syncMockFormScroll"></textarea>
+                </div>
+                <div class="ym-form-hint">
+                    <ym-btn type="text" size="sm" @click="formatMockResponse">格式化 JSON</ym-btn>
+                    <ym-btn type="text" size="sm" @click="showTemplateHelp">查看可用变量</ym-btn>
+                    模板示例：<code>{"name": "${name}"}</code>
+                </div>
+            </ym-form-item>
+            <ym-form-item label="描述">
+                <input class="ym-input" v-model="apiForm.comment" placeholder="API描述（可选）">
+            </ym-form-item>
+            <div class="ym-grid">
+                <div class="ym-col-6">
+                    <ym-form-item label="模板变量">
+                        <label class="ym-switch"><input type="checkbox" v-model="apiForm.template"><span
+                                class="ym-switch__slider"></span></label>
+                    </ym-form-item>
+                </div>
+                <div class="ym-col-6">
+                    <ym-form-item label="流式返回">
+                        <label class="ym-switch"><input type="checkbox" v-model="apiForm.streamEnabled"
+                                                        @change="onStreamEnabledChange"><span
+                                class="ym-switch__slider"></span></label>
+                    </ym-form-item>
+                </div>
+            </div>
+            <ym-form-item label="启用状态">
+                <label class="ym-switch"><input type="checkbox" v-model="apiForm.enabled"><span
+                        class="ym-switch__slider"></span></label>
+            </ym-form-item>
+        </ym-form>
+        <div slot="footer">
+            <ym-btn @click="showCreateDialog = false">取消</ym-btn>
+            <ym-btn type="primary" @click="saveApi">确定</ym-btn>
+        </div>
+    </ym-modal>
 
-    <script src="lib/vue.js"></script>
-    <script src="js/yimo-ui.js"></script>
-    <script src="lib/axios.min.js"></script>
-    <script src="lib/highlight.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/app.js"></script>
+    <!-- 模板变量说明对话框 -->
+    <ym-modal title="可用模板变量" :visible.sync="showTemplateHelpDialog" width="560px">
+        <table class="ym-table">
+            <thead>
+            <tr>
+                <th>变量名</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in templateConstants" :key="item.code">
+                <td><code>{{ item.code }}</code></td>
+                <td>{{ item.desc }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div slot="footer">
+            <ym-btn @click="showTemplateHelpDialog = false">关闭</ym-btn>
+        </div>
+    </ym-modal>
+
+    <!-- 创建/编辑分组对话框 -->
+    <ym-modal :title="editingGroup ? '编辑分组' : '新建分组'" :visible.sync="showGroupDialog" width="480px">
+        <ym-form :model="groupForm" :rules="groupRules" ref="groupForm" label-width="100px">
+            <ym-form-item label="分组名称" prop="apiGroupName">
+                <input class="ym-input" v-model="groupForm.apiGroupName" placeholder="请输入分组名称">
+            </ym-form-item>
+            <ym-form-item label="基础URL" prop="apiBaseUrl">
+                <input class="ym-input" v-model="groupForm.apiBaseUrl" placeholder="/api">
+            </ym-form-item>
+        </ym-form>
+        <div slot="footer">
+            <ym-btn @click="showGroupDialog = false">取消</ym-btn>
+            <ym-btn v-if="editingGroup" type="danger" @click="deleteGroup(editingGroup.apiGroupId)">删除分组</ym-btn>
+            <ym-btn type="primary" @click="saveGroup">确定</ym-btn>
+        </div>
+    </ym-modal>
+
+    <!-- 响应弹框 -->
+    <ym-modal title="API响应结果" :visible.sync="showResponseDialog" width="720px">
+        <div v-if="currentResponse">
+            <div class="response-info">
+                <h4>请求信息</h4>
+                <p><strong>请求方法：</strong>{{ currentResponse.method }}</p>
+                <p><strong>请求URL：</strong>{{ currentResponse.url }}
+                    <ym-btn type="text" size="sm" @click="copyFullUrl">复制路径</ym-btn>
+                </p>
+                <p><strong>状态码：</strong>{{ currentResponse.isLoading ? '请求中' : currentResponse.status }}</p>
+                <p><strong>响应时间：</strong>{{ currentResponse.isLoading ? '-' : currentResponse.responseTime + 'ms' }}</p>
+                <p><strong>响应类型：</strong>{{ currentResponse.contentType || 'application/json' }}</p>
+                <p v-if="currentResponse.isStreaming" style="color: var(--accent);">
+                    <span class="ym-spinner"><ym-icon name="loader"></ym-icon></span>
+                    流式数据接收中...
+                </p>
+                <p v-else-if="currentResponse.contentType && (currentResponse.contentType.includes('stream') || currentResponse.contentType === 'text/event-stream')"
+                   style="color: var(--success);">
+                    <ym-icon name="check"></ym-icon>
+                    流式数据接收完成
+                </p>
+            </div>
+            <div class="response-content">
+                <h4>响应内容</h4>
+                <pre v-if="currentResponse.isLoading" class="ym-req__loading"><span class="ym-spinner"><ym-icon name="loader"></ym-icon></span>请求发送中，请稍候...</pre>
+                <pre v-else-if="currentResponse.isStreaming || (currentResponse.contentType === 'text/event-stream')">{{ currentResponse.data
+                    }}{{ currentResponse.isStreaming ? '\n\n数据流式传输中...' : '' }}</pre>
+                <pre v-else><code class="language-json" v-html="formattedResponse"></code></pre>
+            </div>
+        </div>
+        <div slot="footer">
+            <ym-btn @click="showResponseDialog = false">关闭</ym-btn>
+            <ym-btn type="primary" @click="copyResponse">复制响应</ym-btn>
+        </div>
+    </ym-modal>
+
+    <!-- 调用日志弹窗（同一层级左右两栏：左=明细表格，右=今日概览面板） -->
+    <ym-modal title="调用日志" :visible.sync="showApiLogsDialog" width="1180px">
+        <div class="ym-log-cols">
+            <div class="ym-log-main">
+                <div class="ym-log-summary">
+                    <div class="ym-log-summary__item">
+                        <span class="ym-log-summary__label">今日调用</span>
+                        <b>{{ apiLogsTotal }}</b>
+                    </div>
+                    <span class="ym-log-summary__divider"></span>
+                    <div class="ym-log-summary__item">
+                        <span class="ym-log-summary__label">命中接口</span>
+                        <b>{{ apiLogsInterfaceCount }}</b>
+                    </div>
+                    <span class="ym-log-summary__hint">数据保留当天 · 次日凌晨自动清理</span>
+                </div>
+                <div class="ym-log-filters">
+                    <div class="ym-input-wrapper" style="flex: 1; max-width: 220px;">
+                        <span class="ym-input-icon"><ym-icon name="search"></ym-icon></span>
+                        <input class="ym-input ym-input--with-icon" v-model="apiLogSearchIp" placeholder="按 IP 搜索">
+                    </div>
+                    <select class="ym-select" v-model="apiLogMethodFilter">
+                        <option value="">全部方法</option>
+                        <option v-for="m in apiLogMethods" :key="m" :value="m">{{ m }}</option>
+                    </select>
+                    <div style="flex: 1;"></div>
+                    <ym-btn icon="refresh" @click="refreshApiLogs">刷新</ym-btn>
+                </div>
+                <div v-if="apiLogs.length === 0" class="ym-log-empty">
+                    暂无调用记录 — 调用 Mock 接口后即可在此查看
+                </div>
+                <div v-else-if="filteredApiLogs.length === 0" class="ym-log-empty">
+                    没有匹配的记录，试试调整筛选条件
+                </div>
+                <div v-else class="ym-log-table-wrap">
+                    <table class="ym-table ym-log-table">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>分组</th>
+                            <th>URL</th>
+                            <th>方法</th>
+                            <th>耗时</th>
+                            <th>状态</th>
+                            <th>IP</th>
+                            <th>时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="ym-log-row" v-for="(log, index) in filteredApiLogs" :key="index"
+                            @click="openLogDetail(log)">
+                            <td class="ym-log-name"><span class="ym-log-cell" :title="log.apiName">{{ log.apiName }}</span></td>
+                            <td class="ym-log-group"><span class="ym-log-cell" :title="log.groupName">{{ log.groupName }}</span></td>
+                            <td class="ym-log-url"><span class="ym-log-cell" :title="log.apiUrl">{{ log.apiUrl }}</span></td>
+                            <td><span class="ym-method"
+                                      :class="'m-' + (log.apiMethod || 'get').toLowerCase()">{{ log.apiMethod
+                                }}</span></td>
+                            <td class="ym-log-duration">{{ formatLogDuration(log.duration) }}</td>
+                            <td class="ym-log-status" :class="logStatusCls(log.statusCode)">{{ log.statusCode }}</td>
+                            <td class="ym-log-ip"><span class="ym-log-cell" :title="log.ip">{{ log.ip }}</span></td>
+                            <td class="ym-log-date">{{ formatLogTime(log.requestTime) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 右侧：今日概览面板（排行/分布，高度随内容自适应，不滚动） -->
+            <div v-if="dashboardStats" class="ym-log-side">
+                <div class="ym-log-side__head">
+                    <span class="ym-log-side__head-title">今日概览</span>
+                    <span class="ym-log-side__head-meta">{{ dashboardStats.totalCalls }} 次</span>
+                </div>
+                <div class="ym-log-side__sec">
+                    <div class="ym-log-side__sec-title">接口排行 TOP10</div>
+                    <div v-if="!dashboardStats.topInterfaces || dashboardStats.topInterfaces.length === 0"
+                         class="ym-log-empty">
+                        今日暂无调用
+                    </div>
+                    <template v-else>
+                        <div class="ym-log-side__row"
+                             v-for="(it, idx) in dashboardStats.topInterfaces"
+                             :key="it.method + it.url">
+                            <span class="ym-log-side__rank" :class="{ 'is-top': idx < 3 }">{{ fmtRank(idx + 1) }}</span>
+                            <span class="ym-method" :class="'m-' + (it.method || 'get').toLowerCase()">{{ it.method
+                                }}</span>
+                            <span class="ym-log-side__name ym-log-side__name--mono"
+                                  :title="it.name || it.url">{{ it.name || it.url }}</span>
+                            <span class="ym-log-side__bar"><i
+                                    :style="{ width: barsPercent(it.count, dashboardStats.topInterfaces) + '%' }"></i></span>
+                            <span class="ym-log-side__count">{{ it.count }}</span>
+                        </div>
+                    </template>
+                </div>
+                <div class="ym-log-side__sec">
+                    <div class="ym-log-side__sec-title">方法分布</div>
+                    <div v-if="!dashboardStats.methodCalls || dashboardStats.methodCalls.length === 0"
+                         class="ym-log-empty">
+                        今日暂无调用
+                    </div>
+                    <template v-else>
+                        <div class="ym-log-side__row" v-for="m in dashboardStats.methodCalls" :key="m.method">
+                            <span class="ym-method" :class="'m-' + (m.method || 'get').toLowerCase()">{{ m.method
+                                }}</span>
+                            <span class="ym-log-side__bar ym-log-side__bar--flex"><i
+                                    :style="{ width: dashboardPercent(m.count) + '%' }"></i></span>
+                            <span class="ym-log-side__pct">{{ dashboardPercent(m.count) }}%</span>
+                            <span class="ym-log-side__count">{{ m.count }}</span>
+                        </div>
+                    </template>
+                </div>
+                <div class="ym-log-side__sec">
+                    <div class="ym-log-side__sec-title">分组调用</div>
+                    <div v-if="!dashboardStats.groupCalls || dashboardStats.groupCalls.length === 0"
+                         class="ym-log-empty">
+                        今日暂无调用
+                    </div>
+                    <template v-else>
+                        <div class="ym-log-side__row" v-for="g in dashboardStats.groupCalls" :key="g.name">
+                            <span class="ym-log-side__name" :title="g.name">{{ g.name }}</span>
+                            <span class="ym-log-side__bar"><i
+                                    :style="{ width: dashboardPercent(g.count) + '%' }"></i></span>
+                            <span class="ym-log-side__count">{{ g.count }}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div slot="footer">
+            <ym-btn @click="showApiLogsDialog = false">关闭</ym-btn>
+        </div>
+    </ym-modal>
+
+    <!-- 调用日志详情弹窗 -->
+    <ym-modal title="调用日志详情" :visible.sync="showLogDetailDialog" width="640px">
+        <div v-if="logDetail" class="ym-log-detail">
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">调用时间</span>
+                <span class="ym-log-detail__value">{{ formatLogTime(logDetail.requestTime) }}</span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">接口</span>
+                <span class="ym-log-detail__value">
+                        <span class="ym-method"
+                              :class="'m-' + (logDetail.apiMethod || 'get').toLowerCase()">{{ logDetail.apiMethod
+                            }}</span>
+                        <span class="ym-log-url" style="display: inline;">{{ logDetail.apiUrl }}</span>
+                    </span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">名称 / 分组</span>
+                <span class="ym-log-detail__value">{{ logDetail.apiName }}<span v-if="logDetail.groupName"
+                                                                                class="ym-log-detail__group">{{ logDetail.groupName
+                    }}</span></span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">状态 / 耗时</span>
+                <span class="ym-log-detail__value">
+                        <span class="ym-log-status">{{ logDetail.statusCode }}</span>
+                        <span class="ym-log-duration" style="display:inline;">{{ formatLogDuration(logDetail.duration)
+                            }}</span>
+                    </span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">客户端 IP</span>
+                <span class="ym-log-detail__value">{{ logDetail.ip || '-' }}</span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">请求类型</span>
+                <span class="ym-log-detail__value">{{ logDetail.requestType || '-' }}</span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">User-Agent</span>
+                <span class="ym-log-detail__value ym-log-detail__value--wrap">{{ logDetail.ua || '-' }}</span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">来源</span>
+                <span class="ym-log-detail__value ym-log-detail__value--wrap">{{ logDetail.referer || '-' }}</span>
+            </div>
+            <div class="ym-log-detail__row">
+                <span class="ym-log-detail__label">响应大小</span>
+                <span class="ym-log-detail__value">{{ formatBytes(logDetail.responseSize) }}</span>
+            </div>
+            <template v-if="logDetail.queryString">
+                <div class="ym-log-detail__row">
+                    <span class="ym-log-detail__label">请求参数</span>
+                    <span class="ym-log-detail__value ym-log-detail__value--wrap">{{ logDetail.queryString }}</span>
+                </div>
+            </template>
+            <template v-if="logDetail.requestBody">
+                <div class="ym-log-detail__row">
+                    <span class="ym-log-detail__label">请求体</span>
+                    <pre class="ym-log-detail__pre">{{ logDetail.requestBody }}</pre>
+                </div>
+            </template>
+            <template v-if="logDetail.errorMsg">
+                <div class="ym-log-detail__row">
+                    <span class="ym-log-detail__label">异常</span>
+                    <pre class="ym-log-detail__pre ym-log-detail__error">{{ logDetail.errorMsg }}</pre>
+                </div>
+            </template>
+        </div>
+        <div slot="footer">
+            <ym-btn @click="showLogDetailDialog = false">关闭</ym-btn>
+        </div>
+    </ym-modal>
+</div>
+
+<script src="lib/vue.js"></script>
+<script src="js/yimo-ui.js"></script>
+<script src="lib/axios.min.js"></script>
+<script src="lib/highlight.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

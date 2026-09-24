@@ -12,6 +12,6 @@ public class YiMoApiService implements IYiMoApiService {
 
     @Override
     public ApiConfig queryApiConfigByApiUrl(String apiUrl, String method) {
-        return apiConfigDao.queryApiConfig(apiUrl,method);
+        return apiConfigDao.queryApiConfig(apiUrl, method);
     }
 }

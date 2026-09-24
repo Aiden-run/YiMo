@@ -18,22 +18,22 @@ new Vue({
             groupListPageSize: 15,
             groupListTotal: 0,
             groupListLoading: false,
-            groupListListenerAttached: false,
             loading: false,
-            
+
             // 分页
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            
+
             // 搜索和筛选
             searchKeyword: '',
             selectedGroup: '',
             selectedMethod: '',
             selectedStatus: '',
+            // API 方法筛选下拉的动态选项（从已配置 API 去重生成）
+            apiMethodOptions: [],
             searchTimeout: null,
-            scrollTimeout: null, // 滚动防抖定时器
-            
+
             // 对话框控制
             showCreateDialog: false,
             showGroupDialog: false,
@@ -42,17 +42,29 @@ new Vue({
             editingApi: null,
             editingGroup: null,
             deletePopoverVisible: false,
-            
+
             // 模板变量
             templateConstants: [],
             templateList: [],
             templateSearchKeyword: '',
             templateLoading: false,
 
+            // 调用日志
+            showApiLogsDialog: false,
+            apiLogs: [],
+            apiLogSearchIp: '',
+            apiLogMethodFilter: '',
+            // 调用日志详情
+            showLogDetailDialog: false,
+            logDetail: null,
+
+            // 数据看板
+            dashboardStats: null,
+
             // 响应弹框数据
             currentResponse: null,
             currentStreamRequest: null, // 当前流式请求的xhr对象
-            
+
             // 表单数据
             apiForm: {
                 apiConfigId: '', // API配置ID
@@ -69,41 +81,41 @@ new Vue({
                 contentType: 'application/json',
                 streamEnabled: false // 控制是否启用流式返回，默认不勾选
             },
-            
+
             groupForm: {
                 apiGroupId: '',
                 apiGroupName: '',
                 apiBaseUrl: ''
             },
-            
+
             // 表单验证规则
             apiRules: {
                 apiConfigName: [
-                    { required: true, message: '请输入API名称', trigger: 'blur' }
+                    {required: true, message: '请输入API名称', trigger: 'blur'}
                 ],
                 apiGroupId: [
-                    { required: true, message: '请选择所属分组', trigger: 'change' }
+                    {required: true, message: '请选择所属分组', trigger: 'change'}
                 ],
                 apiUrl: [
-                    { required: true, message: '请输入API路径', trigger: 'blur' }
+                    {required: true, message: '请输入API路径', trigger: 'blur'}
                 ],
                 apiMethod: [
-                    { required: true, message: '请选择请求方法', trigger: 'change' }
+                    {required: true, message: '请选择请求方法', trigger: 'change'}
                 ],
                 response: [
-                    { required: true, message: '请输入响应内容', trigger: 'blur' }
+                    {required: true, message: '请输入响应内容', trigger: 'blur'}
                 ]
             },
-            
+
             groupRules: {
                 apiGroupName: [
-                    { required: true, message: '请输入分组名称', trigger: 'blur' }
+                    {required: true, message: '请输入分组名称', trigger: 'blur'}
                 ],
                 apiBaseUrl: [
-                    { required: true, message: '请输入基础URL', trigger: 'blur' }
+                    {required: true, message: '请输入基础URL', trigger: 'blur'}
                 ]
             },
-            
+
             // MoYi 调试模式状态（浏览器直连远程接口，数据仅存本地）
             requestMode: localStorage.getItem('yimo-mode') === 'moyi',
             requestMethod: 'GET',
@@ -121,27 +133,57 @@ new Vue({
             requestAbortController: null
         }
     },
-    
+
     computed: {
+        // 是否存在筛选/搜索条件（决定空态文案及是否显示「清空筛选」）
+        hasActiveFilters() {
+            return !!(this.searchKeyword || this.selectedGroup || this.selectedMethod || this.selectedStatus);
+        },
+        // 调用日志：本次查询到的记录数（即累计调用次数的近似值）
+        apiLogsTotal() {
+            return this.apiLogs.length;
+        },
+        // 调用日志：命中的接口数（按 方法+URL 去重）
+        apiLogsInterfaceCount() {
+            return new Set(this.apiLogs.map(d => (d.apiMethod || '') + '|' + (d.apiUrl || ''))).size;
+        },
+        // 调用日志：按 IP 关键词 + 请求方法筛选后的记录
+        filteredApiLogs() {
+            const ip = (this.apiLogSearchIp || '').trim().toLowerCase();
+            const method = this.apiLogMethodFilter || '';
+            return this.apiLogs.filter(d => {
+                if (method && (d.apiMethod || '') !== method) return false;
+                if (ip && !String(d.ip || '').toLowerCase().includes(ip)) return false;
+                return true;
+            });
+        },
+        // 调用日志：实际存在的方法列表（用于筛选下拉，动态生成而非写死）
+        apiLogMethods() {
+            const methods = new Set();
+            (this.apiLogs || []).forEach(d => {
+                if (d.apiMethod) methods.add(d.apiMethod);
+            });
+            return Array.from(methods).sort();
+        },
         // 格式化的响应内容
         formattedResponse() {
             if (!this.currentResponse || !this.currentResponse.data) {
                 return '';
             }
-            
+
             // 如果是流式响应，直接显示原始内容
             if (this.currentResponse.isStreaming !== undefined ? this.currentResponse.isStreaming || this.currentResponse.contentType === 'text/event-stream' : this.currentResponse.contentType === 'text/event-stream') {
-                const content = typeof this.currentResponse.data === 'string' 
-                    ? this.currentResponse.data 
+                const content = typeof this.currentResponse.data === 'string'
+                    ? this.currentResponse.data
                     : JSON.stringify(this.currentResponse.data, null, 2);
-                
+
                 // 如果是正在流式传输，添加实时更新标识
-                const streamingIndicator = this.currentResponse.isStreaming ? '\n\n⏳ 数据流式传输中...' : '';
-                
+                const streamingIndicator = this.currentResponse.isStreaming ? '\n\n数据流式传输中...' : '';
+
                 // 直接返回原始内容，不进行特殊格式化
                 return this.safeHighlight(content + streamingIndicator, 'plaintext');
             }
-            
+
             try {
                 // 尝试格式化JSON
                 const formatted = JSON.stringify(this.currentResponse.data, null, 2);
@@ -149,8 +191,8 @@ new Vue({
                 return this.safeHighlight(formatted, 'json');
             } catch (error) {
                 // 如果不是JSON，直接返回原始内容
-                const content = typeof this.currentResponse.data === 'string' 
-                    ? this.currentResponse.data 
+                const content = typeof this.currentResponse.data === 'string'
+                    ? this.currentResponse.data
                     : String(this.currentResponse.data);
                 return this.safeHighlight(content, 'plaintext');
             }
@@ -161,7 +203,7 @@ new Vue({
                 return this.templateList;
             }
             const keyword = this.templateSearchKeyword.toLowerCase();
-            return this.templateList.filter(template => 
+            return this.templateList.filter(template =>
                 template.templateName.toLowerCase().includes(keyword) ||
                 template.templateDescription.toLowerCase().includes(keyword) ||
                 template.apiUrl.toLowerCase().includes(keyword)
@@ -194,12 +236,13 @@ new Vue({
                 try {
                     text = JSON.stringify(JSON.parse(text), null, 2);
                     return this.safeHighlight(text, 'json');
-                } catch (e) { /* 非合法 JSON，按纯文本处理 */ }
+                } catch (e) { /* 非合法 JSON，按纯文本处理 */
+                }
             }
             return this.safeHighlight(text, 'plaintext');
         }
     },
-    
+
     mounted() {
         // 移除启动加载动画
         const bootLoader = document.getElementById('boot-loader');
@@ -209,53 +252,18 @@ new Vue({
                 if (bootLoader.parentNode) bootLoader.parentNode.removeChild(bootLoader);
             }, 350);
         }
-        // 确保highlight.js可用
-        if (typeof hljs !== 'undefined') {
-            console.log('Highlight.js loaded successfully');
-        } else {
-            console.warn('Highlight.js not available, using fallback formatting');
-        }
         this.loadData();
         this.loadRequestFavs();
     },
 
-    updated() {
-        // updated钩子仍然作为备用方案
-        this.attachScrollListener();
-    },
-
     beforeDestroy() {
-        if (this.$refs.groupListContainer) {
-            const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
-            if (container && container.removeEventListener) {
-                container.removeEventListener('scroll', this.handleGroupListScroll);
-            }
-        }
         // 清理定时器
-        if (this.scrollTimeout) {
-            clearTimeout(this.scrollTimeout);
-        }
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
         }
     },
-    
-    methods: {
-        attachScrollListener() {
-            if (this.$refs.groupListContainer && !this.groupListListenerAttached) {
-                // 获取实际的DOM元素
-                const container = this.$refs.groupListContainer.$el || this.$refs.groupListContainer;
-                console.log('尝试绑定滚动事件监听器，容器:', container);
-                if (container && container.addEventListener) {
-                    container.addEventListener('scroll', this.handleGroupListScroll);
-                    this.groupListListenerAttached = true;
-                    console.log('滚动事件监听器绑定成功');
-                } else {
-                    console.log('容器不支持事件监听');
-                }
-            }
-        },
 
+    methods: {
         filterByGroup(group) {
             if (group && group.apiGroupId) {
                 // 如果点击的是当前已选中的分组，则取消选中
@@ -279,7 +287,9 @@ new Vue({
                 await Promise.all([
                     this.loadGroupList(), // Load paginated list for management view
                     this.loadAllGroupsForDropdown(), // Load all groups for select dropdowns
-                    this.loadApis() // Load API list
+                    this.loadApis(), // Load API list
+                    this.loadApiMethodOptions(), // API 方法筛选下拉动态选项
+                    this.loadDashboard() // 数据看板
                 ]);
             } catch (error) {
                 this.$message.error('加载数据失败: ' + error.message);
@@ -297,63 +307,55 @@ new Vue({
             this.isRefreshing = true;
 
             await this.loadApis(); // 调用静默加载
+            this.loadApiMethodOptions(); // 方法选项同步刷新
+            this.loadDashboard(); // 数据看板同步刷新
 
             setTimeout(() => {
                 this.isRefreshing = false;
             }, 1000);
         },
-        
+
         // Load paginated list of groups for the management card
         async loadGroupList() {
             if (this.groupListLoading) return;
-            
+
             // 检查是否已经加载完所有数据
             if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) return;
-            
-            console.log('开始加载分组列表，当前页:', this.groupListCurrentPage, '每页数量:', this.groupListPageSize);
-            
+
             this.groupListLoading = true;
             try {
                 const response = await axios.get('/admin/group/list', {
-                    params: { 
-                        pageNum: this.groupListCurrentPage, 
-                        pageSize: this.groupListPageSize 
+                    params: {
+                        pageNum: this.groupListCurrentPage,
+                        pageSize: this.groupListPageSize
                     }
                 });
-                
-                console.log('分组列表响应:', response.data);
-                
+
                 if (response.data.code === 200 && response.data.data) {
                     const newData = response.data.data.list || [];
                     const total = response.data.data.total || 0;
-                    
-                    console.log('获取到新数据:', newData.length, '条，总数:', total);
-                    
+
                     // 检查返回的数据是否为空
                     if (newData.length === 0 && this.groupListCurrentPage > 1) {
-                        console.log('没有更多数据了');
                         return;
                     }
-                    
+
                     // 第一页时替换数据，后续页面追加数据
                     if (this.groupListCurrentPage === 1) {
                         this.groupList = newData;
                     } else {
                         this.groupList = [...this.groupList, ...newData];
                     }
-                    
+
                     this.groupListTotal = total;
-                    
+
                     // 只有在成功加载数据时才增加页码
                     if (newData.length > 0) {
                         this.groupListCurrentPage++;
                     }
-                    
-                    console.log('当前分组列表长度:', this.groupList.length, '下一页:', this.groupListCurrentPage);
                 }
             } catch (error) {
                 this.$message.error('加载分组列表失败');
-                console.error('加载分组列表失败:', error);
             } finally {
                 this.groupListLoading = false;
             }
@@ -363,14 +365,25 @@ new Vue({
         async loadAllGroupsForDropdown() {
             try {
                 const response = await axios.get('/admin/group/list', {
-                    params: { pageNum: 1, pageSize: 100 } // Load up to 100 groups for dropdowns
+                    params: {pageNum: 1, pageSize: 100} // Load up to 100 groups for dropdowns
                 });
                 if (response.data.code === 200) {
                     this.groups = response.data.data.list || [];
                 }
             } catch (error) {
-                console.error('加载全量分组失败:', error);
                 this.groups = [];
+            }
+        },
+
+        // 加载 API 方法筛选下拉选项（去重，按实际配置动态生成）
+        async loadApiMethodOptions() {
+            try {
+                const response = await axios.get('/admin/config/methods');
+                if (response.data && response.data.code === 200) {
+                    this.apiMethodOptions = response.data.data || [];
+                }
+            } catch (error) {
+                // 方法选项为非关键数据，加载失败静默处理
             }
         },
 
@@ -392,23 +405,36 @@ new Vue({
                     this.total = response.data.data.total || 0;
                 }
             } catch (error) {
-                console.error('加载API列表失败:', error);
                 this.apis = [];
                 this.total = 0;
             }
         },
-        
+
+        // 清空搜索与筛选条件
+        clearApiFilters() {
+            // 重置期间抑制筛选 watcher，只发一次请求
+            this._suppressFilterWatch = true;
+            this.searchKeyword = '';
+            this.selectedGroup = '';
+            this.selectedMethod = '';
+            this.selectedStatus = '';
+            this._suppressFilterWatch = false;
+            this.currentPage = 1;
+            clearTimeout(this.searchTimeout);
+            this.loadApis();
+        },
+
         // 编辑API
         editApi(api) {
             this.editingApi = api;
-            
+
             // 使用对象展开，但确保包含所有字段
             this.apiForm = {
                 ...this.apiForm, // 保留默认值
                 ...api, // 覆盖API数据
                 streamEnabled: (api.contentType === 'text/event-stream') // 确保streamEnabled正确
             };
-            
+
             this.showCreateDialog = true;
         },
 
@@ -428,12 +454,12 @@ new Vue({
             localStorage.setItem('yimo-theme', this.theme);
             document.documentElement.setAttribute('data-theme', this.theme);
         },
-        
+
         // 保存API
         async saveApi() {
             try {
                 await this.$refs.apiForm.validate();
-                
+
                 // 自动格式化API路径
                 let apiUrl = this.apiForm.apiUrl;
                 if (apiUrl && typeof apiUrl === 'string') {
@@ -445,21 +471,23 @@ new Vue({
                     }
                     this.apiForm.apiUrl = apiUrl;
                 }
-                
+
                 // 根据streamEnabled设置contentType
-                const formData = { ...this.apiForm };
+                const formData = {...this.apiForm};
                 formData.contentType = formData.streamEnabled ? 'text/event-stream' : 'application/json';
-                
+
                 const url = this.editingApi ? '/admin/config' : '/admin/config';
                 const method = this.editingApi ? 'put' : 'post';
-                
+
                 const response = await axios[method](url, formData);
-                
+
                 if (response.data.code === 200) {
                     this.$message.success(this.editingApi ? '更新成功' : '创建成功');
                     this.showCreateDialog = false;
                     this.resetApiForm();
                     this.loadApis(); // Only reload the API list
+                    this.loadApiMethodOptions(); // 方法选项同步刷新
+                    this.loadDashboard();
                 } else {
                     this.$message.error(response.data.message || '操作失败');
                 }
@@ -481,7 +509,7 @@ new Vue({
                 // If it's not an `Error` instance, it's a validation failure, and we do nothing.
             }
         },
-        
+
         // 删除API
         async deleteApi(apiId) {
             if (!apiId) {
@@ -499,6 +527,8 @@ new Vue({
                     if (response.data.code === 200) {
                         this.$message.success('删除成功');
                         this.loadApis();
+                        this.loadApiMethodOptions(); // 方法选项同步刷新
+                        this.loadDashboard();
                     } else {
                         this.$message.error(response.data.message || '删除失败');
                     }
@@ -534,9 +564,102 @@ new Vue({
             }
         },
 
+        // 打开调用日志弹窗并加载数据（左侧明细表格 + 右侧今日调用概览）
+        async showApiLogs() {
+            this.showApiLogsDialog = true;
+            // 日志表格 + 概览统计一起刷新
+            await Promise.all([this.loadApiLogs(), this.loadDashboard()]);
+        },
+
+        // 加载调用日志
+        async loadApiLogs() {
+            try {
+                const response = await axios.get('/api-details/log');
+                this.apiLogs = Array.isArray(response.data) ? response.data : [];
+            } catch (error) {
+                this.apiLogs = [];
+                this.$message.error('加载调用日志失败: ' + (error.message || ''));
+            }
+        },
+
+        // 刷新调用日志 + 右侧今日概览统计
+        async refreshApiLogs() {
+            await Promise.all([this.loadApiLogs(), this.loadDashboard()]);
+        },
+
+        // 打开调用日志详情弹窗
+        openLogDetail(log) {
+            this.logDetail = log;
+            this.showLogDetailDialog = true;
+        },
+
+        // 时间格式化：yyyy-MM-dd'T'HH:mm:ss -> yyyy-MM-dd HH:mm:ss
+        formatLogTime(time) {
+            if (!time) return '-';
+            return String(time).replace('T', ' ').slice(0, 19);
+        },
+
+        // 耗时格式化：>=1s 显示 x.x s，否则显示 x ms，未知显示 -
+        formatLogDuration(ms) {
+            if (ms == null || ms < 0) return '-';
+            if (ms >= 1000) return (ms / 1000).toFixed(1) + ' s';
+            return ms + ' ms';
+        },
+
+        // 字节数格式化：B / KB / MB，未知显示 -
+        formatBytes(size) {
+            if (size == null || size < 0) return '-';
+            if (size >= 1024 * 1024) return (size / (1024 * 1024)).toFixed(1) + ' MB';
+            if (size >= 1024) return (size / 1024).toFixed(1) + ' KB';
+            return size + ' B';
+        },
+
+        // 看板：方法调用次数占总调用次数的百分比（0-100）
+        dashboardPercent(count) {
+            const total = this.dashboardStats ? this.dashboardStats.totalCalls : 0;
+            if (!total || !count) return 0;
+            return Math.round((count / total) * 100);
+        },
+
+        // 概览面板：次数相对当前列表最大值的百分比，用于排行/分组条形图（小值保底可见）
+        barsPercent(count, list) {
+            const max = (list && list.length) ? (list[0].count || 0) : 0;
+            if (!max || !count) return 0;
+            const p = (count / max) * 100;
+            return Math.round(p < 5 ? 5 : p);
+        },
+
+        // 概览面板：排行序号两位补零（01、02 …）
+        fmtRank(n) {
+            return (n < 10 ? '0' : '') + n;
+        },
+
+        // 调用日志：状态码配色（2xx 成功 / 4xx 及以上异常 / 其他中性）
+        logStatusCls(code) {
+            const n = parseInt(code, 10);
+            if (n >= 200 && n < 300) return 'ok';
+            if (n >= 400) return 'bad';
+            return 'def';
+        },
+
+        // 加载数据看板（分组/API总数 + 今日调用统计）
+        async loadDashboard() {
+            try {
+                const response = await axios.get('/api-details/stats');
+                if (response.data && response.data.code === 200) {
+                    this.dashboardStats = response.data.data || null;
+                } else {
+                    this.dashboardStats = null;
+                }
+            } catch (error) {
+                // 看板为非关键数据，加载失败静默处理
+                this.dashboardStats = null;
+            }
+        },
+
         // 保存分组
         async saveGroup() {
-            this.$refs.groupForm.validate(async(valid) => {
+            this.$refs.groupForm.validate(async (valid) => {
                 if (valid) {
                     // 自动格式化基础URL
                     let apiBaseUrl = this.groupForm.apiBaseUrl;
@@ -553,25 +676,22 @@ new Vue({
                     try {
                         const url = this.editingGroup ? '/admin/group' : '/admin/group';
                         const method = this.editingGroup ? 'put' : 'post';
-                        
+
                         const response = await axios[method](url, this.groupForm);
                         if (response.data.code === 200) {
                             this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
                             this.showGroupDialog = false;
                             this.resetGroupForm();
-                            
+
                             // 重置并重新加载分组列表
                             this.groupList = [];
                             this.groupListCurrentPage = 1;
                             this.groupListTotal = 0;
-                            this.groupListListenerAttached = false; // 关键：重置监听器标志
                             await this.loadGroupList();
-                            
-                            // 重新加载下拉菜单并尝试重新附加滚动监听器
+                            await this.loadDashboard();
+
+                            // 重新加载下拉菜单
                             this.loadAllGroupsForDropdown();
-                            this.$nextTick(() => {
-                                this.attachScrollListener();
-                            });
                         } else {
                             this.$message.error(response.data.message || '保存失败');
                         }
@@ -581,15 +701,15 @@ new Vue({
                 }
             });
         },
-        
+
         // 编辑分组
         editGroup(group) {
             this.editingGroup = group;
-            this.groupForm = { ...group };
+            this.groupForm = {...group};
             this.deletePopoverVisible = false; // Reset on edit
             this.showGroupDialog = true;
         },
-        
+
         // 删除分组
         async deleteGroup(groupId) {
             try {
@@ -607,15 +727,16 @@ new Vue({
                     this.$message.success('删除成功');
                     this.showGroupDialog = false; // 关闭编辑窗口
                     this.resetGroupForm(); // 重置表单状态
-                    
+
                     // 重置分组列表状态，确保能重新加载
                     this.groupList = [];
                     this.groupListCurrentPage = 1;
                     this.groupListTotal = 0;
-                    
+
                     await this.loadGroupList();
                     await this.loadAllGroupsForDropdown();
                     await this.loadApis(); // Refresh APIs as they might have been affected
+                    await this.loadDashboard();
                 } else {
                     this.$message.error(response.data.message || '删除失败');
                 }
@@ -625,7 +746,7 @@ new Vue({
                 }
             }
         },
-        
+
         // 重置API表单
         resetApiForm() {
             this.apiForm = {
@@ -646,7 +767,7 @@ new Vue({
             this.editingApi = null;
             this.$refs.apiForm && this.$refs.apiForm.resetFields();
         },
-        
+
         // 重置分组表单
         resetGroupForm() {
             this.groupForm = {
@@ -658,7 +779,7 @@ new Vue({
             this.deletePopoverVisible = false;
             this.$refs.groupForm && this.$refs.groupForm.resetFields();
         },
-        
+
         // 请求API
         async requestApi(api) {
             try {
@@ -670,13 +791,13 @@ new Vue({
                     this.$message.warning('该API已禁用，无法请求');
                     return;
                 }
-                
+
                 // 构建请求URL：分组的baseUrl + apiUrl
                 const apiBaseUrl = api.apiBaseUrl || '';
                 const apiUrl = api.apiUrl || '';
                 const requestUrl = `/api${apiBaseUrl}${apiUrl}`;
                 const apiMethod = api.apiMethod || 'GET';
-                
+
                 // 构建请求头，根据API配置设置Accept头
                 const headers = {};
                 const isStreamEnabled = api.contentType === 'text/event-stream';
@@ -686,9 +807,9 @@ new Vue({
                 } else {
                     headers['Accept'] = 'application/json';
                 }
-                
+
                 const startTime = Date.now();
-                
+
                 // 对于流式响应，使用特殊处理
                 if (isStreamEnabled) {
                     try {
@@ -698,11 +819,9 @@ new Vue({
                     } catch (error) {
                         // 用户主动中止，则不显示错误弹窗
                         if (error && error.message && error.message.includes('请求被中止')) {
-                            console.log('流式请求被用户中止，不显示二次弹窗。');
                             return;
                         }
 
-                        console.error('流式请求失败:', error);
                         // 设置错误响应数据用于弹框显示
                         this.currentResponse = {
                             method: apiMethod,
@@ -711,44 +830,65 @@ new Vue({
                             responseTime: Date.now() - startTime,
                             data: '流式请求失败: ' + error.message,
                             contentType: 'text/plain',
+                            isLoading: false,
                             isStreaming: false
                         };
                         // 显示错误响应弹框
                         this.showResponseDialog = true;
                     }
                 } else {
-                const response = await axios({
-                    method: apiMethod.toLowerCase(),
-                    url: requestUrl,
+                    // 立即弹出响应框并显示加载动画，避免请求期间界面无任何反馈（接口延迟时让用户感知正在请求）
+                    // 使用 AbortController 支持加载中关闭弹框时取消请求，避免响应回来后弹框重新打开
+                    const abortController = new AbortController();
+                    this._pendingResponseAbort = abortController;
+                    this.currentResponse = {
+                        method: apiMethod,
+                        url: requestUrl,
+                        status: 0,
+                        responseTime: 0,
+                        data: '',
+                        contentType: api.contentType || 'application/json',
+                        isLoading: true,
+                        isStreaming: false
+                    };
+                    this.showResponseDialog = true;
+
+                    const response = await axios({
+                        method: apiMethod.toLowerCase(),
+                        url: requestUrl,
                         headers: headers,
-                    timeout: 10000
-                });
-                const endTime = Date.now();
-                
-                // 设置响应数据用于弹框显示
-                this.currentResponse = {
-                    method: apiMethod,
-                    url: requestUrl,
-                    status: response.status,
-                    responseTime: endTime - startTime,
+                        timeout: 10000,
+                        signal: abortController.signal
+                    });
+                    const endTime = Date.now();
+                    this._pendingResponseAbort = null;
+
+                    // 设置响应数据用于弹框显示
+                    this.currentResponse = {
+                        method: apiMethod,
+                        url: requestUrl,
+                        status: response.status,
+                        responseTime: endTime - startTime,
                         data: response.data,
-                        contentType: api.contentType || 'application/json'
-                };
+                        contentType: api.contentType || 'application/json',
+                        isLoading: false,
+                        isStreaming: false
+                    };
                 }
-                
-                // 对于非流式响应，显示响应弹框
-                if (!isStreamEnabled) {
-                this.showResponseDialog = true;
-                }
-                
+
             } catch (error) {
+                this._pendingResponseAbort = null;
+                // 用户加载中关闭弹框导致请求被取消，不再弹出错误弹框
+                if (error && (error.code === 'ERR_CANCELED' || error.name === 'CanceledError' || error.name === 'AbortError')) {
+                    return;
+                }
                 const endTime = Date.now();
                 let errorData = '请求失败: ' + error.message;
-                
+
                 if (error.response) {
                     errorData = error.response.data;
                 }
-                
+
                 // 设置错误响应数据用于弹框显示
                 this.currentResponse = {
                     method: api.apiMethod || 'GET',
@@ -756,29 +896,30 @@ new Vue({
                     status: error.response ? error.response.status : 0,
                     responseTime: endTime - Date.now(),
                     data: errorData,
-                    contentType: api.contentType || 'application/json'
+                    contentType: api.contentType || 'application/json',
+                    isLoading: false,
+                    isStreaming: false
                 };
-                
+
                 // 显示响应弹框
                 this.showResponseDialog = true;
-                
+
             }
         },
-        
+
         // 安全的语法高亮函数
         safeHighlight(content, language = 'plaintext') {
             if (typeof hljs !== 'undefined' && hljs.highlight) {
                 try {
-                    return hljs.highlight(content, { language: language }).value;
+                    return hljs.highlight(content, {language: language}).value;
                 } catch (error) {
-                    console.warn('Highlight.js error:', error);
                     return `<pre>${content}</pre>`;
                 }
             } else {
                 return `<pre>${content}</pre>`;
             }
         },
-        
+
         // 获取响应内容占位符
         getResponsePlaceholder() {
             if (this.apiForm.streamEnabled) {
@@ -787,7 +928,7 @@ new Vue({
                 return '请输入响应内容，支持模板语法';
             }
         },
-        
+
         // 处理WebFlux流式响应
         async handleStreamResponse(method, url, headers) {
             return new Promise((resolve, reject) => {
@@ -812,35 +953,35 @@ new Vue({
                     }
                     this.currentStreamRequest = null;
                 }
-                
+
                 const startTime = Date.now();
                 let responseData = '';
                 let hasReceivedData = false;
-                
+
                 // 对于GET请求，使用EventSource
                 if (method.toUpperCase() === 'GET') {
                     const eventSource = new EventSource(url);
                     this.currentStreamRequest = eventSource;
-                    
+
                     eventSource.onopen = (event) => {
                         this.currentResponse.status = 200;
                         this.currentResponse.data = '连接成功，等待数据...\n';
                     };
-                    
+
                     eventSource.onmessage = (event) => {
                         hasReceivedData = true;
                         responseData += event.data + '\n\n';
-                        
+
                         // 直接更新响应数据 - GET请求保持简单
                         this.currentResponse.data = responseData;
                         this.currentResponse.responseTime = Date.now() - startTime;
                     };
-                    
+
                     eventSource.onerror = (event) => {
                         this.currentResponse.isStreaming = false;
                         this.currentStreamRequest = null;
                         eventSource.close();
-                        
+
                         if (hasReceivedData) {
                             // 如果已经收到一些数据，认为部分成功
                             resolve({
@@ -853,14 +994,14 @@ new Vue({
                             reject(new Error('EventSource连接失败'));
                         }
                     };
-                    
+
                     // 设置超时机制
                     setTimeout(() => {
                         if (this.currentResponse.isStreaming) {
                             this.currentResponse.isStreaming = false;
                             eventSource.close();
                             this.currentStreamRequest = null;
-                            
+
                             if (hasReceivedData) {
                                 resolve({
                                     status: this.currentResponse.status,
@@ -877,13 +1018,12 @@ new Vue({
                             }
                         }
                     }, 30000); // 30秒超时
-                    
+
                 } else {
                     // 对于非GET请求，也使用fetch实现流式处理
-                    console.log('--- [DEBUG] Starting non-GET stream request ---');
                     const controller = new AbortController();
                     this.currentStreamRequest = controller;
-                    
+
                     fetch(url, {
                         method: method,
                         headers: {
@@ -893,21 +1033,19 @@ new Vue({
                         },
                         signal: controller.signal
                     }).then(response => {
-                        console.log('[DEBUG] Received response from fetch:', response);
                         this.currentResponse.status = response.status;
-                        
+
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
-                        
+
                         // 使用ReadableStream处理流式数据
                         const reader = response.body.getReader();
                         const decoder = new TextDecoder();
-                        
+
                         const readStream = () => {
-                            return reader.read().then(({ done, value }) => {
+                            return reader.read().then(({done, value}) => {
                                 if (done) {
-                                    console.log('[DEBUG] Stream finished.');
                                     this.currentResponse.isStreaming = false;
                                     this.currentStreamRequest = null;
                                     resolve({
@@ -917,29 +1055,27 @@ new Vue({
                                     });
                                     return;
                                 }
-                                
+
                                 // 将新解码的数据块直接追加到响应数据中，不做任何解析
-                                const chunk = decoder.decode(value, { stream: true });
-                                console.log('[DEBUG] Received chunk:', chunk);
+                                const chunk = decoder.decode(value, {stream: true});
                                 responseData += chunk;
                                 hasReceivedData = true;
 
                                 // 立即更新UI以显示原始数据
                                 this.currentResponse.data = responseData;
                                 this.currentResponse.responseTime = Date.now() - startTime;
-                                
+
                                 // 继续读取下一块数据
                                 return readStream();
                             });
                         };
-                        
+
                         return readStream();
-                        
+
                     }).catch(error => {
-                        console.error('[DEBUG] Error in fetch stream:', error);
                         this.currentResponse.isStreaming = false;
                         this.currentStreamRequest = null;
-                        
+
                         if (error.name === 'AbortError') {
                             this.currentResponse.data = '请求被中止';
                             reject(new Error('请求被中止'));
@@ -951,27 +1087,26 @@ new Vue({
                 }
             });
         },
-        
 
-        
+
         // 流式返回开关变化处理
         onStreamEnabledChange(val) {
             // 根据开关状态更新contentType
             this.apiForm.contentType = val ? 'text/event-stream' : 'application/json';
         },
-        
+
         // 复制响应内容
         copyResponse() {
             if (!this.currentResponse || !this.currentResponse.data) {
                 this.$message.error('没有响应内容可复制');
                 return;
             }
-            
+
             try {
-                const content = typeof this.currentResponse.data === 'string' 
-                    ? this.currentResponse.data 
+                const content = typeof this.currentResponse.data === 'string'
+                    ? this.currentResponse.data
                     : JSON.stringify(this.currentResponse.data, null, 2);
-                
+
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(content).then(() => {
                         this.$message.success('响应内容已复制到剪贴板');
@@ -992,59 +1127,13 @@ new Vue({
                 this.$message.error('复制失败: ' + error.message);
             }
         },
-        
+
         // 分页处理
         handleCurrentChange(page) {
             this.currentPage = page;
             this.loadApis();
         },
-        
-        handleGroupListScroll() {
-            const el = this.$refs.groupListContainer;
-            console.log('滚动事件触发，容器引用:', el);
-            if (!el) return;
-            
-            // 获取实际的DOM元素
-            const container = el.$el || el;
-            console.log('实际容器元素:', container);
-            if (!container || typeof container.scrollTop === 'undefined') return;
-            
-            // 检查是否已经加载完所有数据
-            if (this.groupList.length >= this.groupListTotal && this.groupListTotal > 0) {
-                console.log('已加载完所有数据，停止滚动加载');
-                return;
-            }
-            
-            // 如果正在加载中，避免重复触发
-            if (this.groupListLoading) {
-                console.log('正在加载中，跳过本次滚动事件');
-                return;
-            }
-            
-            const scrollTop = container.scrollTop;
-            const scrollHeight = container.scrollHeight;
-            const clientHeight = container.clientHeight;
-            const distanceToBottom = scrollHeight - scrollTop - clientHeight;
-            
-            console.log('滚动信息:', {
-                scrollTop,
-                scrollHeight,
-                clientHeight,
-                distanceToBottom
-            });
-            
-            // Check if scrolled to the bottom (with a buffer)
-            if (distanceToBottom < 20) { // 减少缓冲区，提高触发灵敏度
-                console.log('接近底部，准备加载更多数据');
-                // 防抖处理，避免频繁触发
-                clearTimeout(this.scrollTimeout);
-                this.scrollTimeout = setTimeout(() => {
-                    console.log('触发滚动加载，当前页:', this.groupListCurrentPage);
-                    this.loadGroupList();
-                }, 100); // 减少防抖时间，提高响应速度
-            }
-        },
-        
+
         copyFullUrl() {
             const fullUrl = window.location.origin + (this.currentResponse?.url || '');
             if (navigator.clipboard) {
@@ -1062,14 +1151,14 @@ new Vue({
                 this.$message.success('已复制完整URL');
             }
         },
-        
+
         // 保存为模板
         saveAsTemplate() {
             if (!this.apiForm.templateName.trim()) {
                 this.$message.error('请填写模板名称');
                 return;
             }
-                
+
             // 模拟保存模板的API调用
             setTimeout(() => {
                 this.$message.success('模板保存成功');
@@ -1077,13 +1166,13 @@ new Vue({
                 // 例如：axios.post('/api/template/save', this.apiForm)
             }, 500);
         },
-        
+
         // 打开模板选择对话框
         openTemplateDialog() {
             this.templateDialogVisible = true;
             this.loadTemplates();
         },
-        
+
         // 加载模板列表
         loadTemplates() {
             this.templateLoading = true;
@@ -1114,7 +1203,7 @@ new Vue({
                 this.$message.success(`成功加载 ${this.templateList.length} 个模板`);
             }, 800);
         },
-        
+
         // 应用模板
         applyTemplate(template) {
             // 模拟应用模板的API调用
@@ -1128,13 +1217,13 @@ new Vue({
                 this.apiForm.isTemplate = true;
                 this.apiForm.templateName = template.templateName;
                 this.apiForm.templateDescription = template.templateDescription;
-                    
+
                 this.$message.success('模板应用成功');
                 this.templateDialogVisible = false;
                 // 这里可以添加实际的API调用
             }, 500);
         },
-        
+
         // 删除模板
         deleteTemplate() {
             this.$confirm('确定要删除该模板吗？', '提示', {
@@ -1154,7 +1243,7 @@ new Vue({
                 // 取消删除
             });
         },
-        
+
         // 删除指定模板
         deleteTemplateById(templateId) {
             this.$confirm('确定要删除该模板吗？', '提示', {
@@ -1169,9 +1258,9 @@ new Vue({
                 // 取消删除
             });
         },
-        
+
         // ==================== MoYi 调试模式（纯前端请求） ====================
-        
+
         // 切换 Mock(YiMo) / 调试(MoYi) 模式
         toggleRequestMode() {
             this.requestMode = !this.requestMode;
@@ -1182,28 +1271,29 @@ new Vue({
                 } else {
                     localStorage.removeItem('yimo-mode');
                 }
-            } catch (error) { /* 忽略 */ }
+            } catch (error) { /* 忽略 */
+            }
             // 切换时中止进行中的请求，避免连接残留
             if (!this.requestMode && this.requestAbortController) {
                 this.requestAbortController.abort();
                 this.requestAbortController = null;
             }
         },
-        
+
         // ---- Params / Headers 行编辑 ----
         addRequestParam() {
-            this.requestParams.push({ id: ++this.requestRowSeq, key: '', value: '' });
+            this.requestParams.push({id: ++this.requestRowSeq, key: '', value: ''});
         },
         removeRequestParam(index) {
             this.requestParams.splice(index, 1);
         },
         addRequestHeader() {
-            this.requestHeaders.push({ id: ++this.requestRowSeq, key: '', value: '' });
+            this.requestHeaders.push({id: ++this.requestRowSeq, key: '', value: ''});
         },
         removeRequestHeader(index) {
             this.requestHeaders.splice(index, 1);
         },
-        
+
         // 整理请求 URL：将 Params 追加为查询串
         buildRequestUrl() {
             let url = (this.requestUrl || '').trim();
@@ -1213,7 +1303,7 @@ new Vue({
             const qs = pair.map(p => encodeURIComponent(p.key) + '=' + encodeURIComponent(p.value || '')).join('&');
             return url + (url.indexOf('?') >= 0 ? '&' : '?') + qs;
         },
-        
+
         // 整理请求头：非空行 + 自动补充请求体 Content-Type
         buildRequestHeaders() {
             const headers = {};
@@ -1226,7 +1316,7 @@ new Vue({
             }
             return headers;
         },
-        
+
         // 格式化请求体为 JSON
         formatRequestBody() {
             if (!this.requestBody.trim()) {
@@ -1261,7 +1351,7 @@ new Vue({
                 pre.scrollLeft = ta.scrollLeft;
             }
         },
-        
+
         // 发送请求（fetch 浏览器直连，30s 超时）
         async sendRequest() {
             if (this.requestSending) return;
@@ -1270,14 +1360,14 @@ new Vue({
                 this.$message.error('请输入请求 URL');
                 return;
             }
-            
+
             // 关闭上一次未完成的请求
             if (this.requestAbortController) {
                 this.requestAbortController.abort();
             }
             const controller = new AbortController();
             this.requestAbortController = controller;
-            
+
             const method = this.requestMethod.trim().toUpperCase();
             const startTime = Date.now();
             this.requestSending = true;
@@ -1286,7 +1376,7 @@ new Vue({
                 text: '', kind: 'is-info', contentType: 'text/plain',
                 isLoading: true, isStreaming: false
             };
-            
+
             try {
                 const options = {
                     method: method,
@@ -1299,11 +1389,11 @@ new Vue({
                 if (this.requestHasBody) {
                     options.body = this.requestBody;
                 }
-                
+
                 const timer = setTimeout(() => controller.abort(), 30000);
                 const resp = await fetch(url, options);
                 clearTimeout(timer);
-                
+
                 const contentType = (resp.headers.get('content-type') || '').split(';')[0] || 'text/plain';
                 const fullText = await resp.text();
                 const responseTime = Date.now() - startTime;
@@ -1313,7 +1403,7 @@ new Vue({
                 const text = fullText.length > MAX_SHOW
                     ? fullText.slice(0, MAX_SHOW) + '\n\n... 响应过长（' + fullText.length + ' 字符），已截断展示'
                     : fullText;
-                
+
                 this.requestResponse = {
                     status: resp.status,
                     statusText: resp.statusText || (resp.ok ? 'OK' : 'Error'),
@@ -1405,14 +1495,13 @@ new Vue({
         clearRequestResponse() {
             this.requestResponse = null;
         },
-        
+
         // ---- 常用请求收藏（localStorage） ----
         loadRequestFavs() {
             try {
                 const raw = localStorage.getItem('yimo-fav-urls');
                 this.requestFavUrls = raw ? JSON.parse(raw) : [];
             } catch (error) {
-                console.warn('读取常用请求失败:', error);
                 this.requestFavUrls = [];
             }
         },
@@ -1420,7 +1509,7 @@ new Vue({
             try {
                 localStorage.setItem('yimo-fav-urls', JSON.stringify(this.requestFavUrls));
             } catch (error) {
-                console.warn('保存常用请求失败:', error);
+                // localStorage 不可用时静默失败
             }
         },
         // 依据 URL 生成默认名称（路径最后一段或域名）
@@ -1465,48 +1554,56 @@ new Vue({
             this.$message.success('已还原常用请求');
         }
     },
-    
+
     watch: {
         // 监听筛选条件变化
         selectedGroup() {
+            if (this._suppressFilterWatch) return;
             this.currentPage = 1;
             this.loadApis();
         },
         selectedMethod() {
+            if (this._suppressFilterWatch) return;
             this.currentPage = 1;
             this.loadApis();
         },
         selectedStatus() {
+            if (this._suppressFilterWatch) return;
             this.currentPage = 1;
             this.loadApis();
         },
         searchKeyword() {
+            if (this._suppressFilterWatch) return;
             this.currentPage = 1;
             clearTimeout(this.searchTimeout);
             this.searchTimeout = setTimeout(() => {
                 this.loadApis();
             }, 300);
         },
-        
+
         // 监听对话框关闭
         showCreateDialog(val) {
             if (!val) {
                 this.resetApiForm();
             }
         },
-        
+
         showGroupDialog(val) {
             if (!val) {
                 this.resetGroupForm();
             }
         },
-        
+
         // 监听响应弹框关闭
         showResponseDialog(val) {
             if (!val) {
+                // 加载中关闭弹框，取消普通（非流式）请求，避免响应回来后弹框重新打开
+                if (this._pendingResponseAbort && this.currentResponse && this.currentResponse.isLoading) {
+                    this._pendingResponseAbort.abort();
+                }
+                this._pendingResponseAbort = null;
                 // 如果有正在进行的流式请求，中止它
                 if (this.currentStreamRequest && this.currentResponse && this.currentResponse.isStreaming) {
-                    console.log('用户关闭弹框，中止流式请求');
                     if (this.currentStreamRequest.abort) {
                         this.currentStreamRequest.abort(); // AbortController
                     } else if (this.currentStreamRequest.close) {
@@ -1516,15 +1613,5 @@ new Vue({
                 this.currentStreamRequest = null;
             }
         },
-        
-        // 监听流式返回开关 - 确保占位符更新
-        'apiForm.streamEnabled'(val) {
-            // 这个监听器主要用于触发计算属性更新，如getResponsePlaceholder
-        },
-        
-        // 监听模板变量开关
-        'apiForm.template'(val) {
-            console.log('template变化:', val);
-        }
     }
 }); 

@@ -14,7 +14,9 @@ public class HttpResult<T> {
     public static <T> HttpResult<T> success(T data) {
         return new HttpResult<T>().setCode(HttpServletResponse.SC_OK).setMessage("success").setData(data);
 
-    }public static <T> HttpResult<T> success() {
+    }
+
+    public static <T> HttpResult<T> success() {
         return new HttpResult<T>().setCode(HttpServletResponse.SC_OK).setMessage("success").setData(null);
     }
 

@@ -6,12 +6,17 @@ import java.util.List;
 
 public interface ApiGroupDao {
     List<ApiGroup> queryGroupConfigByPage();
-    
+
     void insertGroup(ApiGroup apiGroup);
-    
+
     void updateGroup(ApiGroup apiGroup);
-    
+
     void deleteGroup(String groupId);
 
     ApiGroup queryGroupByBaseUrl(String apiBaseUrl);
+
+    /**
+     * 分组总数（数据看板用）
+     */
+    long countGroups();
 }
