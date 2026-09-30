@@ -28,7 +28,7 @@ public class ApiGroupService implements IApiGroupService {
     }
 
     @Override
-    public ApiGroup createGroup(ApiGroup apiGroup) {
+    public synchronized ApiGroup createGroup(ApiGroup apiGroup) {
         //1.apiBaseUrl唯一
         ApiGroup group = apiGroupDao.queryGroupByBaseUrl(apiGroup.getApiBaseUrl());
         if (!ObjectUtils.isEmpty(group)) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YiMo - Mock服务管理平台</title>
+    <title>YiMo - 本地 Mock 服务 · 即建即用</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         /* ==================== CSS 变量 ==================== */
@@ -147,29 +147,59 @@
         .ym-logo {
             width: 28px;
             height: 28px;
-            background: linear-gradient(135deg, #2f81f7, #6366f1);
+            background: rgba(47, 129, 247, .12);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            backdrop-filter: blur(10px) saturate(1.4);
+            border: 1px solid rgba(47, 129, 247, .3);
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: white;
-            border: none;
+            color: var(--accent);
             padding: 0;
             cursor: pointer;
             transition: transform .15s, box-shadow .15s;
             position: relative;
+            animation: ym-logo-nudge 6s ease-in-out infinite;
         }
 
         .ym-logo:hover {
+            animation: none;
             transform: scale(1.08);
-            box-shadow: 0 2px 8px rgba(47, 129, 247, .35);
+            box-shadow: 0 2px 8px rgba(47, 129, 247, .28);
         }
 
-        .ym-logo .ym-logo__letter {
+        @keyframes ym-logo-nudge {
+            0%, 88%, 100% { transform: rotate(0); }
+            89% { transform: rotate(-9deg); }
+            90.5% { transform: rotate(7deg); }
+            92% { transform: rotate(-5deg); }
+            93.5% { transform: rotate(3deg); }
+            95% { transform: rotate(0); }
+        }
+
+        .ym-title-bounce__char {
+            display: inline-block;
+            animation: ym-char-bounce 6s ease-in-out infinite;
+        }
+
+        @keyframes ym-char-bounce {
+            0%, 95%, 100% { transform: translateY(0); }
+            95.7% { transform: translateY(-9px); }
+            97% { transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ym-logo,
+            .ym-title-bounce__char {
+                animation: none;
+            }
+        }
+
+        .ym-logo .ym-logo__mark {
             transition: opacity .15s;
             opacity: 1;
+            display: block;
         }
 
         .ym-logo .ym-icon {
@@ -180,21 +210,23 @@
             transition: opacity .15s;
         }
 
-        .ym-logo:hover .ym-logo__letter {
+        .ym-logo:hover .ym-logo__mark {
             opacity: 0;
         }
 
         .ym-logo:hover .ym-icon {
             opacity: 1;
-            color: white;
+            color: inherit;
         }
 
         .ym-logo.is-moyi {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: rgba(139, 92, 246, .14);
+            border-color: rgba(139, 92, 246, .32);
+            color: #8b5cf6;
         }
 
         .ym-logo.is-moyi:hover {
-            box-shadow: 0 2px 8px rgba(139, 92, 246, .4);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, .3);
         }
 
         .ym-header__title {
@@ -468,6 +500,10 @@
         }
 
         .ym-method {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
             padding: 2px 8px;
             border-radius: var(--radius-sm);
             font-size: 11px;
@@ -920,7 +956,7 @@
             border-top: 1px solid var(--border-default);
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
+            gap: 12px;
         }
 
         .ym-modal-enter-active, .ym-modal-leave-active {
@@ -1196,7 +1232,7 @@
             padding: 0 20px 18px;
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
+            gap: 12px;
         }
 
         /* ==================== 骨架屏 ==================== */
@@ -1349,15 +1385,16 @@
         .boot-loader__logo {
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, #2f81f7, #6366f1);
+            background: rgba(47, 129, 247, .12);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            backdrop-filter: blur(10px) saturate(1.4);
+            border: 1px solid rgba(47, 129, 247, .3);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            box-shadow: 0 8px 24px rgba(47, 129, 247, .35);
+            color: var(--accent);
+            box-shadow: 0 8px 24px rgba(47, 129, 247, .22);
             animation: boot-pulse 1.4s ease-in-out infinite;
         }
 
@@ -1732,6 +1769,8 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            height: 100%;
+            min-height: 0;
         }
 
         .ym-req__body.is-disabled {
@@ -1747,6 +1786,14 @@
         .ym-req__body textarea {
             font-family: var(--font-mono);
             font-size: 12px;
+        }
+
+        .ym-req__body .ym-code-editor {
+            flex: 1;
+        }
+
+        .ym-req__body .ym-textarea {
+            flex: 1;
         }
 
         .ym-code-editor {
@@ -2257,7 +2304,10 @@
 <body>
 <!-- 启动加载动画：JS 加载完成前显示，挂载后移除 -->
 <div id="boot-loader" class="boot-loader">
-    <div class="boot-loader__logo">Y</div>
+    <div class="boot-loader__logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"
+             stroke-linejoin="round" width="30" height="30"><path d="M5.5 5.5 L12 13 L18.5 5.5 M12 13 V18.5"/></svg>
+    </div>
     <div class="boot-loader__ring"></div>
     <div class="boot-loader__text">YiMo 加载中...</div>
 </div>
@@ -2268,12 +2318,19 @@
         <div class="ym-header__brand">
             <button type="button" class="ym-logo" :class="{ 'is-moyi': requestMode }" @click="toggleRequestMode"
                     :title="requestMode ? '切换到 YiMo Mock 模式' : '切换到 MoYi 调试模式'">
-                <span class="ym-logo__letter">{{ requestMode ? 'M' : 'Y' }}</span>
+                <svg v-if="!requestMode" class="ym-logo__mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path
+                        d="M5.5 5.5 L12 13 L18.5 5.5 M12 13 V18.5"/></svg>
+                <svg v-else class="ym-logo__mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path
+                        d="M5 5.5 V18.5 M5 5.5 L12 13.5 M12 13.5 L19 5.5 M19 5.5 V18.5"/></svg>
                 <ym-icon name="swap" size="12"></ym-icon>
             </button>
-            <span class="ym-header__title">{{ requestMode ? 'MoYi' : 'YiMo' }}</span>
-            <span class="ym-header__subtitle">{{ requestMode ? 'API 调试工具 · 浏览器直连 · 本地保存数据' : 'Mock 服务管理平台'
-                }}</span>
+            <span class="ym-header__title ym-title-bounce">
+                <span v-for="(c, i) in (requestMode ? 'MoYi' : 'YiMo')" :key="i" class="ym-title-bounce__char"
+                      :style="{ animationDelay: (i * 0.08) + 's' }">{{ c }}</span>
+            </span>
+            <span class="ym-header__subtitle">{{ requestMode ? 'API 调试工具 · 浏览器直连 · 本地保存数据' : '本地 Mock 服务 · 即建即用' }}</span>
         </div>
         <div class="ym-header__actions">
             <button class="ym-theme-toggle" @click="toggleTheme"
@@ -2311,9 +2368,9 @@
                                 <div class="ym-group-item__url">{{ group.apiBaseUrl }}</div>
                             </div>
                             <div class="ym-group-item__actions">
-                                <ym-btn type="text" size="sm" icon="edit" @click.stop="editGroup(group)"></ym-btn>
+                                <ym-btn type="text" size="sm" icon="edit" @click.stop.native="editGroup(group)"></ym-btn>
                                 <ym-btn type="text" size="sm" icon="trash"
-                                        @click.stop="deleteGroup(group.apiGroupId)"></ym-btn>
+                                        @click.stop.native="deleteGroup(group.apiGroupId)"></ym-btn>
                             </div>
                         </div>
                     </transition-group>
@@ -2729,8 +2786,7 @@
         </ym-form>
         <div slot="footer">
             <ym-btn @click="showGroupDialog = false">取消</ym-btn>
-            <ym-btn v-if="editingGroup" type="danger" @click="deleteGroup(editingGroup.apiGroupId)">删除分组</ym-btn>
-            <ym-btn type="primary" @click="saveGroup">确定</ym-btn>
+            <ym-btn type="primary" :disabled="groupSaving" @click="saveGroup">{{ groupSaving ? '保存中...' : '确定' }}</ym-btn>
         </div>
     </ym-modal>
 

@@ -42,6 +42,7 @@ new Vue({
             editingApi: null,
             editingGroup: null,
             deletePopoverVisible: false,
+            groupSaving: false,
 
             // 模板变量
             templateConstants: [],
@@ -659,8 +660,15 @@ new Vue({
 
         // 保存分组
         async saveGroup() {
+            if (this.groupSaving) {
+                return;
+            }
+            this.groupSaving = true;
             this.$refs.groupForm.validate(async (valid) => {
-                if (valid) {
+                try {
+                    if (!valid) {
+                        return;
+                    }
                     // 自动格式化基础URL
                     let apiBaseUrl = this.groupForm.apiBaseUrl;
                     if (apiBaseUrl && typeof apiBaseUrl === 'string') {
@@ -673,31 +681,31 @@ new Vue({
                         this.groupForm.apiBaseUrl = apiBaseUrl;
                     }
 
-                    try {
-                        const url = this.editingGroup ? '/admin/group' : '/admin/group';
-                        const method = this.editingGroup ? 'put' : 'post';
+                    const url = '/admin/group';
+                    const method = this.editingGroup ? 'put' : 'post';
 
-                        const response = await axios[method](url, this.groupForm);
-                        if (response.data.code === 200) {
-                            this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
-                            this.showGroupDialog = false;
-                            this.resetGroupForm();
+                    const response = await axios[method](url, this.groupForm);
+                    if (response.data.code === 200) {
+                        this.$message.success(this.editingGroup ? '更新成功' : '创建成功');
+                        this.showGroupDialog = false;
+                        this.resetGroupForm();
 
-                            // 重置并重新加载分组列表
-                            this.groupList = [];
-                            this.groupListCurrentPage = 1;
-                            this.groupListTotal = 0;
-                            await this.loadGroupList();
-                            await this.loadDashboard();
+                        // 重置并重新加载分组列表
+                        this.groupList = [];
+                        this.groupListCurrentPage = 1;
+                        this.groupListTotal = 0;
+                        await this.loadGroupList();
+                        await this.loadDashboard();
 
-                            // 重新加载下拉菜单
-                            this.loadAllGroupsForDropdown();
-                        } else {
-                            this.$message.error(response.data.message || '保存失败');
-                        }
-                    } catch (error) {
-                        this.$message.error('操作失败: ' + error.message);
+                        // 重新加载下拉菜单
+                        this.loadAllGroupsForDropdown();
+                    } else {
+                        this.$message.error(response.data.message || '保存失败');
                     }
+                } catch (error) {
+                    this.$message.error('操作失败: ' + error.message);
+                } finally {
+                    this.groupSaving = false;
                 }
             });
         },
@@ -1537,7 +1545,12 @@ new Vue({
                 id: Date.now() + Math.random(),
                 name: this.getFavDefaultName(url),
                 method: method,
-                url: url
+                url: url,
+                bodyType: this.requestBodyType,
+                body: this.requestBody,
+                headers: this.requestHeaders.filter(h => (h.key || '').trim()).map(h => ({key: h.key, value: h.value})),
+                params: this.requestParams.filter(p => (p.key || '').trim()).map(p => ({key: p.key, value: p.value})),
+                withCredentials: this.requestWithCredentials
             });
             this.requestFavUrls = this.requestFavUrls.slice(0, 20);
             this.saveRequestFavs();
@@ -1551,6 +1564,12 @@ new Vue({
             if (!fav) return;
             this.requestMethod = fav.method || 'GET';
             this.requestUrl = fav.url || '';
+            // 还原请求体、请求头、参数与跨域 Cookie 开关（旧收藏无这些字段时保留空态）
+            this.requestBodyType = fav.bodyType || this.requestBodyType;
+            this.requestBody = fav.body || '';
+            this.requestHeaders = (fav.headers || []).map(h => ({id: ++this.requestRowSeq, key: h.key, value: h.value}));
+            this.requestParams = (fav.params || []).map(p => ({id: ++this.requestRowSeq, key: p.key, value: p.value}));
+            this.requestWithCredentials = !!fav.withCredentials;
             this.$message.success('已还原常用请求');
         }
     },
